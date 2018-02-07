@@ -20,6 +20,7 @@ class Node:
         self.x = x
         self.y = y
         self.value = value
+        self.origin = False
 
         # Updates the value of the starting node once found
         if value == 'P':
