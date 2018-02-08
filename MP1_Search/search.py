@@ -1,5 +1,7 @@
 from maze import Maze
 from node import Node
+from asyncio import Queue as Q
+from asyncio import PriorityQueue as PQ
 
 def DepthFirstSearch(maze):
     pass
