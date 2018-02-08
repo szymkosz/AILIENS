@@ -1,10 +1,5 @@
 ## Node class holding data for each cell array
 class Node:
-    # Initializes char of the starting node
-    startingNode = False
-    food_array = []
-    maze = []
-
     # Constructor
     def __init__(self, x, y, char):
         self.x = x
@@ -13,10 +8,10 @@ class Node:
         self.parent = ()
 
         # Updates the char of the starting node once found
-        if char == 'P':
-            Node.startingNode = self
-        if char == '.':
-            Node.food_array.append((self,1e100))
+        # if char == 'P':
+        #     Maze.startingNode = self
+        # if char == '.':
+        #     Maze.food_array.append((self,1e100))
 
     # Specific-use node representation (Characters only)
     def __repr__(self):

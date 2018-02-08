@@ -6,6 +6,7 @@ class Maze:
         self.fileName = fileName
         self.maze = []
         self.food_array = []
+        self.startingNode = None
 
         ## Open file and create matrix data structure
         with open(fileName, 'r') as file:
@@ -13,9 +14,17 @@ class Maze:
 
             ## Unfortunately, the way the file is read and parsed, the coordinates
             ## are backwards, so the array should be indexed with y first, then x
-            ## i.e. Node.maze[y][x]
+            ## i.e. maze[y][x]
             for line in file:
-                self.maze.append([ Node(w,h,line[w]) for w in range(len(line)) ])
+                # self.maze.append([ Node(w,h,line[w]) for w in range(len(line)) ])
+                row = []
+                for w in range(len(line)):
+                    row.append(Node(w,h,line[w]))
+                    if line[w] == 'P':
+                        self.startingNode = row[w]
+                    if line[w] == '.':
+                        self.food_array.append(row[w])
+                self.maze.append(row)
                 h+=1
 
     def printMaze(self):

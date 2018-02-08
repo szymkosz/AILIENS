@@ -53,7 +53,9 @@ maze = Maze("mediumMaze.txt")
 # Node.maze[4][1].value = '.'
 #
 # maze.printMaze()
-maze.writeMaze()
+# maze.writeMaze()
+
+maze.printMaze()
 #
 # print(Node.maze[4][4].startingNode)
 # print(Node.maze[15][12].startingNode)
