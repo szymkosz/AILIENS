@@ -33,6 +33,9 @@ where abs() is the absolute value function.
 def ManhattanDistance(x1, y1, x2, y2):
     return abs(x1 - x2) + abs(y1 - y2)
 
+def ManhattanDistanceNode(node1, node2):
+    return abs(node1.x - node2.x) + abs(node2.y - node2.y)
+
 def DepthFirstSearch(maze):
     pass
 
