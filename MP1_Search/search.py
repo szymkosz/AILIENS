@@ -1,4 +1,4 @@
-#Import all the necessary packages
+# Import all the necessary packages
 from maze import Maze
 from node import Node
 from asyncio import Queue as Q
@@ -17,7 +17,8 @@ MP 1.1 STARTS HERE!
 EACH PROBLEM INSTANCE AND SEARCH ALGORITHM MUST RETURN THE FOLLOWING:
 
 1. The solution, displayed by putting a '.' in every maze square visited on the path.
-2. The path cost of the solution, defined as the number of steps taken to get from the initial state to the goal state.
+2. The path cost of the solution, defined as the number of steps taken to get from
+   the initial state to the goal state.
 3. Number of nodes expanded by the search algorithm.
 -------------------------------------------------------------------------------
 """
@@ -29,7 +30,7 @@ m = abs(x1 - x2) + abs(y1 - y2)
 
 where abs() is the absolute value function.
 """
-def ManhattanDistance(x1, y1, x2, y2)
+def ManhattanDistance(x1, y1, x2, y2):
     return abs(x1 - x2) + abs(y1 - y2)
 
 def DepthFirstSearch(maze):

@@ -12,8 +12,8 @@ class Maze:
         with open(fileName, 'r') as file:
             h = 0
             ## Unfortunately, the way the file is read and parsed, the coordinates
-            ## are backwards, so the array should be indexed with y first, then x
-            ## i.e. maze[y][x]
+            ##  are backwards, so the array should be indexed with y first, then x
+            ##  i.e. maze[y][x]
             for line in file:
                 # self.maze.append([ Node(w,h,line[w]) for w in range(len(line)) ])
                 row = []
@@ -63,7 +63,7 @@ class Maze:
                 f.write(maze[i][j].char)
         f.close()
 
-    # Returns boolean whether or not can move in the desired direction
+    ## Returns boolean whether or not can move in the desired direction
     def canTravel(self, node, dir):
         RIGHT = 0
         DOWN = 1
