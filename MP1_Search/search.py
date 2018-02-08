@@ -2,6 +2,7 @@ from maze import Maze
 from node import Node
 
 def DepthFirstSearch(maze):
+    print("This is a test")
     pass
 
 def BreadthFirstSearch(maze):
