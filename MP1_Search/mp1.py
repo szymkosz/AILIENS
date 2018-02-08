@@ -3,9 +3,6 @@ import search
 from node import Node
 from maze import Maze
 
-# from asyncio import Queue as Q
-# from asyncio import PriorityQueue as PQ
-
 RIGHT = 0
 DOWN = 1
 LEFT = 2

@@ -8,6 +8,10 @@ class Node:
         self.parent = None
         self.visited = False
 
+        #This variable stores the lowest path cost seen thus far
+        #from the start Node to this Node, initialized to positive infinity.
+        self.cost = float("inf")
+
     # Specific-use node representation (Characters only)
     def __repr__(self):
         return "{0}".format(self.char)
