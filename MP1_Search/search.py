@@ -24,17 +24,14 @@ EACH PROBLEM INSTANCE AND SEARCH ALGORITHM MUST RETURN THE FOLLOWING:
 """
 
 """
-Computes the Manhattan distance d from coordinates (x1, y1) to (x2, y2) as:
+Computes the Manhattan distance d from node1 to node2 as:
 
-m = abs(x1 - x2) + abs(y1 - y2)
+m = abs(node1.x - node2.x) + abs(node1.y - node2.y)
 
 where abs() is the absolute value function.
 """
-def ManhattanDistance(x1, y1, x2, y2):
-    return abs(x1 - x2) + abs(y1 - y2)
-
-def ManhattanDistanceNode(node1, node2):
-    return abs(node1.x - node2.x) + abs(node2.y - node2.y)
+def ManhattanDistance(node1, node2):
+    return abs(node1.x - node2.x) + abs(node1.y - node2.y)
 
 def DepthFirstSearch(maze):
     pass
@@ -66,7 +63,7 @@ def AStar(maze):
     #Mark the start as visited and add it
     start.cost = 0
     start.visited = True
-    startHeuristic = ManhattanDistance(start.x, start.y, goal.x, goal.y)
+    startHeuristic = ManhattanDistance(start, goal)
     frontier.put(start.cost + startHeuristic, maze.startingNode)
 
     expandedNodes = 0
@@ -81,7 +78,7 @@ def AStar(maze):
 
                 rightNode.cost = curNode.cost + 1
                 rightNode.visited = True
-                rightHeuristic = ManhattanDistance(rightNode.x, rightNode.y, goal.x, goal.y)
+                rightHeuristic = ManhattanDistance(rightNode, goal)
                 frontier.put(rightNode.cost + rightHeuristic, rightNode)
         if(maze.canTravel(curNode, DOWN)):
             pass
