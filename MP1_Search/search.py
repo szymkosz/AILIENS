@@ -10,6 +10,29 @@ DOWN = 1
 LEFT = 2
 UP = 3
 
+
+"""
+-------------------------------------------------------------------------------
+THIS SECTION IS FOR HELPER FUNCTIONS!
+-------------------------------------------------------------------------------
+"""
+
+# Computes the Manhattan distance d from node1 to node2 as:
+#
+# m = abs(node1.x - node2.x) + abs(node1.y - node2.y)
+#
+# where abs() is the absolute value function.
+def ManhattanDistance(node1, node2):
+    return abs(node1.x - node2.x) + abs(node1.y - node2.y)
+
+# Adds a new node to the frontier within the A* algorithm for MP 1.1
+def AStar_AddToFrontier(curNode, newNode, goalNode, frontier):
+    newNode.parent = curNode
+    newNode.cost = curNode.cost + 1
+    newNode.visited = True
+    newHeuristic = ManhattanDistance(newNode, goalNode)
+    frontier.put(newNode.cost + newHeuristic, newNode)
+
 """
 -------------------------------------------------------------------------------
 MP 1.1 STARTS HERE!
@@ -23,16 +46,6 @@ EACH PROBLEM INSTANCE AND SEARCH ALGORITHM MUST RETURN THE FOLLOWING:
 -------------------------------------------------------------------------------
 """
 
-"""
-Computes the Manhattan distance d from node1 to node2 as:
-
-m = abs(node1.x - node2.x) + abs(node1.y - node2.y)
-
-where abs() is the absolute value function.
-"""
-def ManhattanDistance(node1, node2):
-    return abs(node1.x - node2.x) + abs(node1.y - node2.y)
-
 def DepthFirstSearch(maze):
     pass
 
@@ -42,25 +55,24 @@ def BreadthFirstSearch(maze):
 def GreedyBestFirstSearch(maze):
     pass
 
-"""
-Searches for the food pellet using the A* algorithm.
-In A*, unexpanded nodes on the frontier are sorted with a min Priority Queue.
-The priority f(n) of a node n is computed as:
 
-f(n) = g(n) + h(n) , where
-
-g(n) = cost so far to reach n (path cost)
-h(n) = estimated cost from n to goal (heuristic)
-
-The heuristic h(n) is computed as the Manhattan distance from n to the goal.
-"""
+# Searches for the food pellet using the A* algorithm.
+# In A*, unexpanded nodes on the frontier are sorted with a min Priority Queue.
+# The priority f(n) of a node n is computed as:
+#
+# f(n) = g(n) + h(n) , where
+#
+# g(n) = cost so far to reach n (path cost)
+# h(n) = estimated cost from n to goal (heuristic)
+#
+# The heuristic h(n) is computed as the Manhattan distance from n to the goal.
 def AStar(maze):
     #Initialize priority queue and identify the start and goal Nodes
     frontier = PQ()
     start = maze.startingNode
     goal = maze.food_array[0]
 
-    #Mark the start as visited and add it
+    #Mark the start as visited with a cost of 0 and add it to the frontier
     start.cost = 0
     start.visited = True
     startHeuristic = ManhattanDistance(start, goal)
@@ -69,23 +81,41 @@ def AStar(maze):
     expandedNodes = 0
 
     while(not frontier.empty()):
+        # Expand node on frontier
         curNode = frontier.get()
         expandedNodes += 1
 
+        # Look at rightward node
         if(maze.canTravel(curNode, RIGHT)):
-            if(not curNode.visited):
-                rightNode = maze[curNode.y][curNode.x+1]
+            rightNode = maze[curNode.y][curNode.x+1]
 
-                rightNode.cost = curNode.cost + 1
-                rightNode.visited = True
-                rightHeuristic = ManhattanDistance(rightNode, goal)
-                frontier.put(rightNode.cost + rightHeuristic, rightNode)
+            # This is the goal node.
+            if(rightNode.char == '.')
+                pass
+
+            if(not rightNode.visited):
+                AStar_AddToFrontier(curNode, rightNode, goal, frontier)
+
+        # Look at downward node
         if(maze.canTravel(curNode, DOWN)):
-            pass
+            downNode = maze[curNode.y+1][curNode.x]
+
+            if(not downNode.visited):
+                AStar_AddToFrontier(curNode, downNode, goal, frontier)
+
+        # Look at leftward node
         if(maze.canTravel(curNode, LEFT)):
-            pass
+            leftNode = maze[curNode.y][curNode.x-1]
+
+            if(not leftNode.visited):
+                AStar_AddToFrontier(curNode, leftNode, goal, frontier)
+
+        # Look at upward node
         if(maze.canTravel(curNode, UP)):
-            pass
+            upNode = maze[curNode.y-1][curNode.x]
+
+            if(not curNode.visited):
+                AStar_AddToFrontier(curNode, upNode, goal, frontier)
 
 
 """
