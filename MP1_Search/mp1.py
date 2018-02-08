@@ -34,5 +34,7 @@ print(maze.canTravel(maze[y][x], RIGHT))
 print(maze.canTravel(maze[y][x], DOWN))
 print(maze.canTravel(maze[y][x], LEFT))
 print(maze.canTravel(maze[y][x], UP))
-# maze.printMaze()
+print(maze.width(), maze.height())
+
+maze.printMaze()
 # maze.printMaze()

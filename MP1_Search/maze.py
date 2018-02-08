@@ -30,6 +30,14 @@ class Maze:
     def __getitem__(self, index):
         return self.maze[index]
 
+    ## Returns maze height
+    def height(self):
+        return len(self.maze)
+
+    ## Returns maze width
+    def width(self):
+        return len(self[0])
+
     ## Prints the maze to standard output
     def printMaze(self):
         maze = self.maze
