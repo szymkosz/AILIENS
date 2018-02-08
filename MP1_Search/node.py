@@ -1,4 +1,4 @@
-## Node class holding data for each cell array
+## Node class holding data for each cell of maze
 class Node:
     # Constructor
     def __init__(self, x, y, char):
@@ -8,12 +8,6 @@ class Node:
         self.parent = None
         self.visited = False
 
-        # Updates the char of the starting node once found
-        # if char == 'P':
-        #     Maze.startingNode = self
-        # if char == '.':
-        #     Maze.food_array.append((self,1e100))
-
     # Specific-use node representation (Characters only)
     def __repr__(self):
         return "{0}".format(self.char)
@@ -21,25 +15,3 @@ class Node:
     # String representation of node -> (x, y) char
     def __str__(self):
         return "({0}, {1}) {2}".format(self.x, self.y, self.char)
-
-    # Returns boolean whether or not can move in the desired direction
-    def canTravel(self, dir):
-        RIGHT = 0
-        DOWN = 1
-        LEFT = 2
-        UP = 3
-
-        if ((self.x == 0 and dir == LEFT) or \
-        (self.y == 0 and dir == UP) or \
-        (self.x == len(Node.maze[0]) - 1 and dir == RIGHT) or \
-        (self.y == len(Node.maze) - 1 and dir == DOWN)):
-            return False
-
-        if dir == RIGHT:
-            return not Node.maze[self.y][self.x+1].char == "%"
-        elif dir == DOWN:
-            return not Node.maze[self.y+1][self.x].char == "%"
-        elif dir == LEFT:
-            return not Node.maze[self.y][self.x-1].char == "%"
-        elif dir == UP:
-            return not Node.maze[self.y-1][self.x].char == "%"
