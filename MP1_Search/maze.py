@@ -27,6 +27,7 @@ class Maze:
                 self.maze.append(row)
                 h+=1
 
+    ## Prints the maze to standard output
     def printMaze(self):
         maze = self.maze
         for i in range(len(maze)):

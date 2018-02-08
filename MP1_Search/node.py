@@ -5,7 +5,8 @@ class Node:
         self.x = x
         self.y = y
         self.char = char
-        self.parent = ()
+        self.parent = None
+        self.visited = False
 
         # Updates the char of the starting node once found
         # if char == 'P':
@@ -23,6 +24,11 @@ class Node:
 
     # Returns boolean whether or not can move in the desired direction
     def canTravel(self, dir):
+        RIGHT = 0
+        DOWN = 1
+        LEFT = 2
+        UP = 3
+
         if ((self.x == 0 and dir == LEFT) or \
         (self.y == 0 and dir == UP) or \
         (self.x == len(Node.maze[0]) - 1 and dir == RIGHT) or \
@@ -31,9 +37,9 @@ class Node:
 
         if dir == RIGHT:
             return not Node.maze[self.y][self.x+1].char == "%"
-        if dir == DOWN:
+        elif dir == DOWN:
             return not Node.maze[self.y+1][self.x].char == "%"
-        if dir == LEFT:
+        elif dir == LEFT:
             return not Node.maze[self.y][self.x-1].char == "%"
-        if dir == UP:
+        elif dir == UP:
             return not Node.maze[self.y-1][self.x].char == "%"
