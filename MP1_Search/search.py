@@ -1,14 +1,14 @@
 import maze
 import node
 
-def DepthFirstSearch()
+def DepthFirstSearch():
     pass
 
-def BreadthFirstSearch()
+def BreadthFirstSearch():
     pass
 
-def GreedyBestFirstSearch()
+def GreedyBestFirstSearch():
     pass
 
-def AStar()
+def AStar():
     pass
