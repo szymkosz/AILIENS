@@ -1,6 +1,12 @@
 import sys
+import search
 from node import Node
 from maze import Maze
+
+RIGHT = 0
+DOWN = 1
+LEFT = 2
+UP = 3
 
 ## Obtain maze text file from command line
 # try:
@@ -40,14 +46,16 @@ DOWN = 1
 LEFT = 2
 UP = 3
 
-parseMazeFile()
+maze = Maze("mediumMaze.txt")
+# parseMazeFile()
 # Node.maze[3][1].value = '.'
 # print(Node.maze[3][1])
 # Node.maze[4][1].value = '.'
 #
-printMaze()
-
-print(Node.maze[4][4].startingNode)
-print(Node.maze[15][12].startingNode)
+# maze.printMaze()
+maze.writeMaze()
+#
+# print(Node.maze[4][4].startingNode)
+# print(Node.maze[15][12].startingNode)
 # writeMaze()
 # printAllNodes()
