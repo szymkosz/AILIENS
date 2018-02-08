@@ -21,12 +21,18 @@ UP = 3
 
 maze = Maze("mediumMaze.txt")
 
-# x = 9
-# y = 3
-# print(maze.maze[y][x])
+x = 1
+y = 3
+
+print(maze[y][x])
 # print(maze.canTravel(maze.maze[y][x], RIGHT))
 # print(maze.canTravel(maze.maze[y][x], DOWN))
 # print(maze.canTravel(maze.maze[y][x], LEFT))
 # print(maze.canTravel(maze.maze[y][x], UP))
+
+print(maze.canTravel(maze[y][x], RIGHT))
+print(maze.canTravel(maze[y][x], DOWN))
+print(maze.canTravel(maze[y][x], LEFT))
+print(maze.canTravel(maze[y][x], UP))
 # maze.printMaze()
 # maze.printMaze()

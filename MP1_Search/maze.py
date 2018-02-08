@@ -11,7 +11,6 @@ class Maze:
         ## Open file and create matrix data structure
         with open(fileName, 'r') as file:
             h = 0
-
             ## Unfortunately, the way the file is read and parsed, the coordinates
             ## are backwards, so the array should be indexed with y first, then x
             ## i.e. maze[y][x]
@@ -26,6 +25,10 @@ class Maze:
                         self.food_array.append(row[w])
                 self.maze.append(row)
                 h+=1
+
+    ## Overloaded operator []
+    def __getitem__(self, index):
+        return self.maze[index]
 
     ## Prints the maze to standard output
     def printMaze(self):
