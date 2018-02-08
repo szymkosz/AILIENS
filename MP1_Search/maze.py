@@ -51,3 +51,25 @@ class Maze:
             for j in range(len(maze[i])):
                 f.write(maze[i][j].char)
         f.close()
+
+    # Returns boolean whether or not can move in the desired direction
+    def canTravel(self, node, dir):
+        RIGHT = 0
+        DOWN = 1
+        LEFT = 2
+        UP = 3
+
+        if ((node.x == 0 and dir == LEFT) or \
+        (node.y == 0 and dir == UP) or \
+        (node.x == len(self.maze[0]) - 1 and dir == RIGHT) or \
+        (node.y == len(self.maze) - 1 and dir == DOWN)):
+            return False
+
+        if dir == RIGHT:
+            return not self.maze[node.y][node.x+1].char == "%"
+        elif dir == DOWN:
+            return not self.maze[node.y+1][node.x].char == "%"
+        elif dir == LEFT:
+            return not self.maze[node.y][node.x-1].char == "%"
+        elif dir == UP:
+            return not self.maze[node.y-1][node.x].char == "%"
