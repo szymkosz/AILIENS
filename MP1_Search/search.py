@@ -49,35 +49,24 @@ EACH PROBLEM INSTANCE AND SEARCH ALGORITHM MUST RETURN THE FOLLOWING:
 """
 
 def DepthFirstSearch(maze):
-    s = S()
+    s = []
     start = maze.startingNode
     goal = maze.food_array[0]
-    # print(goal, start)
 
-    s.put_nowait(start)
-    s.put_nowait(1)
-    # print(s.empty())
-    # print(s.get())
-    # print(s)
-    # print(s.empty())
-    while (not s.empty()):
-        # print("in while")
-        # print(current)
-        print(s.qsize())
-        current = s.get()
-        print(current)
+    s.append(start)
+    while (len(s) > 0):
+        current = s.pop(-1)
         if not current.visited:
             current.visited = True
             adj = maze.getAdjacent(current)
             for node in adj:
                 if not node.visited:
-                    print(current)
                     node.parent = current
-                    s.put_nowait(node)
+                    s.append(node)
     current = goal
-    print(current)
-    print(current.parent)
+    maze.cost = 0
     while (current != start):
+        maze.cost += 1
         current.char = '.'
         current = current.parent
 
