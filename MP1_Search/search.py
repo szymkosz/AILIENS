@@ -47,6 +47,8 @@ EACH PROBLEM INSTANCE AND SEARCH ALGORITHM MUST RETURN THE FOLLOWING:
 """
 
 def DepthFirstSearch(maze):
+    s = S()
+
     pass
 
 def BreadthFirstSearch(maze):
@@ -90,7 +92,7 @@ def AStar(maze):
             rightNode = maze[curNode.y][curNode.x+1]
 
             # This is the goal node.
-            if(rightNode.char == '.')
+            if(rightNode.char == '.'):
                 pass
 
             if(not rightNode.visited):
