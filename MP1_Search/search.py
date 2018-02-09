@@ -71,7 +71,26 @@ def DepthFirstSearch(maze):
         current = current.parent
 
 def BreadthFirstSearch(maze):
-    pass
+    q = []
+    start = maze.startingNode
+    goal = maze.food_array[0]
+
+    q.append(start)
+    while len(q) > 0:
+        current = q.pop(0)
+        if not current.visited:
+            current.visited = True
+            adj = maze.getAdjacent(current)
+            for node in adj:
+                if not node.visited:
+                    node.parent = current
+                    q.append(node)
+    current = goal
+    maze.cost = 0
+    while (current != start):
+        maze.cost += 1
+        current.char = '.'
+        current = current.parent
 
 def GreedyBestFirstSearch(maze):
     pass
