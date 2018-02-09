@@ -1,9 +1,9 @@
 # Import all the necessary packages
 from maze import Maze
 from node import Node
-from asyncio import Queue as Q
-from asyncio import PriorityQueue as PQ
-from asyncio import LifoQueue as S
+# from asyncio import Queue as Q
+# from asyncio import PriorityQueue as PQ
+# from asyncio import LifoQueue as S
 
 import heapq
 
@@ -92,7 +92,30 @@ def BreadthFirstSearch(maze):
         current = current.parent
 
 def GreedyBestFirstSearch(maze):
-    pass
+    frontier = PQ()
+
+    #add the startingNode to the frontier
+    P = maze.startingNode
+    P.parent = None
+    P.cost = 0
+    P.visited = True
+    goal = maze.food_array[0]
+    P_MH = ManhattanDistance(P, goal)
+    # frontier.put(P.cost + P_MH, P)
+    heapq.heappush(frontier, (P.cost + P_MH, P))
+
+    #check all directions of neighbors and add them on the frontier
+    while(frontier.qsize() > 0):
+	# currNode = frontier.get()
+	currNode = heapq.heappop(frontier)[1]
+
+	if(currNode == goal):
+		break
+
+	for direction in range(0, 4):
+		if(maze.canTravel(currNode, direction) and not currNode.visited):
+			newNode = maze.getNode(currNode, direction)
+			AStar_AddToFrontier(currNode, newNode, goal, frontier)
 
 
 # Searches for the food pellet using the A* algorithm.

@@ -42,16 +42,17 @@ print(frontier.get_nowait())
 print(frontier.get_nowait())
 """
 
-import heapq
+# import heapq
 
-frontier = []
-heapq.heappush(frontier, (3, Node(1,1,'P')))
-heapq.heappush(frontier, (5, Node(2,1,' ')))
-heapq.heappush(frontier, (7, Node(1,2,' ')))
+# frontier = []
+# heapq.heappush(frontier, (3, Node(1,1,'P')))
+# heapq.heappush(frontier, (5, Node(2,1,' ')))
+# heapq.heappush(frontier, (7, Node(1,2,' ')))
 
-print(heapq.heappop(frontier))
-print(heapq.heappop(frontier))
-print(heapq.heappop(frontier))
+# print(heapq.heappop(frontier))
+# print(heapq.heappop(frontier))
+# print(heapq.heappop(frontier))
+
 # x = 3
 # y = 1
 # testNode = maze[y][x]
@@ -78,8 +79,9 @@ print(heapq.heappop(frontier))
 
 """ BFS/DFS Test """
 # search.BreadthFirstSearch(maze)
-#search.DepthFirstSearch(maze)
-search.AStar(maze)
+# search.DepthFirstSearch(maze)
+search.GreedyBestFirstSearch(maze)
+# search.AStar(maze)
 maze.printMaze()
 # maze.writeMaze()
 # print(maze.cost)
