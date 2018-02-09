@@ -5,13 +5,7 @@ from asyncio import Queue as Q
 from asyncio import PriorityQueue as PQ
 from asyncio import LifoQueue as S
 
-
-# Define the values for representing the directions
-RIGHT = 0
-DOWN = 1
-LEFT = 2
-UP = 3
-
+import heapq
 
 """
 -------------------------------------------------------------------------------
@@ -31,9 +25,13 @@ def ManhattanDistance(node1, node2):
 def AStar_AddToFrontier(curNode, newNode, goalNode, frontier):
     newNode.parent = curNode
     newNode.cost = curNode.cost + 1
-    newNode.visited = True
     newHeuristic = ManhattanDistance(newNode, goalNode)
-    frontier.put(newNode.cost + newHeuristic, newNode)
+    print(newNode)
+    print((newNode.cost + newHeuristic, newNode))
+    #frontier.put_nowait((newNode.cost + newHeuristic, newNode))
+    heapq.heappush(frontier, (newNode.cost + newHeuristic, newNode))
+    print(frontier)
+
 
 """
 -------------------------------------------------------------------------------
@@ -109,54 +107,57 @@ def GreedyBestFirstSearch(maze):
 # The heuristic h(n) is computed as the Manhattan distance from n to the goal.
 def AStar(maze):
     #Initialize priority queue and identify the start and goal Nodes
-    frontier = PQ()
+    frontier = []
     start = maze.startingNode
     goal = maze.food_array[0]
+    trueCost = float("inf")
 
     #Mark the start as visited with a cost of 0 and add it to the frontier
     start.cost = 0
-    start.visited = True
     startHeuristic = ManhattanDistance(start, goal)
-    frontier.put(start.cost + startHeuristic, maze.startingNode)
+    #frontier.put_nowait((start.cost + startHeuristic, maze.startingNode))
+    heapq.heappush(frontier, (start.cost + startHeuristic, maze.startingNode))
 
     expandedNodes = 0
+    #print(start)
+    #print(goal)
+    #print(frontier)
 
-    while(not frontier.empty()):
+    while len(frontier) > 0:
         # Expand node on frontier
-        curNode = frontier.get()
-        expandedNodes += 1
+        #curNode = frontier.get_nowait()[1]
+        curNode = heapq.heappop(frontier)[1]
+        #print(curNode)
+        curNodeHeuristic = ManhattanDistance(curNode, goal)
 
-        # Look at rightward node
-        if(maze.canTravel(curNode, RIGHT)):
-            rightNode = maze[curNode.y][curNode.x+1]
+        if not curNode.visited and (curNode.cost+curNodeHeuristic) < trueCost:
+            curNode.visited = True
+            expandedNodes += 1
 
-            # This is the goal node.
-            if(rightNode.char == '.'):
-                pass
+            # Compute the cost
+            if curNode == goal:
+                pathCost = 0
+                current = goal
 
-            if(not rightNode.visited):
-                AStar_AddToFrontier(curNode, rightNode, goal, frontier)
+                while current != start:
+                    pathCost += 1
+                    current = current.parent
 
-        # Look at downward node
-        if(maze.canTravel(curNode, DOWN)):
-            downNode = maze[curNode.y+1][curNode.x]
+                if pathCost < trueCost:
+                    trueCost = pathCost
 
-            if(not downNode.visited):
-                AStar_AddToFrontier(curNode, downNode, goal, frontier)
+            neighbors = maze.getAdjacent(curNode)
+            for neighbor in neighbors:
+                print("I am here")
+                if not neighbor.visited:
+                    AStar_AddToFrontier(curNode, neighbor, goal, frontier)
 
-        # Look at leftward node
-        if(maze.canTravel(curNode, LEFT)):
-            leftNode = maze[curNode.y][curNode.x-1]
-
-            if(not leftNode.visited):
-                AStar_AddToFrontier(curNode, leftNode, goal, frontier)
-
-        # Look at upward node
-        if(maze.canTravel(curNode, UP)):
-            upNode = maze[curNode.y-1][curNode.x]
-
-            if(not curNode.visited):
-                AStar_AddToFrontier(curNode, upNode, goal, frontier)
+    current = goal
+    maze.cost = 0
+    while (current != start):
+        maze.cost += 1
+        current.char = '.'
+        current = current.parent
 
 
 """

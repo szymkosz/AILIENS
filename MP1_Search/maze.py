@@ -114,7 +114,7 @@ class Maze:
         DOWN = 1
         LEFT = 2
         UP = 3
-
+        
         adj = []
         if self.canTravel(node, RIGHT):
             adj.append(self.getNode(node, RIGHT))
