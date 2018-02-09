@@ -116,12 +116,15 @@ class Maze:
         UP = 3
 
         adj = []
-        if self.canTravel(node, UP):
-            adj.append(self.getNode(node, UP))
-        if self.canTravel(node, LEFT):
-            adj.append(self.getNode(node, LEFT))
-        if self.canTravel(node, DOWN):
-            adj.append(self.getNode(node, DOWN))
         if self.canTravel(node, RIGHT):
             adj.append(self.getNode(node, RIGHT))
+        if self.canTravel(node, DOWN):
+            adj.append(self.getNode(node, DOWN))
+        if self.canTravel(node, LEFT):
+            adj.append(self.getNode(node, LEFT))
+        if self.canTravel(node, UP):
+            adj.append(self.getNode(node, UP))
+
+
+
         return adj

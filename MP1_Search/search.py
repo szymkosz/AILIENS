@@ -59,7 +59,8 @@ def DepthFirstSearch(maze):
         if not current.visited:
             current.visited = True
             adj = maze.getAdjacent(current)
-            for node in adj:
+            while len(adj) > 0:
+                node = adj.pop()
                 if not node.visited:
                     node.parent = current
                     s.append(node)
