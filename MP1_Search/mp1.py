@@ -18,19 +18,20 @@ UP = 3
 
 maze = Maze("mediumMaze.txt")
 
-x = 1
-y = 1
-testNode = maze[y][x]
-print(testNode)
+# x = 3
+# y = 1
+# testNode = maze[y][x]
+# print(testNode)
+#
+# for node in maze.getAdjacent(testNode):
+#     print(node)
 
-maze.getNode(testNode, 4)
+# maze.getNode(testNode, 4)
 # print(maze.canTravel(maze.maze[y][x], RIGHT))
 # print(maze.canTravel(maze.maze[y][x], DOWN))
 # print(maze.canTravel(maze.maze[y][x], LEFT))
 # print(maze.canTravel(maze.maze[y][x], UP))
 
-for node in maze.getAdjacent(testNode):
-    print(node)
 
 # print(maze.canTravel(maze[y][x], RIGHT))
 # print(maze.canTravel(maze[y][x], DOWN))
@@ -40,3 +41,10 @@ for node in maze.getAdjacent(testNode):
 
 # maze.printMaze()
 # maze.printMaze()
+
+""" BFS/DFS Test """
+# search.BreadthFirstSearch(maze)
+# search.DepthFirstSearch(maze)
+# maze.printMaze()
+# maze.writeMaze()
+# print(maze.cost)
