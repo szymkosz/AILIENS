@@ -3,6 +3,8 @@ from maze import Maze
 from node import Node
 from asyncio import Queue as Q
 from asyncio import PriorityQueue as PQ
+from asyncio import LifoQueue as S
+
 
 # Define the values for representing the directions
 RIGHT = 0
@@ -48,8 +50,36 @@ EACH PROBLEM INSTANCE AND SEARCH ALGORITHM MUST RETURN THE FOLLOWING:
 
 def DepthFirstSearch(maze):
     s = S()
+    start = maze.startingNode
+    goal = maze.food_array[0]
+    # print(goal, start)
 
-    pass
+    s.put_nowait(start)
+    s.put_nowait(1)
+    # print(s.empty())
+    # print(s.get())
+    # print(s)
+    # print(s.empty())
+    while (not s.empty()):
+        # print("in while")
+        # print(current)
+        print(s.qsize())
+        current = s.get()
+        print(current)
+        if not current.visited:
+            current.visited = True
+            adj = maze.getAdjacent(current)
+            for node in adj:
+                if not node.visited:
+                    print(current)
+                    node.parent = current
+                    s.put_nowait(node)
+    current = goal
+    print(current)
+    print(current.parent)
+    while (current != start):
+        current.char = '.'
+        current = current.parent
 
 def BreadthFirstSearch(maze):
     pass
