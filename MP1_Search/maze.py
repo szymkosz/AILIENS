@@ -70,6 +70,9 @@ class Maze:
         LEFT = 2
         UP = 3
 
+        if node.char == '%':
+            raise ValueError("Invalid node passed as parameter. Must be a non-wall node.")
+
         if ((node.x == 0 and dir == LEFT) or \
         (node.y == 0 and dir == UP) or \
         (node.x == len(self.maze[0]) - 1 and dir == RIGHT) or \
@@ -84,3 +87,41 @@ class Maze:
             return not self.maze[node.y][node.x-1].char == "%"
         elif dir == UP:
             return not self.maze[node.y-1][node.x].char == "%"
+        else:
+            raise ValueError("Invalid direction parameter(s) passed into canTravel()")
+
+    ## Returns the Node in the desired direction
+    def getNode(self, node, dir):
+        RIGHT = 0
+        DOWN = 1
+        LEFT = 2
+        UP = 3
+
+        if self.canTravel(node, dir):
+            if dir == RIGHT:
+                return self[node.y][node.x+1]
+            elif dir == DOWN:
+                return self[node.y+1][node.x]
+            elif dir == LEFT:
+                return self.maze[node.y][node.x-1]
+            elif dir == UP:
+                return self.maze[node.y-1][node.x]
+
+    ## Returns a list of adjacent nodes for which canTravel() = True.
+    #   Returns an empty list otherwise.
+    def getAdjacent(self, node):
+        RIGHT = 0
+        DOWN = 1
+        LEFT = 2
+        UP = 3
+
+        adj = []
+        if self.canTravel(node, RIGHT):
+            adj.append(self[node.y][node.x+1])
+        if self.canTravel(node, DOWN):
+            adj.append(self[node.y+1][node.x])
+        if self.canTravel(node, LEFT):
+            adj.append(self.maze[node.y][node.x-1])
+        if self.canTravel(node, UP):
+            adj.append(self.maze[node.y-1][node.x])
+        return adj

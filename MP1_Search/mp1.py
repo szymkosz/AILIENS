@@ -19,19 +19,24 @@ UP = 3
 maze = Maze("mediumMaze.txt")
 
 x = 1
-y = 3
+y = 1
+testNode = maze[y][x]
+print(testNode)
 
-print(maze[y][x])
+maze.getNode(testNode, 4)
 # print(maze.canTravel(maze.maze[y][x], RIGHT))
 # print(maze.canTravel(maze.maze[y][x], DOWN))
 # print(maze.canTravel(maze.maze[y][x], LEFT))
 # print(maze.canTravel(maze.maze[y][x], UP))
 
-print(maze.canTravel(maze[y][x], RIGHT))
-print(maze.canTravel(maze[y][x], DOWN))
-print(maze.canTravel(maze[y][x], LEFT))
-print(maze.canTravel(maze[y][x], UP))
-print(maze.width(), maze.height())
+for node in maze.getAdjacent(testNode):
+    print(node)
 
-maze.printMaze()
+# print(maze.canTravel(maze[y][x], RIGHT))
+# print(maze.canTravel(maze[y][x], DOWN))
+# print(maze.canTravel(maze[y][x], LEFT))
+# print(maze.canTravel(maze[y][x], UP))
+# print(maze.width(), maze.height())
+
+# maze.printMaze()
 # maze.printMaze()
