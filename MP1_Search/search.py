@@ -1,10 +1,6 @@
 # Import all the necessary packages
 from maze import Maze
 from node import Node
-# from asyncio import Queue as Q
-# from asyncio import PriorityQueue as PQ
-# from asyncio import LifoQueue as S
-
 import heapq
 
 """
@@ -140,6 +136,7 @@ def GreedyBestFirstSearch(maze):
 
     print("Path Cost: " + str(totalMazeCost))
     print("Expanded Nodes: " + str(expandedNodes))
+    maze.printMaze()
 
     """
     frontier = PQ()
@@ -243,6 +240,7 @@ def AStar(maze):
 
     print("Path Cost: " + str(totalMazeCost))
     print("Expanded Nodes: " + str(expandedNodes))
+    maze.printMaze()
 
 
 """
