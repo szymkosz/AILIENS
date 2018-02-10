@@ -22,15 +22,12 @@ def ManhattanDistance(node1, node2):
     return abs(node1.x - node2.x) + abs(node1.y - node2.y)
 
 # Adds a new node to the frontier within the A* algorithm for MP 1.1
-def AStar_AddToFrontier(curNode, newNode, goalNode, frontier):
+def AStar_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
     newNode.parent = curNode
     newNode.cost = curNode.cost + 1
     newHeuristic = ManhattanDistance(newNode, goalNode)
-    print(newNode)
-    print((newNode.cost + newHeuristic, newNode))
-    #frontier.put_nowait((newNode.cost + newHeuristic, newNode))
-    heapq.heappush(frontier, (newNode.cost + newHeuristic, newNode))
-    print(frontier)
+    counter += 1
+    heapq.heappush(frontier, (newNode.cost + newHeuristic, counter, newNode))
 
 
 """
@@ -129,7 +126,8 @@ def GreedyBestFirstSearch(maze):
 #
 # The heuristic h(n) is computed as the Manhattan distance from n to the goal.
 def AStar(maze):
-    #Initialize priority queue and identify the start and goal Nodes
+    # Initialize the frontier (represented as a priority queue),
+    # the true path cost, and identify the start and goal Nodes
     frontier = []
     start = maze.startingNode
     goal = maze.food_array[0]
@@ -138,26 +136,25 @@ def AStar(maze):
     #Mark the start as visited with a cost of 0 and add it to the frontier
     start.cost = 0
     startHeuristic = ManhattanDistance(start, goal)
-    #frontier.put_nowait((start.cost + startHeuristic, maze.startingNode))
-    heapq.heappush(frontier, (start.cost + startHeuristic, maze.startingNode))
+    counter = 1
+    heapq.heappush(frontier, (start.cost + startHeuristic, counter, maze.startingNode))
 
     expandedNodes = 0
-    #print(start)
-    #print(goal)
-    #print(frontier)
 
     while len(frontier) > 0:
-        # Expand node on frontier
-        #curNode = frontier.get_nowait()[1]
-        curNode = heapq.heappop(frontier)[1]
-        #print(curNode)
+        # Remove node from frontier
+        curNode = heapq.heappop(frontier)[2]
         curNodeHeuristic = ManhattanDistance(curNode, goal)
 
+        # Expand this node only if it hasn't been expanded (visited) yet
+        # and its value of f(n) is less than the current discovered path
+        # cost to the goal
         if not curNode.visited and (curNode.cost+curNodeHeuristic) < trueCost:
             curNode.visited = True
             expandedNodes += 1
 
-            # Compute the cost
+            # If the expanded node is the goal,
+            # compute the total path cost
             if curNode == goal:
                 pathCost = 0
                 current = goal
@@ -170,17 +167,28 @@ def AStar(maze):
                     trueCost = pathCost
 
             neighbors = maze.getAdjacent(curNode)
+
+            # Iterate through all the neighbors and add them to the frontier
+            # if they haven't been visited
             for neighbor in neighbors:
-                print("I am here")
+                """
+                if neighbor == goal:
+                    goal.visited = False
+                """
                 if not neighbor.visited:
-                    AStar_AddToFrontier(curNode, neighbor, goal, frontier)
+                    AStar_AddToFrontier(curNode, neighbor, goal, counter, frontier)
 
     current = goal
-    maze.cost = 0
+    totalMazeCost = 0
     while (current != start):
-        maze.cost += 1
+        totalMazeCost += 1
         current.char = '.'
         current = current.parent
+
+    assert totalMazeCost == trueCost, "ERROR: True cost doesn't match final cost"
+
+    print("Path Cost: " + str(totalMazeCost))
+    print("Expanded Nodes: " + str(expandedNodes))
 
 
 """
