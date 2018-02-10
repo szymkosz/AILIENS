@@ -21,6 +21,13 @@ THIS SECTION IS FOR HELPER FUNCTIONS!
 def ManhattanDistance(node1, node2):
     return abs(node1.x - node2.x) + abs(node1.y - node2.y)
 
+# Adds a new node to the frontier within the greedy best-first search algorithm for MP 1.1
+def GreedyBestFirstSearch_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
+    newNode.parent = curNode
+    newHeuristic = ManhattanDistance(newNode, goalNode)
+    counter += 1
+    heapq.heappush(frontier, (newHeuristic, counter, newNode))
+
 # Adds a new node to the frontier within the A* algorithm for MP 1.1
 def AStar_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
     newNode.parent = curNode
@@ -89,6 +96,52 @@ def BreadthFirstSearch(maze):
         current = current.parent
 
 def GreedyBestFirstSearch(maze):
+    # Initialize the frontier (represented as a priority queue),
+    # the true path cost, and identify the start and goal Nodes
+    frontier = []
+    start = maze.startingNode
+    goal = maze.food_array[0]
+
+    # Add the start to the frontier
+    startHeuristic = ManhattanDistance(start, goal)
+    counter = 1
+    heapq.heappush(frontier, (startHeuristic, counter, maze.startingNode))
+
+    expandedNodes = 0
+
+    while len(frontier) > 0:
+        # Remove node from frontier
+        curNode = heapq.heappop(frontier)[2]
+
+        # Expand this node only if it hasn't been expanded (visited) yet
+        if not curNode.visited:
+            curNode.visited = True
+            expandedNodes += 1
+
+            # If the expanded node is the goal,
+            # compute the total path cost
+            if curNode == goal:
+                break
+
+            neighbors = maze.getAdjacent(curNode)
+
+            # Iterate through all the neighbors and add them to the frontier
+            # if they haven't been visited
+            for neighbor in neighbors:
+                if not neighbor.visited:
+                    GreedyBestFirstSearch_AddToFrontier(curNode, neighbor, goal, counter, frontier)
+
+    current = goal
+    totalMazeCost = 0
+    while (current != start):
+        totalMazeCost += 1
+        current.char = '.'
+        current = current.parent
+
+    print("Path Cost: " + str(totalMazeCost))
+    print("Expanded Nodes: " + str(expandedNodes))
+
+    """
     frontier = PQ()
 
     #add the startingNode to the frontier
@@ -113,6 +166,7 @@ def GreedyBestFirstSearch(maze):
 		if(maze.canTravel(currNode, direction) and not currNode.visited):
 			newNode = maze.getNode(currNode, direction)
 			AStar_AddToFrontier(currNode, newNode, goal, frontier)
+    """
 
 
 # Searches for the food pellet using the A* algorithm.
