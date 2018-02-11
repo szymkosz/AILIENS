@@ -12,6 +12,9 @@ class Node:
         #  start Node to this Node, initialized to positive infinity.
         self.cost = float("inf")
 
+        # Only for 1.2
+        self.food = []
+
     # Specific-use node representation (Characters only)
     def __repr__(self):
         return "{0}".format(self.char)

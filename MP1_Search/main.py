@@ -53,10 +53,10 @@ if __name__ == "__main__":
         assert len(sys.argv) == 4, incorrectUsageError
 
         # Load the maze if possible
-        try:
-            maze = Maze(part1Path + sys.argv[2])
-        except:
-            sys.exit("FileNotFoundError: Is the file spelled correctly?")
+        #try:
+        maze = Maze(part1Path + sys.argv[2])
+        #except:
+        #    sys.exit("FileNotFoundError: Is the file spelled correctly?")
 
         # Run the appropriate search algorithm
         if sys.argv[3] == "dfs" or sys.argv[3] == "DFS":

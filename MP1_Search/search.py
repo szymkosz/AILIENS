@@ -21,7 +21,6 @@ def ManhattanDistance(node1, node2):
 def GreedyBestFirstSearch_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
     newNode.parent = curNode
     newHeuristic = ManhattanDistance(newNode, goalNode)
-    counter += 1
     heapq.heappush(frontier, (newHeuristic, counter, newNode))
 
 # Adds a new node to the frontier within the A* algorithm for MP 1.1
@@ -29,7 +28,6 @@ def AStar_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
     newNode.parent = curNode
     newNode.cost = curNode.cost + 1
     newHeuristic = ManhattanDistance(newNode, goalNode)
-    counter += 1
     heapq.heappush(frontier, (newNode.cost + newHeuristic, counter, newNode))
 
 
@@ -151,6 +149,7 @@ def GreedyBestFirstSearch(maze):
             # if they haven't been visited
             for neighbor in neighbors:
                 if not neighbor.visited:
+                    counter += 1
                     GreedyBestFirstSearch_AddToFrontier(curNode, neighbor, goal, counter, frontier)
 
     current = goal
@@ -253,6 +252,7 @@ def AStar(maze):
                     goal.visited = False
                 """
                 if not neighbor.visited:
+                    counter += 1
                     AStar_AddToFrontier(curNode, neighbor, goal, counter, frontier)
 
     current = goal
@@ -274,8 +274,63 @@ def AStar(maze):
 MP 1.2 STARTS HERE!
 -------------------------------------------------------------------------------
 """
-def BuildMST():
+def BuildMST(edges):
     pass
 
 def AStarMultiSearch(maze):
-    pass
+    # Initialize the frontier (represented as a priority queue),
+    # the true path cost, and identify the start and goal Nodes
+    frontier = []
+    start = maze.startingNode
+    goal = maze.food_array[0]
+    trueCost = float("inf")
+
+    #Mark the start as visited with a cost of 0 and add it to the frontier
+    start.cost = 0
+    startHeuristic = ManhattanDistance(start, goal)
+    counter = 1
+    heapq.heappush(frontier, (start.cost + startHeuristic, counter, maze.startingNode))
+
+    expandedNodes = 0
+
+    while len(frontier) > 0:
+        # Remove node from frontier
+        curNode = heapq.heappop(frontier)[2]
+        curNodeHeuristic = ManhattanDistance(curNode, goal)
+
+        # Expand this node only if it hasn't been expanded (visited) yet
+        # and its value of f(n) is less than the current discovered path
+        # cost to the goal
+        if not curNode.visited and (curNode.cost+curNodeHeuristic) < trueCost:
+            curNode.visited = True
+            expandedNodes += 1
+
+            # If the expanded node is the goal,
+            # compute the total path cost
+            if curNode == goal:
+                pathCost = 0
+                current = goal
+
+                while current != start:
+                    pathCost += 1
+                    current = current.parent
+
+                if pathCost < trueCost:
+                    trueCost = pathCost
+
+            neighbors = maze.getAdjacent(curNode)
+
+            # Iterate through all the neighbors and add them to the frontier
+            # if they haven't been visited
+            for neighbor in neighbors:
+                """
+                if neighbor == goal:
+                    goal.visited = False
+                """
+                if not neighbor.visited:
+                    counter += 1
+                    AStar_AddToFrontier(curNode, neighbor, goal, counter, frontier)
+
+
+
+    mst = BuildMST(node.food)

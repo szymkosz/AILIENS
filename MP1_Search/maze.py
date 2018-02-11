@@ -26,6 +26,21 @@ class Maze:
                 self.maze.append(row)
                 h+=1
 
+            #print(self.maze)
+            #print(len(self.maze))
+            #print(len(self.maze[0]))
+            #print(len(self.maze[19]))
+            for i in range(0, len(self.maze)):
+                print(i)
+                for j in range(0, len(self.maze[0])):
+                    if i >= 19:
+                        print(j)
+                    self.maze[i][j].food = self.food_array.copy()
+
+            for i in range(0, len(self.maze)):
+                for j in range(0, len(self.maze[0])):
+                    print(self.maze[i][j].food)
+
     ## Overloaded operator []
     def __getitem__(self, index):
         return self.maze[index]
@@ -114,7 +129,7 @@ class Maze:
         DOWN = 1
         LEFT = 2
         UP = 3
-        
+
         adj = []
         if self.canTravel(node, RIGHT):
             adj.append(self.getNode(node, RIGHT))
