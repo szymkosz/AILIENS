@@ -7,7 +7,7 @@ run the following command:
 
 python main.py <part> <file> <algorithm>
 
-where
+where:
 
 <part> = "1.1", "mp1.1", "mp 1.1", "MP1.1", or "MP 1.1"
 <file> = "mediumMaze.txt", "bigMaze.txt", or "openMaze.txt"
@@ -21,7 +21,7 @@ To run part 1.2 on a particular maze, run the following command:
 
 python main.py <part> <file>
 
-where
+where:
 
 <part> = "1.2", "mp1.2", "mp 1.2", "MP1.2", or "MP 1.2"
 <file> = "tinySearch.txt", "smallSearch.txt", or "mediumSearch.txt"

@@ -51,6 +51,7 @@ def DepthFirstSearch(maze):
 
     s.append(start)
 
+    # Initialize a counter to count the number of nodes that get expanded
     expandedNodes = 0
 
     while len(s) > 0:
@@ -87,6 +88,7 @@ def BreadthFirstSearch(maze):
 
     q.append(start)
 
+    # Initialize a counter to count the number of nodes that get expanded
     expandedNodes = 0
 
     while len(q) > 0:
@@ -127,6 +129,7 @@ def GreedyBestFirstSearch(maze):
     counter = 1
     heapq.heappush(frontier, (startHeuristic, counter, maze.startingNode))
 
+    # Initialize a counter to count the number of nodes that get expanded
     expandedNodes = 0
 
     while len(frontier) > 0:
@@ -139,7 +142,7 @@ def GreedyBestFirstSearch(maze):
             expandedNodes += 1
 
             # If the expanded node is the goal,
-            # compute the total path cost
+            # end the search
             if curNode == goal:
                 break
 
@@ -209,12 +212,14 @@ def AStar(maze):
     goal = maze.food_array[0]
     trueCost = float("inf")
 
-    #Mark the start as visited with a cost of 0 and add it to the frontier
+    # Mark the start with a cost of 0, compute its heuristic, initialize a counter
+    # for breaking ties in the frontier, and add the start to the frontier
     start.cost = 0
     startHeuristic = ManhattanDistance(start, goal)
     counter = 1
     heapq.heappush(frontier, (start.cost + startHeuristic, counter, maze.startingNode))
 
+    # Initialize a counter to count the number of nodes that get expanded
     expandedNodes = 0
 
     while len(frontier) > 0:
@@ -274,29 +279,65 @@ def AStar(maze):
 MP 1.2 STARTS HERE!
 -------------------------------------------------------------------------------
 """
+
+# Consider the complete graph where the nodes are all the pellets remaining
+# and the edges are all the possible pairwise distances between each of the
+# remaining pellets.
+#
+# This function takes in a list called 'edges' representing the edges of this graph
+# and returns the edges that belong to the minimum spanning tree (MST).
+# The 'edges' parameter is of the form:
+#
+# [(d1, 1, (n1A, n1B)), (d2, 2, (n2A, n2B)) ... (di, i, (niA, niB)) ... (dm, m, (nmA, nmB))]
+#
+# where:
+#
+# niA, niB = the nodes representing the endpoints of the edge
+# di = the weight of the ith edge (the Manhattan Distance between nodes niA and niB)
 def BuildMST(edges):
-    pass
+    return []
+
+# Computes the heuristic for
+def AStarMultiSearch_ComputeHeuristic(curNode):
+    edges = []
+    numEdges = 0
+
+    for i in range(len(curNode.food)):
+        nodeA = curNode.food[i]
+
+        for j in range(i+1, len(curNode.food)):
+            nodeB = curNode.food[j]
+            numEdges += 1
+
+            edges.append( (ManhattanDistance(nodeA, nodeB), numEdges, (nodeA, nodeB)) )
+
+    curMST = BuildMST(edges)
+    curMSTCost = sum(edge[0] for edge in curMST)
+    curMinDistanceToPellet = min(ManhattanDistance(curNode, pellet) for pellet in curNode.food)
+
+    return curMSTCost + curMinDistanceToPellet
 
 def AStarMultiSearch(maze):
     # Initialize the frontier (represented as a priority queue),
-    # the true path cost, and identify the start and goal Nodes
+    # the true path cost, and identify the start Node
     frontier = []
     start = maze.startingNode
-    goal = maze.food_array[0]
     trueCost = float("inf")
 
-    #Mark the start as visited with a cost of 0 and add it to the frontier
+    # Mark the start with a cost of 0, compute its heuristic, initialize a counter
+    # for breaking ties in the frontier, and add the start to the frontier
     start.cost = 0
-    startHeuristic = ManhattanDistance(start, goal)
+    startHeuristic = AStarMultiSearch_ComputeHeuristic(start)
     counter = 1
     heapq.heappush(frontier, (start.cost + startHeuristic, counter, maze.startingNode))
 
+    # Initialize a counter to count the number of nodes that get expanded
     expandedNodes = 0
 
     while len(frontier) > 0:
         # Remove node from frontier
         curNode = heapq.heappop(frontier)[2]
-        curNodeHeuristic = ManhattanDistance(curNode, goal)
+        curNodeHeuristic = AStarMultiSearch_ComputeHeuristic(start)
 
         # Expand this node only if it hasn't been expanded (visited) yet
         # and its value of f(n) is less than the current discovered path
@@ -307,7 +348,7 @@ def AStarMultiSearch(maze):
 
             # If the expanded node is the goal,
             # compute the total path cost
-            if curNode == goal:
+            if len(curNode.food) == 0:
                 pathCost = 0
                 current = goal
 
@@ -330,7 +371,3 @@ def AStarMultiSearch(maze):
                 if not neighbor.visited:
                     counter += 1
                     AStar_AddToFrontier(curNode, neighbor, goal, counter, frontier)
-
-
-
-    mst = BuildMST(node.food)

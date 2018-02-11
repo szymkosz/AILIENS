@@ -25,7 +25,7 @@ class Maze:
                         self.food_array.append(row[w])
                 self.maze.append(row)
                 h+=1
-
+        
         # Initialize the food list for every node in the maze
         for i in range(len(self.maze)):
             for j in range(len(self.maze[i])):
