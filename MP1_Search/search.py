@@ -52,22 +52,35 @@ def DepthFirstSearch(maze):
     goal = maze.food_array[0]
 
     s.append(start)
-    while (len(s) > 0):
+
+    expandedNodes = 0
+
+    while len(s) > 0:
         current = s.pop(-1)
+
         if not current.visited:
             current.visited = True
+            expandedNodes += 1
+
             adj = maze.getAdjacent(current)
+
             while len(adj) > 0:
                 node = adj.pop()
                 if not node.visited:
                     node.parent = current
                     s.append(node)
+
     current = goal
-    maze.cost = 0
+    totalMazeCost = 0
     while (current != start):
-        maze.cost += 1
+        totalMazeCost += 1
         current.char = '.'
         current = current.parent
+
+    print("Path Cost: " + str(totalMazeCost))
+    print("Expanded Nodes: " + str(expandedNodes))
+    maze.printMaze()
+
 
 def BreadthFirstSearch(maze):
     q = []
@@ -75,21 +88,34 @@ def BreadthFirstSearch(maze):
     goal = maze.food_array[0]
 
     q.append(start)
+
+    expandedNodes = 0
+
     while len(q) > 0:
         current = q.pop(0)
+
         if not current.visited:
             current.visited = True
+            expandedNodes += 1
+
             adj = maze.getAdjacent(current)
+
             for node in adj:
                 if not node.visited:
                     node.parent = current
                     q.append(node)
+
     current = goal
-    maze.cost = 0
+    totalMazeCost = 0
     while (current != start):
-        maze.cost += 1
+        totalMazeCost += 1
         current.char = '.'
         current = current.parent
+
+    print("Path Cost: " + str(totalMazeCost))
+    print("Expanded Nodes: " + str(expandedNodes))
+    maze.printMaze()
+
 
 def GreedyBestFirstSearch(maze):
     # Initialize the frontier (represented as a priority queue),
@@ -248,5 +274,8 @@ def AStar(maze):
 MP 1.2 STARTS HERE!
 -------------------------------------------------------------------------------
 """
+def BuildMST():
+    pass
+
 def AStarMultiSearch(maze):
     pass
