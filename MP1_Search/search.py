@@ -17,11 +17,13 @@ THIS SECTION IS FOR HELPER FUNCTIONS!
 def ManhattanDistance(node1, node2):
     return abs(node1.x - node2.x) + abs(node1.y - node2.y)
 
+
 # Adds a new node to the frontier within the greedy best-first search algorithm for MP 1.1
 def GreedyBestFirstSearch_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
     newNode.parent = curNode
     newHeuristic = ManhattanDistance(newNode, goalNode)
     heapq.heappush(frontier, (newHeuristic, counter, newNode))
+
 
 # Adds a new node to the frontier within the A* algorithm for MP 1.1
 def AStar_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
@@ -294,14 +296,19 @@ MP 1.2 STARTS HERE!
 #
 # niA, niB = the nodes representing the endpoints of the edge
 # di = the weight of the ith edge (the Manhattan Distance between nodes niA and niB)
+#
+# The purpose of the second entry of each tuple in the input is to break ties in
+# this function's priority queue when two edges have the same Manhattan Distance.
 def BuildMST(edges):
     return []
 
-# Computes the heuristic for
+
+# Computes the heuristic for MP 1.2.
 def AStarMultiSearch_ComputeHeuristic(curNode):
     edges = []
     numEdges = 0
 
+    # Build the input list to BuildMST
     for i in range(len(curNode.food)):
         nodeA = curNode.food[i]
 
@@ -316,6 +323,15 @@ def AStarMultiSearch_ComputeHeuristic(curNode):
     curMinDistanceToPellet = min(ManhattanDistance(curNode, pellet) for pellet in curNode.food)
 
     return curMSTCost + curMinDistanceToPellet
+
+
+# Adds a new node to the frontier within the A* algorithm for MP 1.2
+def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, frontier):
+    newNode.parent = curNode
+    newNode.cost = curNode.cost + 1
+    newHeuristic = AStarMultiSearch_ComputeHeuristic(newNode)
+    heapq.heappush(frontier, (newNode.cost + newHeuristic, counter, newNode))
+
 
 def AStarMultiSearch(maze):
     # Initialize the frontier (represented as a priority queue),
@@ -337,7 +353,7 @@ def AStarMultiSearch(maze):
     while len(frontier) > 0:
         # Remove node from frontier
         curNode = heapq.heappop(frontier)[2]
-        curNodeHeuristic = AStarMultiSearch_ComputeHeuristic(start)
+        curNodeHeuristic = AStarMultiSearch_ComputeHeuristic(curNode)
 
         # Expand this node only if it hasn't been expanded (visited) yet
         # and its value of f(n) is less than the current discovered path
@@ -350,7 +366,7 @@ def AStarMultiSearch(maze):
             # compute the total path cost
             if len(curNode.food) == 0:
                 pathCost = 0
-                current = goal
+                current = curNode
 
                 while current != start:
                     pathCost += 1
@@ -370,4 +386,15 @@ def AStarMultiSearch(maze):
                 """
                 if not neighbor.visited:
                     counter += 1
-                    AStar_AddToFrontier(curNode, neighbor, goal, counter, frontier)
+                    AStarMultiSearch_AddToFrontier(curNode, neighbor, counter, frontier)
+
+    current = goal
+    totalMazeCost = 0
+    while (current != start):
+        totalMazeCost += 1
+        current.char = '.'
+        current = current.parent
+
+    print("Path Cost: " + str(totalMazeCost))
+    print("Expanded Nodes: " + str(expandedNodes))
+    maze.printMaze()
