@@ -53,10 +53,10 @@ if __name__ == "__main__":
         assert len(sys.argv) == 4, incorrectUsageError
 
         # Load the maze if possible
-        #try:
-        maze = Maze(part1Path + sys.argv[2])
-        #except:
-        #    sys.exit("FileNotFoundError: Is the file spelled correctly?")
+        try:
+            maze = Maze(part1Path + sys.argv[2])
+        except:
+            sys.exit("FileNotFoundError: Is the file spelled correctly?")
 
         # Run the appropriate search algorithm
         if sys.argv[3] == "dfs" or sys.argv[3] == "DFS":
@@ -85,18 +85,3 @@ if __name__ == "__main__":
 
     else:
         sys.exit("PartNotRecognizedError: Is the part spelled correctly?")
-
-
-
-
-
-# import heapq
-
-# frontier = []
-# heapq.heappush(frontier, (3, Node(1,1,'P')))
-# heapq.heappush(frontier, (5, Node(2,1,' ')))
-# heapq.heappush(frontier, (7, Node(1,2,' ')))
-
-# print(heapq.heappop(frontier))
-# print(heapq.heappop(frontier))
-# print(heapq.heappop(frontier))

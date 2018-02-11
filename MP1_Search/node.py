@@ -9,10 +9,15 @@ class Node:
         self.visited = False
 
         # This variable stores the lowest path cost seen thus far from the
-        #  start Node to this Node, initialized to positive infinity.
+        # start Node to this Node, initialized to positive infinity.
+        #
+        # This variable is only for the A* algorithms in parts 1.1 and 1.2.
         self.cost = float("inf")
 
-        # Only for 1.2
+        # Stores the nodes of the pellets to allow nodes to be uniquely distinguished
+        # by both remaining pellet configurations and Pacman's location.
+        #
+        # This variable is only for the A* algorithm in part 1.2.
         self.food = []
 
     # Specific-use node representation (Characters only)

@@ -26,20 +26,10 @@ class Maze:
                 self.maze.append(row)
                 h+=1
 
-            #print(self.maze)
-            #print(len(self.maze))
-            #print(len(self.maze[0]))
-            #print(len(self.maze[19]))
-            for i in range(0, len(self.maze)):
-                print(i)
-                for j in range(0, len(self.maze[0])):
-                    if i >= 19:
-                        print(j)
-                    self.maze[i][j].food = self.food_array.copy()
-
-            for i in range(0, len(self.maze)):
-                for j in range(0, len(self.maze[0])):
-                    print(self.maze[i][j].food)
+        # Initialize the food list for every node in the maze
+        for i in range(len(self.maze)):
+            for j in range(len(self.maze[i])):
+                self.maze[i][j].food = list(self.food_array)
 
     ## Overloaded operator []
     def __getitem__(self, index):
@@ -122,8 +112,8 @@ class Maze:
             elif dir == UP:
                 return self.maze[node.y-1][node.x]
 
-    ## Returns a list of adjacent nodes for which canTravel() = True.
-    #   Returns an empty list otherwise.
+    # Returns a list of adjacent nodes for which canTravel() = True.
+    # Returns an empty list otherwise.
     def getAdjacent(self, node):
         RIGHT = 0
         DOWN = 1
@@ -139,7 +129,5 @@ class Maze:
             adj.append(self.getNode(node, LEFT))
         if self.canTravel(node, UP):
             adj.append(self.getNode(node, UP))
-
-
 
         return adj
