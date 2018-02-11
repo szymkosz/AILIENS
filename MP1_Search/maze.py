@@ -8,6 +8,10 @@ class Maze:
         self.food_array = []
         self.startingNode = None
 
+        # This is a Python dictionary to map sorted arrays of pellet nodes
+        # to the cost of the MST
+        # self.MSTs = {}
+
         ## Open file and create matrix data structure
         with open(fileName, 'r') as file:
             h = 0
@@ -25,7 +29,7 @@ class Maze:
                         self.food_array.append(row[w])
                 self.maze.append(row)
                 h+=1
-        
+
         # Initialize the food list for every node in the maze
         for i in range(len(self.maze)):
             for j in range(len(self.maze[i])):
