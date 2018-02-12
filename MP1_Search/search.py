@@ -34,14 +34,9 @@ def DepthFirstSearch(maze):
             current.visited = True
             expandedNodes += 1
 
-            """
-            Should this code be added?
-
-            # If the expanded node is the goal,
-            # end the search
+            ## If goal state is reached, stop algorithm
             if current == goal:
                 break
-            """
 
             adj = maze.getAdjacent(current)
 
@@ -81,14 +76,9 @@ def BreadthFirstSearch(maze):
             current.visited = True
             expandedNodes += 1
 
-            """
-            Should this code be added?
-
-            # If the expanded node is the goal,
-            # end the search
+            ## If the expanded node is the goal, end the search
             if current == goal:
                 break
-            """
 
             adj = maze.getAdjacent(current)
 
