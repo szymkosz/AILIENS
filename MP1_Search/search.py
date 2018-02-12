@@ -411,7 +411,7 @@ def AStarMultiSearch(maze):
                 while current != start:
                     pathCost += 1
                     current = current.parent
-
+self.food = []
                 if pathCost < trueCost:
                     trueCost = pathCost
 
