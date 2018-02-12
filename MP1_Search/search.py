@@ -304,44 +304,21 @@ def BuildMST(edges, numVertices):
 
 
 # Computes the heuristic for MP 1.2.
-def AStarMultiSearch_ComputeHeuristic(curNode):
-    # curMSTCost stores the cost of the MST of the remaining pellets
-    # represented by curNode.
-    curMSTCost = float("inf")
+def AStarMultiSearch_ComputeHeuristic(maze, curNode):
+    curMinDistanceToPellet = min(ManhattanDistance(curNode, pellet) for pellet in maze.food_array)
+    return maze.MSTCost + curMinDistanceToPellet
 
-    # If the cost of curNode's MST is not yet known, compute it.
-    if(curNode.MSTCost == float("inf")):
-        # Initialize the input list to BuildMST and counters of the numbers
-        # of edges and vertices
-        edges = []
-        numEdges = 0
-        numVertices = len(curNode.food)
 
-        # Build the input list to BuildMST
-        for i in range(numVertices):
-            vertexA = curNode.food[i]
-
-            for j in range(i+1, numVertices):
-                vertexB = curNode.food[j]
-                numEdges += 1
-
-                edges.append( (ManhattanDistance(vertexA, vertexB), numEdges, (vertexA, vertexB)) )
-
-        # Compute the MST cost and store it in curNode.MSTCost
-        curMST = BuildMST(edges, numVertices)
-        curMSTCost = sum(edge[0] for edge in curMST)
-        curNode.MSTCost = curMSTCost
-    # Since curNode.MSTCost is known, initialize curMSTCost to it.
-    else:
-        curMSTCost = curNode.MSTCost
-
-    curMinDistanceToPellet = min(ManhattanDistance(curNode, pellet) for pellet in curNode.food)
-
-    return curMSTCost + curMinDistanceToPellet
-
+# Adds a new node to the frontier within the A* algorithm for MP 1.1
+def AStar_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
+    newNode.parent = curNode
+    newNode.pathCost = curNode.pathCost + 1
+    newHeuristic = ManhattanDistance(newNode, goalNode)
+    heapq.heappush(frontier, (newNode.pathCost + newHeuristic, counter, newNode))
 
 # Adds a new node to the frontier within the A* algorithm for MP 1.2
-def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, frontier):
+def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, mazes, mazeIndex, frontier):
+    """
     # Represents the Node to be added to the frontier
     addNode = None
 
@@ -366,29 +343,35 @@ def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, frontier):
     # MST of the remaining pellets doesn't have to be recomputed.
     if addNode.char != '.':
         addNode.MSTCost = curNode.MSTCost
+    """
 
-    addNode.parent = curNode
-    addNode.pathCost = curNode.pathCost + 1
-    addHeuristic = AStarMultiSearch_ComputeHeuristic(addNode)
-    heapq.heappush(frontier, (addNode.pathCost + addHeuristic, counter, addNode))
+    newNode.parent = curNode
+    newNode.pathCost = curNode.pathCost + 1
+    newHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[mazeIndex], newNode)
+    heapq.heappush(frontier, (newNode.pathCost + newHeuristic,
+                              counter, mazeIndex, newNode))
 
 
 def AStarMultiSearch(maze):
+    mazes = []
+    mazes.append(maze)
+
     # Initialize the frontier (represented as a priority queue),
     # the true path cost, and identify the start Node
     frontier = []
-    start = maze.startingNode
+    startMazeIndex = 0
+    start = mazes[startMazeIndex].startingNode
+    goal = None
     trueCost = float("inf")
-
-    mazes = []
-    mazes.append(maze)
 
     # Mark the start with a cost of 0, compute its heuristic, initialize a counter
     # for breaking ties in the frontier, and add the start to the frontier
     start.pathCost = 0
-    startHeuristic = AStarMultiSearch_ComputeHeuristic(start)
+    startHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[startMazeIndex], start)
+
     counter = 1
-    heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, 0, maze.startingNode))
+    heapq.heappush(frontier, (start.pathCost + startHeuristic,
+                              counter, startMazeIndex, start))
 
     # Initialize a counter to count the number of nodes that get expanded
     expandedNodes = 0
@@ -398,7 +381,7 @@ def AStarMultiSearch(maze):
         tup = heapq.heappop(frontier)
         curNode = tup[3]
         mazeIndex = tup[2]
-        curNodeHeuristic = AStarMultiSearch_ComputeHeuristic(curNode)
+        curNodeHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[mazeIndex], curNode)
 
         # Expand this node only if it hasn't been expanded (visited) yet
         # and its value of f(n) is less than the current discovered path
@@ -407,9 +390,13 @@ def AStarMultiSearch(maze):
             curNode.visited = True
             expandedNodes += 1
 
-            # If the expanded node is the goal,
-            # compute the total path cost
+            # If the expanded node is a goal state,
+            # compute the total path cost it took to get there
             if len(curNode.food) == 0:
+                # Set the optimal goal state if one hasn't been discovered yet
+                if goal is None:
+                    goal = curNode
+
                 pathCost = 0
                 current = curNode
 
@@ -417,13 +404,14 @@ def AStarMultiSearch(maze):
                     pathCost += 1
                     current = current.parent
 
+                # If the total cost to reach this goal state is better than
+                # the best total cost discovered so far, set the optimal goal
+                # state to this one and update the optimal total cost
                 if pathCost < trueCost:
+                    goal = curNode
                     trueCost = pathCost
 
-            """
-            This needs to change to allow for accurate lookup of neighboring states.
-            """
-            neighbors = maze[mazeIndex].getAdjacent(curNode)
+            neighbors = mazes[mazeIndex].getAdjacent(curNode)
 
             # Iterate through all the neighbors and add them to the frontier
             # if they haven't been visited
@@ -437,8 +425,13 @@ def AStarMultiSearch(maze):
 
                     if neighbor.char == '.':
                         newMazeIndex = len(mazes)
-                        mazes.append(Maze(origMaze=maze[mazeIndex], remove_pellet=))
-                    AStarMultiSearch_AddToFrontier(curNode, neighbor, counter, frontier)
+                        mazes.append(Maze(origMaze=mazes[mazeIndex], remove_pellet=neighbor))
+                        newNode = mazes[newMazeIndex].maze[neighbor.y][neighbor.x]
+                        AStarMultiSearch_AddToFrontier(curNode, newNode, counter,
+                                                       mazes, newMazeIndex, frontier)
+                    else:
+                        AStarMultiSearch_AddToFrontier(curNode, neighbor, counter,
+                                                       mazes, mazeIndex, frontier)
 
     current = goal
     totalMazeCost = 0

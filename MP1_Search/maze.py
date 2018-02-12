@@ -2,13 +2,13 @@ from node import Node
 import sys
 
 class Maze:
-    def __init__(self, fileName=None, origMaze=None, remove_pellet=None, startingNode=None):
+    def __init__(self, fileName=None, origMaze=None, remove_pellet=None):
         self.fileName = fileName
         self.maze = []
         self.food_array = []
         self.startingNode = None
 
-        if filename != None:
+        if filename is not None:
             ## Open file and create matrix data structure
             with open(fileName, 'r') as file:
                 h = 0
@@ -27,25 +27,21 @@ class Maze:
                     self.maze.append(row)
                     h+=1
 
-        elif origMaze != None:
+        elif origMaze is not None:
             for i in range(len(origMaze.maze)):
                 row = []
                 for j in range(len(origMaze.maze[i])):
                     origNode = origMaze.maze[i][j]
                     newNode = Node(origNode.x, origNode.y, origNode.char)
                     row.append(newNode)
-                    if newNode.char == 'P':
-                        self.startingNode = newNode
                     if newNode.char == '.':
                         self.food_array.append(newNode)
                 self.maze.append(row)
 
-        if remove_pellet != None:
-            isNotPellet = lambda x: x is not remove_pellet
+        if remove_pellet is not None:
+            isNotPellet = lambda x: (x.x != remove_pellet.x or x.y != remove_pellet.y)
             self.food_array = filter(isNotPellet, self.food_array)
-
-        if startingNode != None:
-            self.startingNode = startingNode
+            self.startingNode = self.maze[remove_pellet.y][remove_pellet.x]
 
         self.MSTCost = computeMSTCost(self)
         """
