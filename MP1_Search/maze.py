@@ -236,9 +236,6 @@ class Maze:
                 self.maze[i][j].pathCost = float("inf")
 
 
-
-
-
 # Consider the complete graph where the nodes are all the pellets remaining
 # and the edges are all the possible pairwise distances between each of the
 # remaining pellets.
@@ -257,7 +254,48 @@ class Maze:
 # The purpose of the second entry of each tuple in the input is to break ties in
 # this function's priority queue when two edges have the same Manhattan Distance.
 def BuildMST(edges, numVertices):
-    return []
+    # sort the edges
+    edges.sort(key = lambda tup: tup[0])
+
+    #breaking ties in sort
+    for edge_index in range(len(edges)-1):
+        if (edges[edge_index][0] == edges[edge_index+1][0]) and (edges[edge_index][1] > edges[edge_index+1][1]):
+            edges[edge_index], edges[edge_index+1] = edges[edge_index+1], edges[edge_index]
+
+
+    edge_index = 0
+
+    #build mst_dict
+    edge_list = []
+    for edge_index in range(len(edges)):
+        edge_list.append(edges[edge_index][2])
+
+
+    mst_dict = dict()
+    mst_len = 0
+    edge_index = 0
+
+    while(edge_index < len(edge_list)) and (mst_len < numVertices):
+        new_edge = edge_list[edge_index]
+
+        mst_dict_copy = copy.deepcopy(mst_dict)
+        if(helper.formsCycle(mst_dict_copy, new_edge) == False):
+            mst_dict = helper.mst_dict_append(mst_dict, new_edge)
+            mst_len += 1
+        
+        edge_index += 1
+
+    #remove the back-edges from the list of edges
+    edge_index = 0
+    mst_edges = []
+    while edge_index < len(edges):
+        x,y = edges[edge_index][2][0], edges[edge_index][2][1]
+        if (x in mst_dict) and (y in mst_dict[x]):
+            mst_edges.append(edges[edge_index])
+
+        edge_index += 1
+
+    return mst_edges
 
 
 def computeMSTCost(maze):

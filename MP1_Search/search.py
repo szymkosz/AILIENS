@@ -166,25 +166,37 @@ def GreedyBestFirstSearch(maze):
     #add the startingNode to the frontier
     P = maze.startingNode
     P.parent = None
-    P.cost = 0
     P.visited = True
     goal = maze.food_array[0]
     P_MH = helper.ManhattanDistance(P, goal)
-    # frontier.put(P.cost + P_MH, P)
-    heapq.heappush(frontier, (P.cost + P_MH, P))
+    heapq.heappush(frontier, (P_MH, P))
 
     #check all directions of neighbors and add them on the frontier
-    while(frontier.qsize() > 0):
-	# currNode = frontier.get()
-	currNode = heapq.heappop(frontier)[1]
+    while(len(frontier) > 0):
+    	currNode = heapq.heappop(frontier)[1]
 
-	if(currNode == goal):
-		break
+        if not currNode.visited:
+            currNode.visited = True
+            expandedNodes += 1
 
-	for direction in range(0, 4):
-		if(maze.canTravel(currNode, direction) and not currNode.visited):
-			newNode = maze.getNode(currNode, direction)
-			helper.AStar_AddToFrontier(currNode, newNode, goal, frontier)
+    	if(currNode == goal):
+    		break
+
+    	for direction in range(0, 4):
+    		if(maze.canTravel(currNode, direction) and not currNode.visited):
+    			newNode = maze.getNode(currNode, direction)
+    			helper.GreedyBestFirstSearch_AddToFrontier(currNode, newNode, goalNode, counter, frontier):
+
+    currNode = goal
+    while(currNode != P)
+        current.char = '.'
+        current = current.parent
+
+    print("Path Cost: " + str(totalMazeCost))
+    print("Expanded Nodes: " + str(expandedNodes))
+    maze.printMaze()
+    maze.writeMaze("greedy")
+
     """
 
 
