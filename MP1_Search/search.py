@@ -2,36 +2,7 @@
 from maze import Maze
 from node import Node
 import heapq
-
-"""
--------------------------------------------------------------------------------
-THIS SECTION IS FOR HELPER FUNCTIONS!
--------------------------------------------------------------------------------
-"""
-
-# Computes the Manhattan distance d from node1 to node2 as:
-#
-# m = abs(node1.x - node2.x) + abs(node1.y - node2.y)
-#
-# where abs() is the absolute value function.
-def ManhattanDistance(node1, node2):
-    return abs(node1.x - node2.x) + abs(node1.y - node2.y)
-
-
-# Adds a new node to the frontier within the greedy best-first search algorithm for MP 1.1
-def GreedyBestFirstSearch_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
-    newNode.parent = curNode
-    newHeuristic = ManhattanDistance(newNode, goalNode)
-    heapq.heappush(frontier, (newHeuristic, counter, newNode))
-
-
-# Adds a new node to the frontier within the A* algorithm for MP 1.1
-def AStar_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
-    newNode.parent = curNode
-    newNode.pathCost = curNode.pathCost + 1
-    newHeuristic = ManhattanDistance(newNode, goalNode)
-    heapq.heappush(frontier, (newNode.pathCost + newHeuristic, counter, newNode))
-
+import helper
 
 """
 -------------------------------------------------------------------------------
@@ -147,7 +118,7 @@ def GreedyBestFirstSearch(maze):
     goal = maze.food_array[0]
 
     # Add the start to the frontier
-    startHeuristic = ManhattanDistance(start, goal)
+    startHeuristic = helper.ManhattanDistance(start, goal)
     counter = 1
     heapq.heappush(frontier, (startHeuristic, counter, maze.startingNode))
 
@@ -175,7 +146,7 @@ def GreedyBestFirstSearch(maze):
             for neighbor in neighbors:
                 if not neighbor.visited:
                     counter += 1
-                    GreedyBestFirstSearch_AddToFrontier(curNode, neighbor, goal, counter, frontier)
+                    helper.GreedyBestFirstSearch_AddToFrontier(curNode, neighbor, goal, counter, frontier)
 
     current = goal
     totalMazeCost = 0
@@ -198,7 +169,7 @@ def GreedyBestFirstSearch(maze):
     P.cost = 0
     P.visited = True
     goal = maze.food_array[0]
-    P_MH = ManhattanDistance(P, goal)
+    P_MH = helper.ManhattanDistance(P, goal)
     # frontier.put(P.cost + P_MH, P)
     heapq.heappush(frontier, (P.cost + P_MH, P))
 
@@ -213,7 +184,7 @@ def GreedyBestFirstSearch(maze):
 	for direction in range(0, 4):
 		if(maze.canTravel(currNode, direction) and not currNode.visited):
 			newNode = maze.getNode(currNode, direction)
-			AStar_AddToFrontier(currNode, newNode, goal, frontier)
+			helper.AStar_AddToFrontier(currNode, newNode, goal, frontier)
     """
 
 
@@ -238,7 +209,7 @@ def AStar(maze):
     # Mark the start with a cost of 0, compute its heuristic, initialize a counter
     # for breaking ties in the frontier, and add the start to the frontier
     start.pathCost = 0
-    startHeuristic = ManhattanDistance(start, goal)
+    startHeuristic = helper.ManhattanDistance(start, goal)
     counter = 1
     heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, maze.startingNode))
 
@@ -248,7 +219,7 @@ def AStar(maze):
     while len(frontier) > 0:
         # Remove node from frontier
         curNode = heapq.heappop(frontier)[2]
-        curNodeHeuristic = ManhattanDistance(curNode, goal)
+        curNodeHeuristic = helper.ManhattanDistance(curNode, goal)
 
         # Expand this node only if it hasn't been expanded (visited) yet
         # and its value of f(n) is less than the current discovered path
@@ -281,7 +252,7 @@ def AStar(maze):
                 """
                 if not neighbor.visited:
                     counter += 1
-                    AStar_AddToFrontier(curNode, neighbor, goal, counter, frontier)
+                    helper.AStar_AddToFrontier(curNode, neighbor, goal, counter, frontier)
 
     current = goal
     totalMazeCost = 0
@@ -304,48 +275,6 @@ MP 1.2 STARTS HERE!
 -------------------------------------------------------------------------------
 """
 
-# Computes the heuristic for MP 1.2.
-def AStarMultiSearch_ComputeHeuristic(maze, curNode):
-    curMinDistanceToPellet = min(ManhattanDistance(curNode, pellet) for pellet in maze.food_array)
-    return maze.MSTCost + curMinDistanceToPellet
-
-
-# Adds a new node to the frontier within the A* algorithm for MP 1.2
-def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, mazes, mazeIndex, frontier):
-    """
-    # Represents the Node to be added to the frontier
-    addNode = None
-
-    # If the Node to be added to the frontier has a food pellet or
-    # it's food array is different from that of curNode, a new Node
-    # must be created to properly represent the state Pacman would be in
-    # if he moved into the position of newNode.
-    if newNode.char == '.' or set(curNode.food) != set(newNode.food):
-        addNode = Node(newNode.x, newNode.y, newNode.char)
-        addNode.food = list(curNode.food)
-
-        # If the Node to be added to the frontier has a food pellet,
-        # the pellet must be removed from the Node's food array to properly represent
-        # the pellets that would remain if Pacman stepped onto this pellet.
-        if addNode.char == '.':
-            isNotNewNode = lambda x: x is not newNode
-            addNode.food = filter(isNotNewNode, addNode.food)
-    else:
-        addNode = newNode
-
-    # If the Node to be added doesn't have a food pellet, the cost of the
-    # MST of the remaining pellets doesn't have to be recomputed.
-    if addNode.char != '.':
-        addNode.MSTCost = curNode.MSTCost
-    """
-
-    newNode.parent = curNode
-    newNode.pathCost = curNode.pathCost + 1
-    newHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[mazeIndex], newNode)
-    heapq.heappush(frontier, (newNode.pathCost + newHeuristic,
-                              counter, mazeIndex, newNode))
-
-
 def AStarMultiSearch(maze):
     mazes = []
     mazes.append(maze)
@@ -362,7 +291,7 @@ def AStarMultiSearch(maze):
     # Mark the start with a cost of 0, compute its heuristic, initialize a counter
     # for breaking ties in the frontier, and add the start to the frontier
     start.pathCost = 0
-    startHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[startMazeIndex], start)
+    startHeuristic = helper.AStarMultiSearch_ComputeHeuristic(mazes[startMazeIndex], start)
     counter = 1
     heapq.heappush(frontier, (start.pathCost + startHeuristic,
                               counter, startMazeIndex, start))
@@ -375,7 +304,7 @@ def AStarMultiSearch(maze):
         tup = heapq.heappop(frontier)
         curNode = tup[3]
         mazeIndex = tup[2]
-        curNodeHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[mazeIndex], curNode)
+        curNodeHeuristic = helper.AStarMultiSearch_ComputeHeuristic(mazes[mazeIndex], curNode)
 
         # Expand this node only if it hasn't been expanded (visited) yet
         # and its value of f(n) is less than the current discovered path
@@ -417,10 +346,10 @@ def AStarMultiSearch(maze):
                         newMazeIndex = len(mazes)
                         mazes.append(Maze(origMaze=mazes[mazeIndex], remove_pellet=neighbor))
                         newNode = mazes[newMazeIndex].maze[neighbor.y][neighbor.x]
-                        AStarMultiSearch_AddToFrontier(curNode, newNode, counter,
+                        helper.AStarMultiSearch_AddToFrontier(curNode, newNode, counter,
                                                        mazes, newMazeIndex, frontier)
                     else:
-                        AStarMultiSearch_AddToFrontier(curNode, neighbor, counter,
+                        helper.AStarMultiSearch_AddToFrontier(curNode, neighbor, counter,
                                                        mazes, mazeIndex, frontier)
 
     assert goal is not None, "ERROR: No goal state found"
@@ -445,6 +374,7 @@ from string import ascii_uppercase
 # This is an implementation of MP 1.2 with Breadth-First Search
 # for debugging purposes.
 def BFSMultiSearch(maze):
+    """
     mazes = []
     mazes.append(maze)
 
@@ -491,7 +421,7 @@ def BFSMultiSearch(maze):
                     else:
                         node.parent = current
                         q.append((mazeIndex, node))
-
+    """
     assert goal is not None, "ERROR: No goal state found"
 
     current = goal

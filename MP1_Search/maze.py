@@ -1,5 +1,7 @@
 from node import Node
 import sys
+import heapq
+import helper
 
 class Maze:
     def __init__(self, fileName=None, origMaze=None, remove_pellet=None):
@@ -49,12 +51,6 @@ class Maze:
 
         self.MSTCost = computeMSTCost(self)
 
-        """
-        # Initialize the food list for every node in the maze
-        for i in range(len(self.maze)):
-            for j in range(len(self.maze[i])):
-                self.maze[i][j].food = list(self.food_array)
-        """
 
     ## Overloaded operator []
     def __getitem__(self, index):
@@ -157,14 +153,88 @@ class Maze:
 
         return adj
 
+    # Searches for the food pellet using the A* algorithm.
+    # In A*, unexpanded nodes on the frontier are sorted with a min Priority Queue.
+    # The priority f(n) of a node n is computed as:
+    #
+    # f(n) = g(n) + h(n) , where
+    #
+    # g(n) = cost so far to reach n (path cost)
+    # h(n) = estimated cost from n to goal (heuristic)
+    #
+    # The heuristic h(n) is computed as the Manhattan distance from n to the goal.
+    def PairwiseAStar(self, start, goal):
+        # Initialize the frontier (represented as a priority queue)
+        # and the true path cost
+        frontier = []
+        trueCost = float("inf")
 
-# Computes the Manhattan distance d from node1 to node2 as:
-#
-# m = abs(node1.x - node2.x) + abs(node1.y - node2.y)
-#
-# where abs() is the absolute value function.
-def ManhattanDistance(node1, node2):
-    return abs(node1.x - node2.x) + abs(node1.y - node2.y)
+        # Mark the start with a cost of 0, compute its heuristic, initialize a counter
+        # for breaking ties in the frontier, and add the start to the frontier
+        start.pathCost = 0
+        startHeuristic = helper.ManhattanDistance(start, goal)
+        counter = 1
+        heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, maze.startingNode))
+
+        # Initialize a counter to count the number of nodes that get expanded
+        expandedNodes = 0
+
+        while len(frontier) > 0:
+            # Remove node from frontier
+            curNode = heapq.heappop(frontier)[2]
+            curNodeHeuristic = helper.ManhattanDistance(curNode, goal)
+
+            # Expand this node only if it hasn't been expanded (visited) yet
+            # and its value of f(n) is less than the current discovered path
+            # cost to the goal
+            if not curNode.visited and (curNode.pathCost+curNodeHeuristic) < trueCost:
+                curNode.visited = True
+                expandedNodes += 1
+
+                # If the expanded node is the goal,
+                # compute the total path cost
+                if curNode == goal:
+                    pathCost = 0
+                    current = goal
+
+                    while current != start:
+                        pathCost += 1
+                        current = current.parent
+
+                    if pathCost < trueCost:
+                        trueCost = pathCost
+
+                neighbors = maze.getAdjacent(curNode)
+
+                # Iterate through all the neighbors and add them to the frontier
+                # if they haven't been visited
+                for neighbor in neighbors:
+                    """
+                    if neighbor == goal:
+                        goal.visited = False
+                    """
+                    if not neighbor.visited:
+                        counter += 1
+                        helper.AStar_AddToFrontier(curNode, neighbor, goal, counter, frontier)
+
+        current = goal
+        totalMazeCost = 0
+        while (current != start):
+            totalMazeCost += 1
+            current.char = '.'
+            current = current.parent
+
+        assert totalMazeCost == trueCost, "ERROR: True cost doesn't match final cost"
+
+
+    # Reset all the nodes in the maze to prepare it for another pairwise A* search
+    def reset(self):
+        for i in range(len(self.maze)):
+            for j in range(len(self.maze[i])):
+                self.maze[i][j].parent = None
+                self.maze[i][j].visited = False
+                self.maze[i][j].pathCost = float("inf")
+
 
 
 
@@ -205,7 +275,7 @@ def computeMSTCost(maze):
             vertexB = maze.food_array[j]
             numEdges += 1
 
-            edges.append( (ManhattanDistance(vertexA, vertexB), numEdges, (vertexA, vertexB)) )
+            edges.append( (maze.PairwiseAStar(vertexA, vertexB), numEdges, (vertexA, vertexB)) )
 
     # Compute the MST cost and return it
     curMST = BuildMST(edges, numVertices)
