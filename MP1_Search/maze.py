@@ -2,7 +2,6 @@ from node import Node
 import sys
 import heapq
 import helper
-import copy
 
 class Maze:
     def __init__(self, fileName=None, origMaze=None, remove_pellet=None):
@@ -10,6 +9,7 @@ class Maze:
         self.maze = []
         self.food_array = []
         self.startingNode = None
+        self.paths = {}
 
         if fileName is not None:
             ## Open file and create matrix data structure
@@ -29,7 +29,7 @@ class Maze:
                             self.food_array.append(row[w])
                     self.maze.append(row)
                     h+=1
-
+        """
         elif origMaze is not None:
             for i in range(len(origMaze.maze)):
                 row = []
@@ -49,8 +49,24 @@ class Maze:
             self.startingNode = self.maze[remove_pellet.y][remove_pellet.x]
             self.startingNode.char = 'P'
             print("start: " + str(self.startingNode))
+        """
+        for i in range(len(self.food_array)):
+            pelletA = self.food_array[i]
 
-        self.MSTCost = computeMSTCost(self)
+            for j in range(i+1, len(self.food_array)):
+                pelletB = self.food_array[j]
+
+                pairwisePath = self.PairwiseAStar(pelletA, pelletB)
+                self.paths[((pelletA.x, pelletA.y), (pelletB.x, pelletB.y))] = pairwisePath
+
+        for i in range(len(self.food_array)):
+            pellet = self.food_array[i]
+
+            pairwisePath = self.PairwiseAStar(self.startingNode, pellet)
+            self.paths[((self.startingNode.x, self.startingNode.y), (pellet.x, pellet.y))] = pairwisePath
+
+        print(self.paths)
+
 
 
     ## Overloaded operator []
@@ -175,7 +191,7 @@ class Maze:
         start.pathCost = 0
         startHeuristic = helper.ManhattanDistance(start, goal)
         counter = 1
-        heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, maze.startingNode))
+        heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, self.startingNode))
 
         # Initialize a counter to count the number of nodes that get expanded
         expandedNodes = 0
@@ -220,12 +236,18 @@ class Maze:
 
         current = goal
         totalMazeCost = 0
+        path = []
         while (current != start):
             totalMazeCost += 1
-            current.char = '.'
+            path.append((current.x, current.y))
             current = current.parent
 
         assert totalMazeCost == trueCost, "ERROR: True cost doesn't match final cost"
+
+        path.append(start.x, start.y)
+        self.reset()
+
+        return (totalMazeCost, path)
 
 
     # Reset all the nodes in the maze to prepare it for another pairwise A* search
@@ -283,7 +305,7 @@ def BuildMST(edges, numVertices):
         if(helper.formsCycle(mst_dict_copy, new_edge) == False):
             mst_dict = helper.mst_dict_append(mst_dict, new_edge)
             mst_len += 1
-        
+
         edge_index += 1
 
     #remove the back-edges from the list of edges

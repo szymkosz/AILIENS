@@ -287,6 +287,7 @@ def AStarMultiSearch(maze):
     frontier = []
     startMazeIndex = 0
     start = mazes[startMazeIndex].startingNode
+    remaining_pellets = list(maze.food_array)
     goal = None
     trueCost = float("inf")
 
