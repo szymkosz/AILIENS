@@ -1,5 +1,5 @@
 # Import all the necessary packages
-from maze import Maze
+# from maze import Maze
 from node import Node
 import heapq
 
