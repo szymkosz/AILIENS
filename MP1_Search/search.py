@@ -380,19 +380,24 @@ def AStarMultiSearch(maze):
     start = maze.startingNode
     trueCost = float("inf")
 
+    mazes = []
+    mazes.append(maze)
+
     # Mark the start with a cost of 0, compute its heuristic, initialize a counter
     # for breaking ties in the frontier, and add the start to the frontier
     start.pathCost = 0
     startHeuristic = AStarMultiSearch_ComputeHeuristic(start)
     counter = 1
-    heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, maze.startingNode))
+    heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, 0, maze.startingNode))
 
     # Initialize a counter to count the number of nodes that get expanded
     expandedNodes = 0
 
     while len(frontier) > 0:
         # Remove node from frontier
-        curNode = heapq.heappop(frontier)[2]
+        tup = heapq.heappop(frontier)
+        curNode = tup[3]
+        mazeIndex = tup[2]
         curNodeHeuristic = AStarMultiSearch_ComputeHeuristic(curNode)
 
         # Expand this node only if it hasn't been expanded (visited) yet
@@ -411,14 +416,14 @@ def AStarMultiSearch(maze):
                 while current != start:
                     pathCost += 1
                     current = current.parent
-self.food = []
+
                 if pathCost < trueCost:
                     trueCost = pathCost
 
             """
             This needs to change to allow for accurate lookup of neighboring states.
             """
-            neighbors = maze.getAdjacent(curNode)
+            neighbors = maze[mazeIndex].getAdjacent(curNode)
 
             # Iterate through all the neighbors and add them to the frontier
             # if they haven't been visited
@@ -429,6 +434,10 @@ self.food = []
                 """
                 if not neighbor.visited:
                     counter += 1
+
+                    if neighbor.char == '.':
+                        newMazeIndex = len(mazes)
+                        mazes.append(Maze(origMaze=maze[mazeIndex], remove_pellet=))
                     AStarMultiSearch_AddToFrontier(curNode, neighbor, counter, frontier)
 
     current = goal

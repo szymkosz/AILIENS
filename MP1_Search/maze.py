@@ -2,38 +2,58 @@ from node import Node
 import sys
 
 class Maze:
-    def __init__(self, fileName):
+    def __init__(self, fileName=None, origMaze=None, remove_pellet=None, startingNode=None):
         self.fileName = fileName
         self.maze = []
         self.food_array = []
         self.startingNode = None
 
-        # This is a Python dictionary to map sorted arrays of pellet nodes
-        # to the cost of the MST
-        # self.MSTs = {}
+        if filename != None:
+            ## Open file and create matrix data structure
+            with open(fileName, 'r') as file:
+                h = 0
+                ## Unfortunately, the way the file is read and parsed, the coordinates
+                ##  are backwards, so the array should be indexed with y first, then x
+                ##  i.e. maze[y][x]
+                for line in file:
+                    # self.maze.append([ Node(w,h,line[w]) for w in range(len(line)) ])
+                    row = []
+                    for w in range(len(line)):
+                        row.append(Node(w,h,line[w]))
+                        if line[w] == 'P':
+                            self.startingNode = row[w]
+                        if line[w] == '.':
+                            self.food_array.append(row[w])
+                    self.maze.append(row)
+                    h+=1
 
-        ## Open file and create matrix data structure
-        with open(fileName, 'r') as file:
-            h = 0
-            ## Unfortunately, the way the file is read and parsed, the coordinates
-            ##  are backwards, so the array should be indexed with y first, then x
-            ##  i.e. maze[y][x]
-            for line in file:
-                # self.maze.append([ Node(w,h,line[w]) for w in range(len(line)) ])
+        elif origMaze != None:
+            for i in range(len(origMaze.maze)):
                 row = []
-                for w in range(len(line)):
-                    row.append(Node(w,h,line[w]))
-                    if line[w] == 'P':
-                        self.startingNode = row[w]
-                    if line[w] == '.':
-                        self.food_array.append(row[w])
+                for j in range(len(origMaze.maze[i])):
+                    origNode = origMaze.maze[i][j]
+                    newNode = Node(origNode.x, origNode.y, origNode.char)
+                    row.append(newNode)
+                    if newNode.char == 'P':
+                        self.startingNode = newNode
+                    if newNode.char == '.':
+                        self.food_array.append(newNode)
                 self.maze.append(row)
-                h+=1
 
+        if remove_pellet != None:
+            isNotPellet = lambda x: x is not remove_pellet
+            self.food_array = filter(isNotPellet, self.food_array)
+
+        if startingNode != None:
+            self.startingNode = startingNode
+
+        self.MSTCost = computeMSTCost(self)
+        """
         # Initialize the food list for every node in the maze
         for i in range(len(self.maze)):
             for j in range(len(self.maze[i])):
                 self.maze[i][j].food = list(self.food_array)
+        """
 
     ## Overloaded operator []
     def __getitem__(self, index):
@@ -135,3 +155,24 @@ class Maze:
             adj.append(self.getNode(node, UP))
 
         return adj
+
+def computeMSTCost(maze):
+    # Initialize the input list to BuildMST and counters of the numbers
+    # of edges and vertices
+    edges = []
+    numEdges = 0
+    numVertices = len(maze.food_array)
+
+    # Build the input list to BuildMST
+    for i in range(numVertices):
+        vertexA = maze.food_array[i]
+
+        for j in range(i+1, numVertices):
+            vertexB = maze.food_array[j]
+            numEdges += 1
+
+            edges.append( (ManhattanDistance(vertexA, vertexB), numEdges, (vertexA, vertexB)) )
+
+    # Compute the MST cost and return it
+    curMST = BuildMST(edges, numVertices)
+    return sum(edge[0] for edge in curMST)
