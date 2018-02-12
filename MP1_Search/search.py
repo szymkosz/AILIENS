@@ -81,6 +81,7 @@ def DepthFirstSearch(maze):
     print("Path Cost: " + str(totalMazeCost))
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
+    maze.writeMaze("dfs")
 
 
 def BreadthFirstSearch(maze):
@@ -117,6 +118,7 @@ def BreadthFirstSearch(maze):
     print("Path Cost: " + str(totalMazeCost))
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
+    maze.writeMaze("bfs")
 
 
 def GreedyBestFirstSearch(maze):
@@ -167,6 +169,7 @@ def GreedyBestFirstSearch(maze):
     print("Path Cost: " + str(totalMazeCost))
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
+    maze.writeMaze("greedy")
 
     """
     frontier = PQ()
@@ -274,6 +277,7 @@ def AStar(maze):
     print("Path Cost: " + str(totalMazeCost))
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
+    maze.writeMaze("AStar")
 
 
 """
@@ -282,39 +286,11 @@ MP 1.2 STARTS HERE!
 -------------------------------------------------------------------------------
 """
 
-# Consider the complete graph where the nodes are all the pellets remaining
-# and the edges are all the possible pairwise distances between each of the
-# remaining pellets.
-#
-# This function takes in a list called 'edges' representing the edges of this graph
-# and returns the edges that belong to the minimum spanning tree (MST).
-# The 'edges' parameter is of the form:
-#
-# [(d1, 1, (n1A, n1B)), (d2, 2, (n2A, n2B)) ... (di, i, (niA, niB)) ... (dm, m, (nmA, nmB))]
-#
-# where:
-#
-# niA, niB = the nodes representing the endpoints of the edge
-# di = the weight of the ith edge (the Manhattan Distance between nodes niA and niB)
-#
-# The purpose of the second entry of each tuple in the input is to break ties in
-# this function's priority queue when two edges have the same Manhattan Distance.
-def BuildMST(edges, numVertices):
-    return []
-
-
 # Computes the heuristic for MP 1.2.
 def AStarMultiSearch_ComputeHeuristic(maze, curNode):
     curMinDistanceToPellet = min(ManhattanDistance(curNode, pellet) for pellet in maze.food_array)
     return maze.MSTCost + curMinDistanceToPellet
 
-
-# Adds a new node to the frontier within the A* algorithm for MP 1.1
-def AStar_AddToFrontier(curNode, newNode, goalNode, counter, frontier):
-    newNode.parent = curNode
-    newNode.pathCost = curNode.pathCost + 1
-    newHeuristic = ManhattanDistance(newNode, goalNode)
-    heapq.heappush(frontier, (newNode.pathCost + newHeuristic, counter, newNode))
 
 # Adds a new node to the frontier within the A* algorithm for MP 1.2
 def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, mazes, mazeIndex, frontier):
@@ -357,7 +333,8 @@ def AStarMultiSearch(maze):
     mazes.append(maze)
 
     # Initialize the frontier (represented as a priority queue),
-    # the true path cost, and identify the start Node
+    # the true path cost, the start Node, the index of the maze in mazes
+    # the start Node belongs to, and the goal state
     frontier = []
     startMazeIndex = 0
     start = mazes[startMazeIndex].startingNode
@@ -368,7 +345,6 @@ def AStarMultiSearch(maze):
     # for breaking ties in the frontier, and add the start to the frontier
     start.pathCost = 0
     startHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[startMazeIndex], start)
-
     counter = 1
     heapq.heappush(frontier, (start.pathCost + startHeuristic,
                               counter, startMazeIndex, start))
@@ -393,10 +369,6 @@ def AStarMultiSearch(maze):
             # If the expanded node is a goal state,
             # compute the total path cost it took to get there
             if len(curNode.food) == 0:
-                # Set the optimal goal state if one hasn't been discovered yet
-                if goal is None:
-                    goal = curNode
-
                 pathCost = 0
                 current = curNode
 
@@ -433,6 +405,8 @@ def AStarMultiSearch(maze):
                         AStarMultiSearch_AddToFrontier(curNode, neighbor, counter,
                                                        mazes, mazeIndex, frontier)
 
+    assert goal is not None, "ERROR: No goal state found"
+
     current = goal
     totalMazeCost = 0
     while (current != start):
@@ -440,6 +414,9 @@ def AStarMultiSearch(maze):
         current.char = '.'
         current = current.parent
 
+    assert totalMazeCost == trueCost, "ERROR: True cost doesn't match final cost"
+
     print("Path Cost: " + str(totalMazeCost))
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
+    maze.writeMaze()

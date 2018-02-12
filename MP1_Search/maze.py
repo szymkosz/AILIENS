@@ -8,7 +8,7 @@ class Maze:
         self.food_array = []
         self.startingNode = None
 
-        if filename is not None:
+        if fileName is not None:
             ## Open file and create matrix data structure
             with open(fileName, 'r') as file:
                 h = 0
@@ -44,6 +44,8 @@ class Maze:
             self.startingNode = self.maze[remove_pellet.y][remove_pellet.x]
 
         self.MSTCost = computeMSTCost(self)
+        #print(self.maze)
+        print(self.maze[0])
         """
         # Initialize the food list for every node in the maze
         for i in range(len(self.maze)):
@@ -78,10 +80,10 @@ class Maze:
                 print(maze[i][j])
 
     ## Write the current state of the maze nodes into a txt file
-    def writeMaze(self):
+    def writeMaze(self, algorithm):
         maze = self.maze
         idx = self.fileName.find('.txt')
-        solutionFileName = self.fileName[0:idx] + "_sol" + self.fileName[idx:]
+        solutionFileName = self.fileName[0:idx] + "_" + algorithm + "_sol" + self.fileName[idx:]
         f = open(solutionFileName, 'w')
         for i in range(len(maze)):
             for j in range(len(maze[i])):
@@ -151,6 +153,28 @@ class Maze:
             adj.append(self.getNode(node, UP))
 
         return adj
+
+
+# Consider the complete graph where the nodes are all the pellets remaining
+# and the edges are all the possible pairwise distances between each of the
+# remaining pellets.
+#
+# This function takes in a list called 'edges' representing the edges of this graph
+# and returns the edges that belong to the minimum spanning tree (MST).
+# The 'edges' parameter is of the form:
+#
+# [(d1, 1, (n1A, n1B)), (d2, 2, (n2A, n2B)) ... (di, i, (niA, niB)) ... (dm, m, (nmA, nmB))]
+#
+# where:
+#
+# niA, niB = the nodes representing the endpoints of the edge
+# di = the weight of the ith edge (the Manhattan Distance between nodes niA and niB)
+#
+# The purpose of the second entry of each tuple in the input is to break ties in
+# this function's priority queue when two edges have the same Manhattan Distance.
+def BuildMST(edges, numVertices):
+    return []
+
 
 def computeMSTCost(maze):
     # Initialize the input list to BuildMST and counters of the numbers
