@@ -63,6 +63,15 @@ def DepthFirstSearch(maze):
             current.visited = True
             expandedNodes += 1
 
+            """
+            Should this code be added?
+
+            # If the expanded node is the goal,
+            # end the search
+            if current == goal:
+                break
+            """
+
             adj = maze.getAdjacent(current)
 
             while len(adj) > 0:
@@ -100,6 +109,15 @@ def BreadthFirstSearch(maze):
         if not current.visited:
             current.visited = True
             expandedNodes += 1
+
+            """
+            Should this code be added?
+
+            # If the expanded node is the goal,
+            # end the search
+            if current == goal:
+                break
+            """
 
             adj = maze.getAdjacent(current)
 
@@ -368,7 +386,7 @@ def AStarMultiSearch(maze):
 
             # If the expanded node is a goal state,
             # compute the total path cost it took to get there
-            if len(curNode.food) == 0:
+            if len(mazes[mazeIndex].food_array) == 0:
                 pathCost = 0
                 current = curNode
 
@@ -420,3 +438,99 @@ def AStarMultiSearch(maze):
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
     maze.writeMaze()
+
+from string import ascii_lowercase
+from string import ascii_uppercase
+
+# This is an implementation of MP 1.2 with Breadth-First Search
+# for debugging purposes.
+def BFSMultiSearch(maze):
+    mazes = []
+    mazes.append(maze)
+
+    # Initialize the frontier (represented as a queue),
+    # the start Node, the index of the maze in mazes
+    # the start Node belongs to, and the goal state
+    q = []
+    startMazeIndex = 0
+    start = mazes[startMazeIndex].startingNode
+    goal = None
+
+    q.append((startMazeIndex, start))
+
+    # Initialize a counter to count the number of nodes that get expanded
+    expandedNodes = 0
+
+    while len(q) > 0:
+        tup = q.pop(0)
+        print("tup: " + str(tup))
+        current = tup[1]
+        print("current: " + str(current))
+        mazeIndex = tup[0]
+
+        if not current.visited:
+            current.visited = True
+            expandedNodes += 1
+
+            if len(mazes[mazeIndex].food_array) == 0:
+                goal = current
+                break
+
+            adj = mazes[mazeIndex].getAdjacent(current)
+
+            for node in adj:
+                if not node.visited:
+                    if node.char == '.':
+                        node.visited = True
+                        newMazeIndex = len(mazes)
+                        mazes.append(Maze(origMaze=mazes[mazeIndex], remove_pellet=node))
+                        newNode = mazes[newMazeIndex].maze[node.y][node.x]
+
+                        newNode.parent = current
+                        q.append((newMazeIndex, newNode))
+                    else:
+                        node.parent = current
+                        q.append((mazeIndex, node))
+
+    assert goal is not None, "ERROR: No goal state found"
+
+    current = goal
+    totalMazeCost = 0
+
+    pelletCounter = 1
+    outOfNumbers = False
+    outOfLowerCaseLetters = False
+    lowerCaseLetterIndex = 0
+    outOfUpperCaseLetters = False
+    upperCaseLetterIndex = 0
+    while (current != start):
+        totalMazeCost += 1
+        if current.char == 'P':
+            if not outOfNumbers:
+                print(current)
+                current.char = str(pelletCounter)
+                print(current.char)
+                pelletCounter += 1
+
+                if pelletCounter >= 10:
+                    outOfNumbers = True
+            elif not outOfLowercaseLetters:
+                current.char = str(ascii_lowercase[lowerCaseLetterIndex])
+                lowerCaseLetterIndex += 1
+
+                if lowerCaseLetterIndex >= len(ascii_lowercase):
+                    outOfLowerCaseLetters = True
+            else:
+                current.char = str(ascii_uppercase[upperCaseLetterIndex])
+                upperCaseLetterIndex += 1
+
+                assert upperCaseLetterIndex < len(ascii_uppercase), "ERROR: Too many pellets to represent"
+        else:
+            current.char = '.'
+
+        current = current.parent
+
+    print("Path Cost: " + str(totalMazeCost))
+    print("Expanded Nodes: " + str(expandedNodes))
+    maze.printMaze()
+    #maze.writeMaze("BFSMultiSearch")

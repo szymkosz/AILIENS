@@ -33,7 +33,6 @@ import search
 from node import Node
 from maze import Maze
 
-
 if __name__ == "__main__":
     incorrectUsageError = "Incorrect Usage: Expected " \
                         + "\"python %s <part> <file> " % sys.argv[0] \
@@ -76,12 +75,13 @@ if __name__ == "__main__":
         assert len(sys.argv) == 3, incorrectUsageError2
 
         # Load the maze if possible
-        try:
-            maze = Maze(part2Path + sys.argv[2])
-        except:
-            sys.exit("FileNotFoundError: Is the file spelled correctly?")
+        #try:
+        maze = Maze(part2Path + sys.argv[2])
+        #except:
+        #    sys.exit("FileNotFoundError: Is the file spelled correctly?")
 
-        search.AStarMultiSearch(maze)
+        #search.AStarMultiSearch(maze)
+        search.BFSMultiSearch(maze)
 
     else:
         sys.exit("PartNotRecognizedError: Is the part spelled correctly?")

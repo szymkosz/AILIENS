@@ -40,12 +40,15 @@ class Maze:
 
         if remove_pellet is not None:
             isNotPellet = lambda x: (x.x != remove_pellet.x or x.y != remove_pellet.y)
-            self.food_array = filter(isNotPellet, self.food_array)
+            self.food_array = list(filter(isNotPellet, self.food_array))
+            print(len(self.food_array))
+            print(self.food_array)
             self.startingNode = self.maze[remove_pellet.y][remove_pellet.x]
+            self.startingNode.char = 'P'
+            print("start: " + str(self.startingNode))
 
         self.MSTCost = computeMSTCost(self)
-        #print(self.maze)
-        print(self.maze[0])
+
         """
         # Initialize the food list for every node in the maze
         for i in range(len(self.maze)):
@@ -153,6 +156,17 @@ class Maze:
             adj.append(self.getNode(node, UP))
 
         return adj
+
+
+# Computes the Manhattan distance d from node1 to node2 as:
+#
+# m = abs(node1.x - node2.x) + abs(node1.y - node2.y)
+#
+# where abs() is the absolute value function.
+def ManhattanDistance(node1, node2):
+    return abs(node1.x - node2.x) + abs(node1.y - node2.y)
+
+
 
 
 # Consider the complete graph where the nodes are all the pellets remaining
