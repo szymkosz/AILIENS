@@ -47,6 +47,29 @@ def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, mazes, mazeIndex, 
     heapq.heappush(frontier, (newNode.pathCost + newHeuristic,
                               counter, mazeIndex, newNode))
 
+
+# Checks if an edge will form a cycle in the given graph for MP 1.2
+def formsCycle(graph, new_edge):
+    back_edge = 0
+    temp_graph = mst_dict_append(graph, new_edge)
+    stack = [new_edge[0]]
+    visited = []
+
+    while(len(stack) > 0):
+        currNode = stack.pop()
+        neighbor = 0
+
+        if (currNode in visited):
+            back_edge += 1
+        else:
+            visited.append(currNode)
+            neighbor = 0
+            for neighbor in range(len(temp_graph[currNode])):
+                if(temp_graph[currNode][neighbor] not in visited):
+                    stack.append(temp_graph[currNode][neighbor])
+
+    return back_edge
+
 # Accepts an array of pellet coordinates
 # Returns a tuple containing the total path cost for the proposed path and a list
 #  of coordinates outlining each step in the path
