@@ -151,46 +151,6 @@ def GreedyBestFirstSearch(maze):
     maze.printMaze()
     maze.writeMaze("greedy")
 
-    """
-    frontier = PQ()
-
-    #add the startingNode to the frontier
-    P = maze.startingNode
-    P.parent = None
-    P.visited = True
-    goal = maze.food_array[0]
-    P_MH = helper.ManhattanDistance(P, goal)
-    heapq.heappush(frontier, (P_MH, P))
-
-    #check all directions of neighbors and add them on the frontier
-    while(len(frontier) > 0):
-    	currNode = heapq.heappop(frontier)[1]
-
-        if not currNode.visited:
-            currNode.visited = True
-            expandedNodes += 1
-
-    	if(currNode == goal):
-    		break
-
-    	for direction in range(0, 4):
-    		if(maze.canTravel(currNode, direction) and not currNode.visited):
-    			newNode = maze.getNode(currNode, direction)
-    			helper.GreedyBestFirstSearch_AddToFrontier(currNode, newNode, goalNode, counter, frontier):
-
-    currNode = goal
-    while(currNode != P)
-        current.char = '.'
-        current = current.parent
-
-    print("Path Cost: " + str(totalMazeCost))
-    print("Expanded Nodes: " + str(expandedNodes))
-    maze.printMaze()
-    maze.writeMaze("greedy")
-
-    """
-
-
 # Searches for the food pellet using the A* algorithm.
 # In A*, unexpanded nodes on the frontier are sorted with a min Priority Queue.
 # The priority f(n) of a node n is computed as:
