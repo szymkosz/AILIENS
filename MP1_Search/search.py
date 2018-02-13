@@ -384,7 +384,6 @@ def AStarMultiSearch(maze):
     outOfNumbers = False
     outOfLowerCaseLetters = False
     lowerCaseLetterIndex = 0
-    outOfUpperCaseLetters = False
     upperCaseLetterIndex = 0
     #print("start remaining coordinates: " + str(startRemainingPelletCoordinates))
     for position in optimalPath[1:]:
@@ -397,7 +396,8 @@ def AStarMultiSearch(maze):
 
                 if pelletCounter >= 10:
                     outOfNumbers = True
-            elif not outOfLowercaseLetters:
+            elif not outOfLowerCaseLetters:
+                #print("lowercase index: " + str(lowerCaseLetterIndex))
                 maze.maze[position[1]][position[0]].char = str(ascii_lowercase[lowerCaseLetterIndex])
                 lowerCaseLetterIndex += 1
 
@@ -408,8 +408,11 @@ def AStarMultiSearch(maze):
                 upperCaseLetterIndex += 1
 
                 assert upperCaseLetterIndex < len(ascii_uppercase), "ERROR: Too many pellets to represent"
+
+            startRemainingPelletCoordinates.remove(position)
         else:
-            maze.maze[position[1]][position[0]].char = '.'
+            if maze.maze[position[1]][position[0]].char == ' ':
+                maze.maze[position[1]][position[0]].char = '.'
 
     print("Path Cost: " + str(totalMazeCost))
     print("Expanded Nodes: " + str(expandedNodes))
