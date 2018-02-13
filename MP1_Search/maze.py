@@ -52,18 +52,22 @@ class Maze:
         """
         for i in range(len(self.food_array)):
             pelletA = self.food_array[i]
+            pelletACoordinates = (pelletA.x, pelletA.y)
 
             for j in range(i+1, len(self.food_array)):
                 pelletB = self.food_array[j]
+                pelletBCoorinates = (pelletB.x, pelletB.y)
 
-                pairwisePath = self.PairwiseAStar(pelletA, pelletB)
-                self.paths[((pelletA.x, pelletA.y), (pelletB.x, pelletB.y))] = pairwisePath
+                pairwisePath = self.PairwiseAStar(pelletACoordinates, pelletBCoorinates)
+                self.paths[(pelletACoordinates, pelletBCoorinates)] = pairwisePath
 
+        startCoordinates = (self.startingNode.x, self.startingNode.y)
         for i in range(len(self.food_array)):
             pellet = self.food_array[i]
+            pelletCoordinates = (pellet.x, pellet.y)
 
-            pairwisePath = self.PairwiseAStar(self.startingNode, pellet)
-            self.paths[((self.startingNode.x, self.startingNode.y), (pellet.x, pellet.y))] = pairwisePath
+            pairwisePath = self.PairwiseAStar(startCoordinates, pelletCoordinates)
+            self.paths[(startCoordinates, pelletCoordinates)] = pairwisePath
 
         print(self.paths)
 
@@ -180,10 +184,14 @@ class Maze:
     # h(n) = estimated cost from n to goal (heuristic)
     #
     # The heuristic h(n) is computed as the Manhattan distance from n to the goal.
-    def PairwiseAStar(self, start, goal):
+    def PairwiseAStar(self, startCoordinates, goalCoordinates):
         # Initialize the frontier (represented as a priority queue)
         # and the true path cost
+        print(startCoordinates)
+        print(goalCoordinates)
         frontier = []
+        start = self.maze[startCoordinates[1]][startCoordinates[0]]
+        goal = self.maze[goalCoordinates[1]][goalCoordinates[0]]
         trueCost = float("inf")
 
         # Mark the start with a cost of 0, compute its heuristic, initialize a counter
@@ -191,7 +199,7 @@ class Maze:
         start.pathCost = 0
         startHeuristic = helper.ManhattanDistance(start, goal)
         counter = 1
-        heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, self.startingNode))
+        heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, self.maze[startCoordinates[1]][startCoordinates[0]]))
 
         # Initialize a counter to count the number of nodes that get expanded
         expandedNodes = 0
@@ -221,7 +229,7 @@ class Maze:
                     if pathCost < trueCost:
                         trueCost = pathCost
 
-                neighbors = maze.getAdjacent(curNode)
+                neighbors = self.getAdjacent(curNode)
 
                 # Iterate through all the neighbors and add them to the frontier
                 # if they haven't been visited
@@ -244,7 +252,7 @@ class Maze:
 
         assert totalMazeCost == trueCost, "ERROR: True cost doesn't match final cost"
 
-        path.append(start.x, start.y)
+        path.append((start.x, start.y))
         self.reset()
 
         return (totalMazeCost, path)
