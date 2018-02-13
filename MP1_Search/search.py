@@ -1,5 +1,6 @@
 # Import all the necessary packages
 from maze import Maze
+from maze import computeMSTCost
 from node import Node
 import heapq
 import helper
@@ -278,6 +279,120 @@ MP 1.2 STARTS HERE!
 """
 
 def AStarMultiSearch(maze):
+    # Initialize the frontier (represented as a priority queue),
+    # the true path cost, and identify the start and goal Nodes
+    frontier = []
+    trueCost = float("inf")
+
+    startPathCost = 0
+    remainingPelletCoordinates = []
+    startPos = (maze.startingNode.x, maze.startingNode.y)
+    eatenPelletCoordinates = []
+
+    for pellet in maze.food_array:
+        remainingPelletCoordinates.append((pellet.x, pellet.y))
+
+    # Mark the start with a cost of 0, compute its heuristic, initialize a counter
+    # for breaking ties in the frontier, and add the start to the frontier
+    #startPathCost = 0
+
+    # Compute the heuristic
+    startMSTCost = computeMSTCost(maze, remainingPelletCoordinates)
+
+    startMinDistanceToPellet = float("inf")
+
+    for key, value in maze.paths.items():
+        if key[0] == startPos or key[1] == startPos:
+            if value[0] < startMinDistanceToPellet:
+                startMinDistanceToPellet = value[0]
+
+    startHeuristic = startMSTCost + startMinDistanceToPellet
+
+    counter = 1
+    heapq.heappush(frontier, (startPathCost + startHeuristic, counter, startPathCost, remainingPelletCoordinates, startPos, eatenPelletCoordinates))
+
+    # Initialize a counter to count the number of nodes that get expanded
+    expandedNodes = 0
+
+    while len(frontier) > 0:
+        # Remove node from frontier
+        tup = heapq.heappop(frontier)
+        expandedNodes += 1
+
+        pathCostSoFar = tup[2]
+        curRemainingPelletCoordinates = tup[3]
+        curPosition = tup[4]
+        curEatenPelletCoordinates = tup[5]
+        """
+        # If the expanded node is the goal,
+        # compute the total path cost
+        if len(curRemainingPelletCoordinates) == 0:
+            pathCost = 0
+            current = goal
+
+            while current != start:
+                pathCost += 1
+                current = current.parent
+
+            if pathCost < trueCost:
+                trueCost = pathCost
+        """
+
+        # Expand this node only if it hasn't been expanded (visited) yet
+        # and its value of f(n) is less than the current discovered path
+        # cost to the goal
+
+        # Iterate through all the neighbors and add them to the frontier
+        # if they haven't been visited
+        for pellet in curRemainingPelletCoordinates:
+            isNotPellet = lambda x: (x.x != pellet.x or x.y != pellet.y)
+            newRemainingPelletCoordinates = list(filter(isNotPellet, curRemainingPelletCoordinates))
+
+            curMSTCost = computeMSTCost(maze, newRemainingPelletCoordinates)
+
+            curMinDistanceToPellet = float("inf")
+            curPos = (pellet.x, pellet.y)
+
+            for key, value in maze.paths.items():
+                if (key[0] == curPos and (key[1] in newRemainingPelletCoordinates)) or \
+                (key[1] == curPos and (key[0] in newRemainingPelletCoordinates)):
+                    if value[0] < curMinDistanceToPellet:
+                        curMinDistanceToPellet = value[0]
+
+            curHeuristic = curMSTCost + curMinDistanceToPellet
+
+            distanceFromCurPosToPellet = 0
+            indexA = (curPos, pellet)
+            indexB = (pellet, curPos)
+
+            if indexA in maze.paths:
+                distanceFromCurPosToPellet = maze.paths[indexA][0]
+            else:
+                assert indexB in maze.paths, "ERROR: Missing pairwise distance"
+                distanceFromCurPosToPellet = maze.paths[indexB][0]
+
+
+            totalEstimatedCost = pathCostSoFar + curHeuristic
+
+            if totalEstimatedCost < trueCost:
+
+            counter += 1
+            heapq.heappush(frontier, (start.pathCost + startHeuristic, counter, len(maze.food_array), list(maze.food_array), maze.startingNode, []))
+
+    current = goal
+    totalMazeCost = 0
+    while (current != start):
+        totalMazeCost += 1
+        current.char = '.'
+        current = current.parent
+
+    assert totalMazeCost == trueCost, "ERROR: True cost doesn't match final cost"
+
+    print("Path Cost: " + str(totalMazeCost))
+    print("Expanded Nodes: " + str(expandedNodes))
+    maze.printMaze()
+    maze.writeMaze("AStar")
+    """
     mazes = []
     mazes.append(maze)
 
@@ -339,8 +454,8 @@ def AStarMultiSearch(maze):
             # if they haven't been visited
             for neighbor in neighbors:
                 """
-                if neighbor == goal:
-                    goal.visited = False
+                #if neighbor == goal:
+                #    goal.visited = False
                 """
                 if not neighbor.visited:
                     counter += 1
@@ -370,6 +485,7 @@ def AStarMultiSearch(maze):
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
     maze.writeMaze()
+    """
 
 from string import ascii_lowercase
 from string import ascii_uppercase

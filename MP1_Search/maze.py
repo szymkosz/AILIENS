@@ -187,8 +187,6 @@ class Maze:
     def PairwiseAStar(self, startCoordinates, goalCoordinates):
         # Initialize the frontier (represented as a priority queue)
         # and the true path cost
-        print(startCoordinates)
-        print(goalCoordinates)
         frontier = []
         start = self.maze[startCoordinates[1]][startCoordinates[0]]
         goal = self.maze[goalCoordinates[1]][goalCoordinates[0]]
@@ -329,22 +327,32 @@ def BuildMST(edges, numVertices):
     return mst_edges
 
 
-def computeMSTCost(maze):
+def computeMSTCost(maze, remainingPelletCoordinates):
     # Initialize the input list to BuildMST and counters of the numbers
     # of edges and vertices
     edges = []
     numEdges = 0
-    numVertices = len(maze.food_array)
+    numVertices = len(remainingPelletCoordinates)
 
     # Build the input list to BuildMST
     for i in range(numVertices):
-        vertexA = maze.food_array[i]
+        vertexA = remainingPelletCoordinates[i]
 
         for j in range(i+1, numVertices):
-            vertexB = maze.food_array[j]
+            vertexB = remainingPelletCoordinates[j]
             numEdges += 1
 
-            edges.append( (maze.PairwiseAStar(vertexA, vertexB), numEdges, (vertexA, vertexB)) )
+            indexA = (vertexA, vertexB)
+            indexB = (vertexB, vertexA)
+
+            EdgeWeight = 0
+            if indexA in maze.paths:
+                EdgeWeight = maze.paths[indexA][0]
+            else:
+                assert indexB in maze.paths, "ERROR: Missing pairwise distance"
+                EdgeWeight = maze.paths[indexB][0]
+
+            edges.append( (EdgeWeight, numEdges, (vertexA, vertexB)) )
 
     # Compute the MST cost and return it
     curMST = BuildMST(edges, numVertices)

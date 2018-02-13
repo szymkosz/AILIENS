@@ -34,10 +34,6 @@ from node import Node
 from maze import Maze
 
 if __name__ == "__main__":
-    part2Path = "mp1.2MazeFiles/"
-    maze = Maze(part2Path + sys.argv[2])
-
-    """
     incorrectUsageError = "Incorrect Usage: Expected " \
                         + "\"python %s <part> <file> " % sys.argv[0] \
                         + "<algorithm>\""
@@ -89,4 +85,3 @@ if __name__ == "__main__":
 
     else:
         sys.exit("PartNotRecognizedError: Is the part spelled correctly?")
-    """
