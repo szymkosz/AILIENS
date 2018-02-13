@@ -80,8 +80,8 @@ if __name__ == "__main__":
         #except:
         #    sys.exit("FileNotFoundError: Is the file spelled correctly?")
 
-        #search.AStarMultiSearch(maze)
-        search.BFSMultiSearch(maze)
+        search.AStarMultiSearch(maze)
+        #search.BFSMultiSearch(maze)
 
     else:
         sys.exit("PartNotRecognizedError: Is the part spelled correctly?")
