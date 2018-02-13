@@ -292,50 +292,67 @@ def AStarMultiSearch(maze):
         curPos = tup[4]
         curEatenPelletCoordinates = tup[5]
 
+        # print("path cost: " + str(pathCostSoFar))
+        # print("remaining pellet coordinates: " + str(curRemainingPelletCoordinates))
+        # print("current position: " + str(curPos))
+        # print("eaten pellet coordinates: " + str(curEatenPelletCoordinates))
+        # print(frontier)
+        # print()
         # If the expanded node is the goal,
         # compute the total path cost
         if len(curRemainingPelletCoordinates) == 0:
+            #print("I have reached the goal")
             assert len(curEatenPelletCoordinates) == len(maze.food_array), "ERROR: Missing pellet from curEatenPelletCoordinates"
-            pathCost = helper.AStarMultiSearch_TraceSolution(maze, curEatenPelletCoordinates)[0]
-
+            vertices = curEatenPelletCoordinates[:]
+            vertices.insert(0, (startPos))
+            #print("vertices: " + str(vertices))
+            pathCost = helper.AStarMultiSearch_TraceSolution(maze, vertices)[0]
+            #print("eaten: " + str(curEatenPelletCoordinates))
             if pathCost < trueCost:
                 trueCost = pathCost
-                goal = list(curEatenPelletCoordinates)
+                #print(trueCost)
+                goal = curEatenPelletCoordinates[:]
 
         # Iterate through all the remaining uneaten pellets and add them
         # to the frontier if they may lead to an optimal path
         for pellet in curRemainingPelletCoordinates:
             # Filter out this pellet from curRemainingPelletCoordinates
             # to get a list of the pellets that would remain if this one was eaten
-            isNotPellet = lambda x: (x.x != pellet.x or x.y != pellet.y)
+            isNotPellet = lambda x: (x[0] != pellet[0] or x[1] != pellet[1])
             newRemainingPelletCoordinates = list(filter(isNotPellet, curRemainingPelletCoordinates))
 
-            # Compute the heuristic for eating this pellet next,
-            # starting with computing the MST of the pellets that would remain
-            # if this pellet was eaten next
-            curMSTCost = computeMSTCost(maze, newRemainingPelletCoordinates)
+            curHeuristic = 0
+            pelletPos = (pellet[0], pellet[1])
+            if len(newRemainingPelletCoordinates) > 0:
+                # Compute the heuristic for eating this pellet next,
+                # starting with computing the MST of the pellets that would remain
+                # if this pellet was eaten next
+                curMSTCost = computeMSTCost(maze, newRemainingPelletCoordinates)
 
-            # Compute the closest distance from this pellet to any pellet
-            # in newRemainingPelletCoordinates
-            curMinDistanceToPellet = float("inf")
-            pelletPos = (pellet.x, pellet.y)
+                # Compute the closest distance from this pellet to any pellet
+                # in newRemainingPelletCoordinates
+                curMinDistanceToPellet = float("inf")
 
-            for key, value in maze.paths.items():
-                if (key[0] == pelletPos and (key[1] in newRemainingPelletCoordinates)) or \
-                (key[1] == pelletPos and (key[0] in newRemainingPelletCoordinates)):
-                    if value[0] < curMinDistanceToPellet:
-                        curMinDistanceToPellet = value[0]
+                for key, value in maze.paths.items():
+                    if (key[0] == pelletPos and (key[1] in newRemainingPelletCoordinates)) or \
+                    (key[1] == pelletPos and (key[0] in newRemainingPelletCoordinates)):
+                        if value[0] < curMinDistanceToPellet:
+                            curMinDistanceToPellet = value[0]
 
-            curHeuristic = curMSTCost + curMinDistanceToPellet
+                #print("curMinDistanceToPellet: " + str(curMinDistanceToPellet))
+                curHeuristic = curMSTCost + curMinDistanceToPellet
 
             distanceFromCurPosToPellet = 0
             indexA = (curPos, pelletPos)
             indexB = (pelletPos, curPos)
+            #print("indexA: " + str(indexA))
+            #print("indexB: " + str(indexB))
+            #print("paths: " + str(maze.paths))
 
-            if indexA in maze.paths:
+            if indexA in maze.paths.keys():
                 distanceFromCurPosToPellet = maze.paths[indexA][0]
             else:
-                assert indexB in maze.paths, "ERROR: Missing pairwise distance"
+                assert indexB in maze.paths.keys(), "ERROR: Missing pairwise distance"
                 distanceFromCurPosToPellet = maze.paths[indexB][0]
 
             # Compute the total estimated cost f(n) for eating this pellet next
@@ -344,41 +361,24 @@ def AStarMultiSearch(maze):
 
             # Only add a state for future expansion if its total estimated cost
             # is less than the best cost discovered so far.
+            #print(totalEstimatedCost)
             if totalEstimatedCost < trueCost:
+                #print("I am about to add a state to the frontier")
                 counter += 1
-                newEatenPelletCoordinates = list(curEatenPelletCoordinates.append(pelletPos))
+                newEatenPelletCoordinates = curEatenPelletCoordinates[:]
+                newEatenPelletCoordinates.append(pelletPos)
                 heapq.heappush(frontier, (totalEstimatedCost, counter, pathCostToPellet, newRemainingPelletCoordinates, pelletPos, newEatenPelletCoordinates))
 
     # Determine the total path cost and the path of the optimal solution
+    goal.insert(0, (startPos))
+    #print(goal)
     solution = helper.AStarMultiSearch_TraceSolution(maze, goal)
     totalMazeCost = solution[0]
     optimalPath = solution[1]
+    #print("maze cost: " + str(totalMazeCost))
+    #print("optimal path: " + str(optimalPath))
+    #print("true cost: " + str(trueCost))
     assert totalMazeCost == trueCost, "ERROR: True cost doesn't match final cost"
-
-    while (current != start):
-        totalMazeCost += 1
-        if current.char == 'P':
-            if not outOfNumbers:
-                print(current)
-                current.char = str(pelletCounter)
-                print(current.char)
-                pelletCounter += 1
-
-                if pelletCounter >= 10:
-                    outOfNumbers = True
-            elif not outOfLowercaseLetters:
-                current.char = str(ascii_lowercase[lowerCaseLetterIndex])
-                lowerCaseLetterIndex += 1
-
-                if lowerCaseLetterIndex >= len(ascii_lowercase):
-                    outOfLowerCaseLetters = True
-            else:
-                current.char = str(ascii_uppercase[upperCaseLetterIndex])
-                upperCaseLetterIndex += 1
-
-                assert upperCaseLetterIndex < len(ascii_uppercase), "ERROR: Too many pellets to represent"
-        else:
-            current.char = '.'
 
     pelletCounter = 1
     outOfNumbers = False
@@ -386,9 +386,12 @@ def AStarMultiSearch(maze):
     lowerCaseLetterIndex = 0
     outOfUpperCaseLetters = False
     upperCaseLetterIndex = 0
+    #print("start remaining coordinates: " + str(startRemainingPelletCoordinates))
     for position in optimalPath[1:]:
         if position in startRemainingPelletCoordinates:
             if not outOfNumbers:
+                #print("position: " + str(position))
+                #print(pelletCounter)
                 maze.maze[position[1]][position[0]].char = str(pelletCounter)
                 pelletCounter += 1
 
@@ -507,4 +510,3 @@ def BFSMultiSearch(maze):
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
     #maze.writeMaze("BFSMultiSearch")
-    

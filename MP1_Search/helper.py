@@ -98,12 +98,12 @@ def AStarMultiSearch_TraceSolution(maze, pelletArray):
             currentPath = maze.paths[(pelletArray[i], pelletArray[i+1])][1]
             for coord in range(len(currentPath)-1):
                 pathCost += 1
-                solutionPath.append(currentPath[coord])
+                solutionPath.append(currentPath[len(currentPath) - 1 - coord])
         else:
             assert (pelletArray[i+1], pelletArray[i]) in maze.paths.keys(), "ERROR: Pellet Coordinate combination not in maze.paths"
             currentPath = maze.paths[(pelletArray[i+1], pelletArray[i])][1]
             for coord in range(len(currentPath)-1):
                 pathCost += 1
-                solutionPath.append(currentPath[len(currentPath) - 2 - coord])
+                solutionPath.append(currentPath[coord])
     solutionPath.append(pelletArray[-1])
     return (pathCost, solutionPath)

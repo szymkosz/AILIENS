@@ -70,7 +70,7 @@ class Maze:
             pairwisePath = self.PairwiseAStar(startCoordinates, pelletCoordinates)
             self.paths[(startCoordinates, pelletCoordinates)] = pairwisePath
 
-        print(self.paths)
+        #print(self.paths)
 
 
 
@@ -331,6 +331,9 @@ def BuildMST(edges, numVertices):
 def computeMSTCost(maze, remainingPelletCoordinates):
     # Initialize the input list to BuildMST and counters of the numbers
     # of edges and vertices
+    if len(remainingPelletCoordinates) == 0:
+        return 0
+
     edges = []
     numEdges = 0
     numVertices = len(remainingPelletCoordinates)
