@@ -46,7 +46,10 @@ def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, mazes, mazeIndex, 
     newHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[mazeIndex], newNode)
     heapq.heappush(frontier, (newNode.pathCost + newHeuristic,
                               counter, mazeIndex, newNode))
-                          
+
+# Accepts an array of pellet coordinates
+# Returns a tuple containing the total path cost for the proposed path and a list
+#  of coordinates outlining each step in the path
 def AStarMultiSearch_TraceSolution(maze, pelletArray):
     solutionPath = []
     pathCost = 0
