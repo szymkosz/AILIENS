@@ -547,4 +547,4 @@ def BFSMultiSearch(maze):
     print("Expanded Nodes: " + str(expandedNodes))
     maze.printMaze()
     #maze.writeMaze("BFSMultiSearch")
-    """
+    

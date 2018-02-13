@@ -2,6 +2,7 @@ from node import Node
 import sys
 import heapq
 import helper
+import copy
 
 class Maze:
     def __init__(self, fileName=None, origMaze=None, remove_pellet=None):
