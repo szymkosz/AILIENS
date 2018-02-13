@@ -47,6 +47,23 @@ def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, mazes, mazeIndex, 
     heapq.heappush(frontier, (newNode.pathCost + newHeuristic,
                               counter, mazeIndex, newNode))
 
+# Appends edges to the minimum spanning tree for MP 1.2
+def mst_dict_append(mst_dict, edge):
+    if edge[0] in mst_dict.keys():
+        mst_dict[edge[0]].append(edge[1])
+    else:
+        temp = list()
+        temp.append(edge[1])
+        mst_dict[edge[0]] = temp
+
+    if edge[1] in mst_dict.keys():
+        mst_dict[edge[1]].append(edge[0])
+    else:
+        temp = list()
+        temp.append(edge[0])
+        mst_dict[edge[1]] = temp
+
+    return mst_dict
 
 # Checks if an edge will form a cycle in the given graph for MP 1.2
 def formsCycle(graph, new_edge):
