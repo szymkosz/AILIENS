@@ -258,7 +258,7 @@ def AStarMultiSearch(maze):
 
     # Mark the start with a cost of 0, compute its heuristic, initialize a counter
     # for breaking ties in the frontier, and add the start to the frontier
-    #startPathCost = 0
+    # startPathCost = 0
 
     # Compute the heuristic
     startMSTCost = computeMSTCost(maze, startRemainingPelletCoordinates)
@@ -292,25 +292,17 @@ def AStarMultiSearch(maze):
         curPos = tup[4]
         curEatenPelletCoordinates = tup[5]
 
-        # print("path cost: " + str(pathCostSoFar))
-        # print("remaining pellet coordinates: " + str(curRemainingPelletCoordinates))
-        # print("current position: " + str(curPos))
-        # print("eaten pellet coordinates: " + str(curEatenPelletCoordinates))
-        # print(frontier)
-        # print()
         # If the expanded node is the goal,
         # compute the total path cost
         if len(curRemainingPelletCoordinates) == 0:
-            #print("I have reached the goal")
             assert len(curEatenPelletCoordinates) == len(maze.food_array), "ERROR: Missing pellet from curEatenPelletCoordinates"
             vertices = curEatenPelletCoordinates[:]
             vertices.insert(0, (startPos))
-            #print("vertices: " + str(vertices))
+
             pathCost = helper.AStarMultiSearch_TraceSolution(maze, vertices)[0]
-            #print("eaten: " + str(curEatenPelletCoordinates))
+
             if pathCost < trueCost:
                 trueCost = pathCost
-                #print(trueCost)
                 goal = curEatenPelletCoordinates[:]
 
         # Iterate through all the remaining uneaten pellets and add them
@@ -339,15 +331,11 @@ def AStarMultiSearch(maze):
                         if value[0] < curMinDistanceToPellet:
                             curMinDistanceToPellet = value[0]
 
-                #print("curMinDistanceToPellet: " + str(curMinDistanceToPellet))
                 curHeuristic = curMSTCost + curMinDistanceToPellet
 
             distanceFromCurPosToPellet = 0
             indexA = (curPos, pelletPos)
             indexB = (pelletPos, curPos)
-            #print("indexA: " + str(indexA))
-            #print("indexB: " + str(indexB))
-            #print("paths: " + str(maze.paths))
 
             if indexA in maze.paths.keys():
                 distanceFromCurPosToPellet = maze.paths[indexA][0]
@@ -361,9 +349,7 @@ def AStarMultiSearch(maze):
 
             # Only add a state for future expansion if its total estimated cost
             # is less than the best cost discovered so far.
-            #print(totalEstimatedCost)
             if totalEstimatedCost < trueCost:
-                #print("I am about to add a state to the frontier")
                 counter += 1
                 newEatenPelletCoordinates = curEatenPelletCoordinates[:]
                 newEatenPelletCoordinates.append(pelletPos)
@@ -371,13 +357,10 @@ def AStarMultiSearch(maze):
 
     # Determine the total path cost and the path of the optimal solution
     goal.insert(0, (startPos))
-    #print(goal)
     solution = helper.AStarMultiSearch_TraceSolution(maze, goal)
     totalMazeCost = solution[0]
     optimalPath = solution[1]
-    #print("maze cost: " + str(totalMazeCost))
-    #print("optimal path: " + str(optimalPath))
-    #print("true cost: " + str(trueCost))
+
     assert totalMazeCost == trueCost, "ERROR: True cost doesn't match final cost"
 
     pelletCounter = 1
@@ -385,19 +368,16 @@ def AStarMultiSearch(maze):
     outOfLowerCaseLetters = False
     lowerCaseLetterIndex = 0
     upperCaseLetterIndex = 0
-    #print("start remaining coordinates: " + str(startRemainingPelletCoordinates))
     for position in optimalPath[1:]:
         if position in startRemainingPelletCoordinates:
             if not outOfNumbers:
-                #print("position: " + str(position))
-                #print(pelletCounter)
+
                 maze.maze[position[1]][position[0]].char = str(pelletCounter)
                 pelletCounter += 1
 
                 if pelletCounter >= 10:
                     outOfNumbers = True
             elif not outOfLowerCaseLetters:
-                #print("lowercase index: " + str(lowerCaseLetterIndex))
                 maze.maze[position[1]][position[0]].char = str(ascii_lowercase[lowerCaseLetterIndex])
                 lowerCaseLetterIndex += 1
 
