@@ -46,3 +46,21 @@ def AStarMultiSearch_AddToFrontier(curNode, newNode, counter, mazes, mazeIndex, 
     newHeuristic = AStarMultiSearch_ComputeHeuristic(mazes[mazeIndex], newNode)
     heapq.heappush(frontier, (newNode.pathCost + newHeuristic,
                               counter, mazeIndex, newNode))
+                          
+def AStarMultiSearch_TraceSolution(maze, pelletArray):
+    solutionPath = []
+    pathCost = 0
+    for i in range(len(pelletArray)-1):
+        if (pelletArray[i], pelletArray[i+1]) in maze.paths.keys():
+            currentPath = maze.paths[(pelletArray[i], pelletArray[i+1])][1]
+            for coord in range(len(currentPath)-1):
+                pathCost += 1
+                solutionPath.append(currentPath[coord])
+        else:
+            assert (pelletArray[i+1], pelletArray[i]) in maze.paths.keys(), "ERROR: Pellet Coordinate combination not in maze.paths"
+            currentPath = maze.paths[(pelletArray[i+1], pelletArray[i])][1]
+            for coord in range(len(currentPath)-1):
+                pathCost += 1
+                solutionPath.append(currentPath[len(currentPath) - 2 - coord])
+    solutionPath.append(pelletArray[-1])
+    return (pathCost, solutionPath)
