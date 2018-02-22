@@ -1,6 +1,11 @@
 import sys
 from position import Position
 
+## Used for formatting standard output
+P1_COLOR = '\033[91m'
+P2_COLOR = '\033[94m'
+C_END = '\033[0m'
+
 class Gomoku:
     ## Constructor
     def __init__(self, dim=7):
@@ -22,9 +27,9 @@ class Gomoku:
         # Check to see if it is the turn of the player setting the piece
         if red != self.reds_turn:
             if red:
-                raise ValueError("Trying to set a \033[91mRED\033[0m piece when it is \033[94mBLUE\033[0m's turn.")
+                raise ValueError("Trying to set a {0}RED{2} piece when it is {1}BLUE{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END))
             elif not red:
-                raise ValueError("Trying to set a \033[94mBLUE\033[0m piece when it is \033[91mRED\033[0m's turn.")
+                raise ValueError("Trying to set a {1}BLUE{2} piece when it is {0}RED{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END))
 
         # If setting a red piece and it is red's turn
         if red and self.reds_turn:
