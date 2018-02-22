@@ -55,7 +55,7 @@ class Gomoku:
     def printBoard(self):
         board = self.board
         for i in range(len(board)):
-            sys.stdout.write(' '.join(n.__repr__() for n in board[i]))
+            sys.stdout.write(' '.join(n[i].__repr__() for n in board))
             sys.stdout.write("\n")
         sys.stdout.write("\n")
 
@@ -67,11 +67,11 @@ class Gomoku:
         ## Numbers along top
         ret += "  " + ' '.join(str(i+1) for i in range(self.dim)) + "\n"
         for i in range(self.dim):
-            ## First row is first number
-            ret += str(i+1) + " " + ' '.join(n.__repr__() for n in board[i]) + "\n"
+            ## First row is top row
+            ret += str(i+1) + " " + ' '.join(n[i].__repr__() for n in board) + "\n"
 
-            ## First row is last number
-            # ret += str(len(board) - i) + " " + ' '.join(n.__repr__() for n in board[i]) + "\n"
+            ## First row is bottom row
+            # ret += str(len(board) - i) + " " + ' '.join(n[i].__repr__() for n in board) + "\n"
 
         ## Numbers along bottom
         # ret += "  " + ' '.join(str(i+1) for i in range(self.dim)) + "\n"

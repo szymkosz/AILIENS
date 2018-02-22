@@ -3,7 +3,7 @@ import time
 
 game = Gomoku()
 
-game.printBoard()
+print(game)
 
 # Random Moves
 game.setPiece(3,4,1)
