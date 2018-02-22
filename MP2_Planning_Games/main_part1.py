@@ -3,6 +3,10 @@ from widget import Widget
 recipes = ["AEDCA", "BEACD", "BABCE", "DADBD", "BECBD"]
 widgets = [Widget(i) for i in recipes]
 
+# # Checks random widget generator
+# for i in range(len(widgets) * 3):
+#     widgets.append(Widget())
+
 print(widgets)
 
 distances = { "A": {"B": 1064,

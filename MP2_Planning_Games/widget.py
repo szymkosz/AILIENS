@@ -1,16 +1,17 @@
 import random
 
 class Widget:
-    def __init__(self, recipe="", N=5, isRandom=False):
-        if isRandom:
+    def __init__(self, recipe="", N=5):
+
+        # If no recipe is given, generate it randomly
+        if recipe == "":
             letters = ["A", "B", "C", "D", "E"]
-            #curLetters = list(letters)
             self.recipe = ""
 
             # Build a random recipe by picking each letter at random
             for i in range(N):
-                newLetterIndex = round(len(letters)*random.random())
-                newLetter = curLetters[newLetterIndex]
+                newLetterIndex = round((len(letters)-1)*random.random())
+                newLetter = letters[newLetterIndex]
                 self.recipe += newLetter
         else:
             self.recipe = recipe.upper()    ## Case insensitive
