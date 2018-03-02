@@ -6,7 +6,7 @@ P1_COLOR = '\033[91m'
 P2_COLOR = '\033[94m'
 C_END = '\033[0m'
 
-players = ["RED", "BLUE"]
+players = ["RED", "BLUE"]   ## ONLY TWO PLAYERS
 
 class Gomoku:
     ## Constructor
@@ -19,7 +19,7 @@ class Gomoku:
     ## Sets the next piece at the desired coordinates (x,y).
     #   @param red - flag indicating the color of the piece to set
     #                True (1) for RED; False (0) for BLUE
-    def setPiece(self, x, y, red):
+    def setPiece(self, x, y, isRedsTurn):
         pos = self.board[x][y]
 
         # If the piece at (x,y) is empty
@@ -27,14 +27,14 @@ class Gomoku:
             raise ValueError("Trying to set a piece in a non-empty position, char: " + str(pos.char))
 
         # Check to see if it is the turn of the player setting the piece
-        if red != self.reds_turn:
-            if red:
+        if isRedsTurn != self.reds_turn:
+            if isRedsTurn:
                 raise ValueError("Trying to set a {0}{3[0]}{2} piece when it is {1}{3[1]}{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END, players))
-            elif not red:
+            elif not isRedsTurn:
                 raise ValueError("Trying to set a {1}{3[1]}{2} piece when it is {0}{3[0]}{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END, players))
 
         # If setting a red piece and it is red's turn
-        if red and self.reds_turn:
+        if isRedsTurn and self.reds_turn:
 
             # Set the position's char to the next red char and its color to "RED"
             # Switch the turn
@@ -43,7 +43,7 @@ class Gomoku:
             self.reds_turn = False
 
         # Else if setting a blue piece and it is blue's turn
-        elif not red and not self.reds_turn:
+        elif not isRedsTurn and not self.reds_turn:
 
             # Set the position's char to the next blue char and its color to "BLUE"
             # Switch the turn
@@ -51,14 +51,18 @@ class Gomoku:
             pos.color = players[1]
             self.curr_char = chr(ord(self.curr_char) + 1)
             self.reds_turn = True
+
+        ## CHECK IF MOVE WON THE GAME
         return False
 
     ## Parses the board and populates a dictionary specifying how many of each
     #   type of pattern is present on the current board.
     def getPatterns(self):
+        minStones = 1
+        maxStones = 5
         # Initializes the dictionary { (player, numberOfStonesInARow, Open/Closed) : 0 }
         patterns = { (p,num,closed):0 for p in [players[0],players[1]] \
-                                for num in range(3,6) for closed1 in [True,False] }
+                                for num in range(minStones,maxStones+1) for closed in [True,False] }
         patternStartingPos = patterns.copy()
 
         # Right, down, diag-right-up, diag-right-down
@@ -73,13 +77,16 @@ class Gomoku:
 
         def findPattern(self, pattern, pos, direction):
             player, num, closed = pattern
-            nextPos = pos
+            curPos = pos
             exists = False
             count = 0
             # self.board[pos[0]][pos[1]].color == player
             for i in range(num):
-                if self.board[nextPos[0]][nextPos[1]].color != player:
+                nextPos = self.nextPosition(curPos, direction)
+                if self.board[curPos[0]][curPos[1]].color != player:
                     return False
+
+
 
 
 
