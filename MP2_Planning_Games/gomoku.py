@@ -58,7 +58,8 @@ class Gomoku:
     def getPatterns(self):
         # Initializes the dictionary { (player, numberOfStonesInARow, Open/Closed) : 0 }
         patterns = { (p,num,closed):0 for p in [players[0],players[1]] \
-                                for num in range(2,6) for closed1 in [True,False] }
+                                for num in range(3,6) for closed1 in [True,False] }
+        patternStartingPos = patterns.copy()
 
         # Right, down, diag-right-up, diag-right-down
         directions = [(1,0),(0,1),(1,-1),(1,1)]
@@ -70,10 +71,22 @@ class Gomoku:
             nextPos = (pos[0] + direction[0], pos[1] + direction[1])
             return nextPos if not outOfBounds(nextPos) else None
 
+        def findPattern(self, pattern, pos, direction):
+            player, num, closed = pattern
+            nextPos = pos
+            exists = False
+            count = 0
+            # self.board[pos[0]][pos[1]].color == player
+            for i in range(num):
+                if self.board[nextPos[0]][nextPos[1]].color != player:
+                    return False
+
+
+
         for player in players:
             for direction in directions:
                 for num in range(2,6):
-                    
+
 
     ## Prints the state of the game to standard out
     def printBoard(self):
