@@ -1,4 +1,5 @@
 from widget import Widget
+import helper
 
 recipes = ["AEDCA", "BEACD", "BABCE", "DADBD", "BECBD"]
 widgets = [Widget(i) for i in recipes]
@@ -7,7 +8,9 @@ widgets = [Widget(i) for i in recipes]
 # for i in range(len(widgets) * 3):
 #     widgets.append(Widget())
 
-print(widgets)
+# print(widgets)
+
+# print(helper.lcsOf5List(recipes))
 
 distances = { "A": {"B": 1064,
                     "C": 673,

@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     # Agent 1
 	if sys.argv[1] == "alpha-beta" or sys.argv[1] == "ab":
-		red =
+		gomoku.players[0]
 	elif sys.argv[1] == "minimax" or sys.argv[1] == "mm":
 		red =
 	elif sys.argv[1] == "reflex" or sys.argv[1] == "r":
