@@ -6,12 +6,14 @@ P1_COLOR = '\033[91m'
 P2_COLOR = '\033[94m'
 C_END = '\033[0m'
 
+players = ["RED", "BLUE"]
+
 class Gomoku:
     ## Constructor
     def __init__(self, dim=7):
         self.curr_char = 'a'
         self.dim = dim
-        self.reds_turn = True       ## Red always starts
+        self.reds_turn = True       # Red always starts
         self.board = [ [ Position() for i in range(dim) ] for i in range(dim) ]
 
     ## Sets the next piece at the desired coordinates (x,y).
@@ -27,9 +29,9 @@ class Gomoku:
         # Check to see if it is the turn of the player setting the piece
         if red != self.reds_turn:
             if red:
-                raise ValueError("Trying to set a {0}RED{2} piece when it is {1}BLUE{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END))
+                raise ValueError("Trying to set a {0}{3[0]}{2} piece when it is {1}{3[1]}{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END, players))
             elif not red:
-                raise ValueError("Trying to set a {1}BLUE{2} piece when it is {0}RED{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END))
+                raise ValueError("Trying to set a {1}{3[1]}{2} piece when it is {0}{3[0]}{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END, players))
 
         # If setting a red piece and it is red's turn
         if red and self.reds_turn:
@@ -37,7 +39,7 @@ class Gomoku:
             # Set the position's char to the next red char and its color to "RED"
             # Switch the turn
             pos.char = self.curr_char
-            pos.color = "RED"
+            pos.color = players[0]
             self.reds_turn = False
 
         # Else if setting a blue piece and it is blue's turn
@@ -46,10 +48,32 @@ class Gomoku:
             # Set the position's char to the next blue char and its color to "BLUE"
             # Switch the turn
             pos.char = self.curr_char.upper()
-            pos.color = "BLUE"
+            pos.color = players[1]
             self.curr_char = chr(ord(self.curr_char) + 1)
             self.reds_turn = True
         return False
+
+    ## Parses the board and populates a dictionary specifying how many of each
+    #   type of pattern is present on the current board.
+    def getPatterns(self):
+        # Initializes the dictionary { (player, numberOfStonesInARow, Open/Closed) : 0 }
+        patterns = { (p,num,closed):0 for p in [players[0],players[1]] \
+                                for num in range(2,6) for closed1 in [True,False] }
+
+        # Right, down, diag-right-up, diag-right-down
+        directions = [(1,0),(0,1),(1,-1),(1,1)]
+
+        def outOfBounds(self, pos):
+            return pos[0] < 0 or pos[0] >= self.dim or pos[1] < 0 or pos[1] >= self.dim
+
+        def nextPosition(self, pos, direction):
+            nextPos = (pos[0] + direction[0], pos[1] + direction[1])
+            return nextPos if not outOfBounds(nextPos) else None
+
+        for player in players:
+            for direction in directions:
+                for num in range(2,6):
+                    
 
     ## Prints the state of the game to standard out
     def printBoard(self):
