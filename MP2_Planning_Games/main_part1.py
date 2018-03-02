@@ -10,7 +10,7 @@ widgets = [Widget(i) for i in recipes]
 
 # print(widgets)
 
-# print(helper.lcsOf5List(recipes))
+# print(helper.lcsOf5List(recipes, True))
 
 distances = { "A": {"B": 1064,
                     "C": 673,
