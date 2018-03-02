@@ -4,12 +4,12 @@ HELPER FUNCTIONS GO IN THIS FILE!
 
 ## Takes in a list of 5 strings as one parameter and finds the Longest Common
 #   Subsequence of those strings
-def lcsOf5List(strings):
+def lcsOf5List(strings, printL=False):
     X, Y, Z, T, U = strings
-    return lcsOf5(X, Y, Z, T, U)
+    return lcsOf5(X, Y, Z, T, U, printL)
 
 ## Finds the length of the Longest Common Subsequence for 5 strings
-def lcsOf5(X, Y, Z, T, U):
+def lcsOf5(X, Y, Z, T, U, printL=False):
     a, b, c, d, e = len(X), len(Y), len(Z), len(T), len(U)
 
     L = [[[[[0 for i in range(e+1)] for j in range(d+1)]
@@ -33,5 +33,14 @@ def lcsOf5(X, Y, Z, T, U):
                             L[i][j][k][l][m] = max(max(max(
                             max(L[i-1][j][k][l][m], L[i][j-1][k][l][m]),
                             L[i][j][k-1][l][m]), L[i][j][k][l-1][m]), L[i][j][k][l][m-1])
+
+    # Prints the state of the L matrix before returning
+    if printL:
+        for i in range(len(L)):
+            print("\n-------------- {0} --------------\n".format(i))
+            for j in range(len(L[0])):
+                for k in range(len(L[0][0])):
+                    print(k, L[i][j][k])
+                print("\n")
 
     return L[a][b][c][d][e]
