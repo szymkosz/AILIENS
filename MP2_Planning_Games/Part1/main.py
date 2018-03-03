@@ -1,8 +1,14 @@
-from widget import Widget
+#from widget import Widget
+import search
 import helper
 
-recipes = ["AEDCA", "BEACD", "BABCE", "DADBD", "BECBD"]
-widgets = [Widget(i) for i in recipes]
+#recipes = ["AEDCA", "BEACD", "BABCE", "DADBD", "BECBD"]
+recipes = ["AD", "AD", "AD", "BD", "BD"]
+letters = ["A", "B", "C", "D", "E"]
+
+search.AStar_MinStops(recipes, letters)
+
+#widgets = [Widget(i) for i in recipes]
 
 # # Checks random widget generator
 # for i in range(len(widgets) * 3):

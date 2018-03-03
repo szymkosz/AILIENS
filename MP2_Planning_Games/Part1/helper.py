@@ -50,6 +50,9 @@ def lcsOf5(X, Y, Z, T, U, printL=False):
 
     return L[a][b][c][d][e]
 
+def scsOf5List(strings, printL=False):
+    return sum([len(string) for string in strings]) - lcsOf5List(strings, printL)
+
 
 """
 -------------------------------------------------------------------------------
