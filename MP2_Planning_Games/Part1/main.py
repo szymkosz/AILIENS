@@ -17,6 +17,11 @@ import sys
 import search
 import helper
 
+# Initialize the given recipes and the letters that can be used to form recipes
+recipes = ["AEDCA", "BEACD", "BABCE", "DADBD", "BECBD"]
+#recipes = ["AD", "AD", "AD", "BD", "BD"]
+letters = ["A", "B", "C", "D", "E"]
+
 # Initialize a dictionary of dictionaries to retrieve pairwise distances
 # between locations
 distances = { "A": {"B": 1064,
@@ -40,10 +45,7 @@ distances = { "A": {"B": 1064,
                     "C": 399,
                     "D": 387}}
 
-# Initialize the given recipes and the letters that can be used to form recipes
-recipes = ["AEDCA", "BEACD", "BABCE", "DADBD", "BECBD"]
-#recipes = ["AD", "AD", "AD", "BD", "BD"]
-letters = ["A", "B", "C", "D", "E"]
+shortestPaths = helper.computeShortestPaths(distances, letters)
 
 
 if __name__ == "__main__":
@@ -54,40 +56,26 @@ if __name__ == "__main__":
     assert len(sys.argv) == 3 or len(sys.argv) == 4, incorrectUsageError
 
     if len(sys.argv) == 4:
-        N = sys.argv[3]
-        recipes = ?
+        N = int(sys.argv[3])
+        recipes = helper.generateWidgets(N, letters)
 
     if sys.argv[1] == "stops":
         if sys.argv[2] == "A*" or sys.argv[2] == "Astar" or sys.argv[2] == "AStar":
+            print("Widgets: " + str(recipes))
             search.AStar_MinStops(recipes, letters)
         elif sys.argv[2] == "ucs" or sys.argv[2] == "UCS":
+            print("Widgets: " + str(recipes))
             search.UCS_MinStops(recipes, letters)
         else:
             sys.exit("AlgorithmNotRecognizedError: Is the algorithm spelled correctly?")
 
     elif sys.argv[1] == "distance":
-        preprocessedRecipes = []
-        startFactory = "B"
-
-        for recipe in recipes:
-            newRecipe = None
-
-            if len(recipe) == 0:
-                newRecipe = ""
-            elif recipe[0] == startFactory:
-                if len(recipe) == 1:
-                    newRecipe = ""
-                else:
-                    newRecipe = recipe[1:]
-            else:
-                newRecipe = recipe[0:]
-
-            preprocessedRecipes.append(newRecipe)
-
         if sys.argv[2] == "A*" or sys.argv[2] == "Astar" or sys.argv[2] == "AStar":
-            search.AStar_MinDistance(preprocessedRecipes, startFactory, distances, letters)
+            print("Widgets: " + str(recipes))
+            search.AStar_MinDistance(recipes, distances, shortestPaths, letters)
         elif sys.argv[2] == "ucs" or sys.argv[2] == "UCS":
-            search.UCS_MinDistance(preprocessedRecipes, startFactory, distances, letters)
+            print("Widgets: " + str(recipes))
+            search.UCS_MinDistance(recipes, distances, shortestPaths, letters)
         else:
             sys.exit("AlgorithmNotRecognizedError: Is the algorithm spelled correctly?")
     else:

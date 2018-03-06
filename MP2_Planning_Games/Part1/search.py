@@ -12,9 +12,7 @@ EACH PROBLEM INSTANCE AND SEARCH ALGORITHM MUST RETURN THE FOLLOWING:
 """
 
 # Import all the necessary packages
-import widget
 import node
-
 import heapq
 import helper
 
@@ -35,28 +33,21 @@ PART 1.1 STARTS HERE!
 #
 # The heuristic h(n) is computed as
 def AStar_MinStops(recipes, letters):
-    # Initialize the frontier (represented as a priority queue)
-    # and identify the start and goal Nodes
+    # Initialize the frontier (represented as a priority queue), identify
+    # the goal Node, and initialize a counter for breaking ties in the frontier
     frontier = []
     start = node.Node(list(recipes), "")
     goal = None
 
-    # Mark the start with a cost of 0, compute its heuristic, initialize a counter
-    # for breaking ties in the frontier, and add the start to the frontier
-    startCost = 0
-    startHeuristic = helper.scsOf5List(recipes)
-    counter = 1
-    heapq.heappush(frontier, (startCost + startHeuristic, counter, start))
+    helper.addNeighborsToFrontier(start, frontier, letters, True, helper.stopHeuristic)
 
     # Initialize a counter to count the number of nodes that get expanded
-    expandedNodes = 0
+    expandedNodes = 1
 
     while len(frontier) > 0:
         # Remove node from frontier
         curNode = heapq.heappop(frontier)[2]
         expandedNodes += 1
-        print(curNode.remainingRecipes)
-        print(curNode.progress)
 
         # Check if the removed node is the goal state
         # (check if there are no components left to build in any recipe)
@@ -73,37 +64,7 @@ def AStar_MinStops(recipes, letters):
             goal = curNode
             break
 
-        for letter in letters:
-            newRemainingRecipes = []
-            isNewState = False
-
-            for recipe in curNode.remainingRecipes:
-                newRecipe = None
-
-                if len(recipe) == 0:
-                    newRecipe = ""
-                elif recipe[0] == letter:
-                    isNewState = True
-
-                    if len(recipe) == 1:
-                        newRecipe = ""
-                    else:
-                        newRecipe = recipe[1:]
-                else:
-                    newRecipe = recipe[0:]
-
-                newRemainingRecipes.append(newRecipe)
-
-            if isNewState:
-                newNode = node.Node(newRemainingRecipes, curNode.progress + letter)
-
-                print("New Node:")
-                newCost = len(newNode.progress)
-                print(newCost)
-                newHeuristic = helper.scsOf5List(newNode.remainingRecipes)
-                print(newHeuristic)
-                counter += 1
-                heapq.heappush(frontier, (newCost + newHeuristic, counter, newNode))
+        helper.addNeighborsToFrontier(curNode, frontier, letters, True, helper.stopHeuristic)
 
     print("Optimal Solution: " + goal.progress)
     print("Minimum Number of Stops: " + str(len(goal.progress)))
@@ -120,30 +81,30 @@ def AStar_MinStops(recipes, letters):
 # h(n) = estimated cost from n to goal state (heuristic)
 #
 # The heuristic h(n) is computed as
-def AStar_MinDistance(recipes, startFactory, distances, letters):
+def AStar_MinDistance(recipes, distances, shortestPaths, letters):
     # Initialize the frontier (represented as a priority queue),
     # the true path cost, and identify the start and goal Nodes
     frontier = []
-    start = node.Node(list(recipes), startFactory)
+    start = node.Node(list(recipes), "")
     goal = None
     trueCost = float("inf")
 
-    # Mark the start with a cost of 0, initialize a counter for breaking ties
-    # in the frontier, and add the start to the frontier
-    startCost = 0
-    startHeuristic = ?
-    counter = 1
-    heapq.heappush(frontier, (startCost + startHeuristic, counter, start))
+    helper.addNeighborsToFrontier(start, frontier, letters, False, helper.distanceHeuristic, distances, shortestPaths)
 
-    # Initialize a counter to count the number of nodes that get expanded
-    expandedNodes = 0
+    # Initialize a counter to count the number of nodes that get expanded.
+    # This counter includes picking the starting factory for the sequence.
+    expandedNodes = 1
 
     while len(frontier) > 0:
         # Remove node from frontier
         tup = heapq.heappop(frontier)
-        curCost = tup[0]
-        curNode = tup[2]
+        curPathCost = tup[2]
+        curNode = tup[3]
         expandedNodes += 1
+
+        curLetter = ""
+        if len(curNode.progress) >= 1:
+            curLetter = curNode.progress[-1]
 
         # Check if the removed node is the goal state
         # (check if there are no components left to build in any recipe)
@@ -157,38 +118,11 @@ def AStar_MinDistance(recipes, startFactory, distances, letters):
         # It should be okay to end the search here because the nodes were
         # expanded in order of increasing path cost.
         if isGoalNode:
-            trueCost = curCost
+            trueCost = curPathCost
             goal = curNode
             break
 
-        for letter in letters:
-            newRemainingRecipes = []
-            isNewState = False
-
-            for recipe in curNode.remainingRecipes:
-                newRecipe = None
-
-                if len(recipe) == 0:
-                    newRecipe = ""
-                elif recipe[0] == letter:
-                    isNewState = True
-
-                    if len(recipe) == 1:
-                        newRecipe = ""
-                    else:
-                        newRecipe = recipe[1:]
-                else:
-                    newRecipe = recipe[0:]
-
-                newRemainingRecipes.append(newRecipe)
-
-            if isNewState:
-                newNode = node.Node(newRemainingRecipes, curNode.progress + letter)
-
-                newCost = curCost + distances[curNode.progress[-1]][letter]
-                newHeuristic = ?
-                counter += 1
-                heapq.heappush(frontier, (newCost + newHeuristic, counter, newNode))
+        helper.addNeighborsToFrontier(curNode, frontier, letters, False, helper.distanceHeuristic, distances, shortestPaths, curPathCost, curLetter)
 
     print("Optimal Solution: " + goal.progress)
     print("Minimum Distance: " + str(trueCost))
@@ -207,20 +141,16 @@ PART 1.3 STARTS HERE!
 # min Priority Queue where the priority g(n) of a node n is the cost so far to
 # reach n (path cost).
 def UCS_MinStops(recipes, letters):
-    # Initialize the frontier (represented as a priority queue)
-    # and identify the start and goal Nodes
+    # Initialize the frontier (represented as a priority queue), identify
+    # the goal Node, and initialize a counter for breaking ties in the frontier
     frontier = []
     start = node.Node(list(recipes), "")
     goal = None
 
-    # Mark the start with a cost of 0, initialize a counter for breaking ties
-    # in the frontier, and add the start to the frontier
-    startCost = 0
-    counter = 1
-    heapq.heappush(frontier, (startCost, counter, start))
+    helper.addNeighborsToFrontier(start, frontier, letters, True)
 
     # Initialize a counter to count the number of nodes that get expanded
-    expandedNodes = 0
+    expandedNodes = 1
 
     while len(frontier) > 0:
         # Remove node from frontier
@@ -236,39 +166,13 @@ def UCS_MinStops(recipes, letters):
                 break
 
         # If the removed node is the goal state, end the search.
-        # It should be okay to end the search here because the nodes were
-        # expanded in order of increasing path cost.
+        # It should be okay to end the search here because the
+        # heuristic is admissable and consistent.
         if isGoalNode:
             goal = curNode
             break
 
-        for letter in letters:
-            newRemainingRecipes = []
-            isNewState = False
-
-            for recipe in curNode.remainingRecipes:
-                newRecipe = None
-
-                if len(recipe) == 0:
-                    newRecipe = ""
-                elif recipe[0] == letter:
-                    isNewState = True
-
-                    if len(recipe) == 1:
-                        newRecipe = ""
-                    else:
-                        newRecipe = recipe[1:]
-                else:
-                    newRecipe = recipe[0:]
-
-                newRemainingRecipes.append(newRecipe)
-
-            if isNewState:
-                newNode = node.Node(newRemainingRecipes, curNode.progress + letter)
-
-                newCost = len(newNode.progress)
-                counter += 1
-                heapq.heappush(frontier, (newCost, counter, newNode))
+        helper.addNeighborsToFrontier(curNode, frontier, letters, True)
 
     print("Optimal Solution: " + goal.progress)
     print("Minimum Number of Stops: " + str(len(goal.progress)))
@@ -280,29 +184,30 @@ def UCS_MinStops(recipes, letters):
 # In uniform cost search, unexpanded nodes on the frontier are sorted with a
 # min Priority Queue where the priority g(n) of a node n is the cost so far to
 # reach n (path cost).
-def UCS_MinDistance(recipes, startFactory, distances, letters):
+def UCS_MinDistance(recipes, distances, shortestPaths, letters):
     # Initialize the frontier (represented as a priority queue),
     # the true path cost, and identify the start and goal Nodes
     frontier = []
-    start = node.Node(list(recipes), startFactory)
+    start = node.Node(list(recipes), "")
     goal = None
     trueCost = float("inf")
 
-    # Mark the start with a cost of 0, initialize a counter for breaking ties
-    # in the frontier, and add the start to the frontier
-    startCost = 0
-    counter = 1
-    heapq.heappush(frontier, (startCost, counter, start))
+    helper.addNeighborsToFrontier(start, frontier, letters, False, None, distances, shortestPaths)
 
-    # Initialize a counter to count the number of nodes that get expanded
-    expandedNodes = 0
+    # Initialize a counter to count the number of nodes that get expanded.
+    # This counter includes picking the starting factory for the sequence.
+    expandedNodes = 1
 
     while len(frontier) > 0:
         # Remove node from frontier
         tup = heapq.heappop(frontier)
-        curCost = tup[0]
-        curNode = tup[2]
+        curPathCost = tup[2]
+        curNode = tup[3]
         expandedNodes += 1
+
+        curLetter = ""
+        if len(curNode.progress) >= 1:
+            curLetter = curNode.progress[-1]
 
         # Check if the removed node is the goal state
         # (check if there are no components left to build in any recipe)
@@ -316,37 +221,11 @@ def UCS_MinDistance(recipes, startFactory, distances, letters):
         # It should be okay to end the search here because the nodes were
         # expanded in order of increasing path cost.
         if isGoalNode:
-            trueCost = curCost
+            trueCost = curPathCost
             goal = curNode
             break
 
-        for letter in letters:
-            newRemainingRecipes = []
-            isNewState = False
-
-            for recipe in curNode.remainingRecipes:
-                newRecipe = None
-
-                if len(recipe) == 0:
-                    newRecipe = ""
-                elif recipe[0] == letter:
-                    isNewState = True
-
-                    if len(recipe) == 1:
-                        newRecipe = ""
-                    else:
-                        newRecipe = recipe[1:]
-                else:
-                    newRecipe = recipe[0:]
-
-                newRemainingRecipes.append(newRecipe)
-
-            if isNewState:
-                newNode = node.Node(newRemainingRecipes, curNode.progress + letter)
-
-                newCost = curCost + distances[curNode.progress[-1]][letter]
-                counter += 1
-                heapq.heappush(frontier, (newCost, counter, newNode))
+        helper.addNeighborsToFrontier(curNode, frontier, letters, False, None, distances, shortestPaths, curPathCost, curLetter)
 
     print("Optimal Solution: " + goal.progress)
     print("Minimum Distance: " + str(trueCost))
