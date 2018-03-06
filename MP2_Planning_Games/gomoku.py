@@ -63,7 +63,8 @@ class Gomoku:
         # Initializes the dictionary { (player, numberOfStonesInARow, Open/Closed) : 0 }
         patterns = { (p,num,closed):0 for p in [players[0],players[1]] \
                                 for num in range(minStones,maxStones+1) for closed in [True,False] }
-        patternStartingPos = patterns.copy()
+        patternStartingPos = { (p,num,closed):[] for p in [players[0],players[1]] \
+                                for num in range(minStones,maxStones+1) for closed in [True,False] }
 
         # Right, down, diag-right-up, diag-right-down
         directions = [(1,0),(0,1),(1,-1),(1,1)]
@@ -71,8 +72,11 @@ class Gomoku:
         def outOfBounds(self, pos):
             return pos[0] < 0 or pos[0] >= self.dim or pos[1] < 0 or pos[1] >= self.dim
 
-        def nextPosition(self, pos, direction):
-            nextPos = (pos[0] + direction[0], pos[1] + direction[1])
+        def nextPosition(self, pos, direction, reverse=False):
+            if reverse:
+                nextPos = (pos[0] - direction[0], pos[1] - direction[1])
+            else:
+                nextPos = (pos[0] + direction[0], pos[1] + direction[1])
             return nextPos if not outOfBounds(nextPos) else None
 
         def findPattern(self, pattern, pos, direction):
@@ -81,10 +85,28 @@ class Gomoku:
             exists = False
             count = 0
             # self.board[pos[0]][pos[1]].color == player
+
+            # Check if this position begins the pattern (player's piece is not
+            #  the piece before it)
+            prevPos = nextPosition(pos, direction, True)
+            startsPattern = (prevPos not None) and (prevPos.color != player)
+            if not startsPattern:
+                return False
+
+            # Check if pattern is present (with potential overlap)
             for i in range(num):
                 nextPos = self.nextPosition(curPos, direction)
                 if self.board[curPos[0]][curPos[1]].color != player:
                     return False
+                curPos = nextPos
+
+            # Check if the position is open or closed
+            if closed:
+                if (prevPos not None and prevPos.color == None) \
+                    or (curPos not None and curPos.color == None):
+                    return False
+
+            return True
 
 
 
