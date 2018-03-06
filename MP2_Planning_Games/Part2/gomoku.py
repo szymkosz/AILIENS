@@ -14,7 +14,7 @@ class Gomoku:
         self.curr_char = 'a'
         self.dim = dim
         self.reds_turn = True       # Red always starts
-        self.board = [ [ Position() for i in range(dim) ] for i in range(dim) ]
+        self.board = [ [ Position() for i in range(dim) ] for j in range(dim) ]
 
     ## Sets the next piece at the desired coordinates (x,y).
     #   @param red - flag indicating the color of the piece to set
@@ -58,63 +58,122 @@ class Gomoku:
     ## Parses the board and populates a dictionary specifying how many of each
     #   type of pattern is present on the current board.
     def getPatterns(self):
-        minStones = 1
+        ## Can only check if patterns of >2 are open or closed
+        minStones = 2
         maxStones = 5
+
         # Initializes the dictionary { (player, numberOfStonesInARow, Open/Closed) : 0 }
         patterns = { (p,num,closed):0 for p in [players[0],players[1]] \
                                 for num in range(minStones,maxStones+1) for closed in [True,False] }
         patternStartingPos = { (p,num,closed):[] for p in [players[0],players[1]] \
                                 for num in range(minStones,maxStones+1) for closed in [True,False] }
 
+        # Add dictionary key to include winning block search
+        for closed in [True, False]:
+            patterns[ (None, 5, closed) ] = 0
+            patternStartingPos[ (None, 5, closed) ] = []
+
         # Right, down, diag-right-up, diag-right-down
         directions = [(1,0),(0,1),(1,-1),(1,1)]
 
-        def outOfBounds(self, pos):
+        def outOfBounds(pos):
             return pos[0] < 0 or pos[0] >= self.dim or pos[1] < 0 or pos[1] >= self.dim
 
-        def nextPosition(self, pos, direction, reverse=False):
+        def nextPosition(pos, direction, reverse=False, length=1):
             if reverse:
-                nextPos = (pos[0] - direction[0], pos[1] - direction[1])
+                nextPos = (pos[0] - length * direction[0], pos[1] - length * direction[1])
             else:
-                nextPos = (pos[0] + direction[0], pos[1] + direction[1])
+                nextPos = (pos[0] + length * direction[0], pos[1] + length * direction[1])
             return nextPos if not outOfBounds(nextPos) else None
 
-        def findPattern(self, pattern, pos, direction):
+        def findPattern(pattern, pos, direction):
             player, num, closed = pattern
             curPos = pos
-            exists = False
-            count = 0
-            # self.board[pos[0]][pos[1]].color == player
+
+            # If player == None, we are looking for winning blocks
+            winningBlockSearch = player == None
 
             # Check if this position begins the pattern (player's piece is not
             #  the piece before it)
-            prevPos = nextPosition(pos, direction, True)
-            startsPattern = (prevPos not None) and (prevPos.color != player)
-            if not startsPattern:
+            prevPos = nextPosition(pos, direction, reverse=True)
+            startsPattern = (prevPos == None) or (self.board[prevPos[0]][prevPos[1]].color != player)
+
+            # Check if the number of stones required is within bounds
+            endPos = nextPosition(pos, direction, reverse=False, length=num-1)
+            endPosOOB = endPos == None
+
+            # If it is not the pattern-starting stone or the ending stone would
+            #  be out of bounds, return False
+            if (not startsPattern and not winningBlockSearch) or endPosOOB:
+                return False
+
+            onePosPast = nextPosition(endPos, direction)
+            if (onePosPast != None and self.board[onePosPast[0]][onePosPast[1]].color == player) and not (winningBlockSearch):
                 return False
 
             # Check if pattern is present (with potential overlap)
             for i in range(num):
-                nextPos = self.nextPosition(curPos, direction)
+                # nextPos = nextPosition(curPos, direction)
                 if self.board[curPos[0]][curPos[1]].color != player:
                     return False
-                curPos = nextPos
+                curPos = nextPosition(curPos, direction)
+
+            # if not winningBlockSearch:
+            #     if startsPattern and prevPos is not None:
+            #         print("\nPlayer: ", player)
+            #         print("Num: ", num)
+            #         print("Direction: ", direction)
+            #         print("Current Position: ", pos)
+            #         print("Prev Pos: ", prevPos)
+            #         print("End Pos: ", endPos )
+            #         print("End+1 Pos: ", onePosPast)
+            #         print("\tcurPos color: ", self.board[pos[0]][pos[0]].color)
+            #         print("\tprevPos color: ", self.board[prevPos[0]][prevPos[1]].color)
+            #         print("\tendPos color: ", self.board[endPos[0]][endPos[1]].color)
+            #         print("\tonePosPast color: ", self.board[onePosPast[0]][onePosPast[1]].color)
+            #         if closed:
+            #             if (prevPos is not None and self.board[prevPos[0]][prevPos[1]].color == None) \
+            #                 or (curPos is not None and self.board[curPos[0]][curPos[1]].color == None):
+            #                 print("\t\tSupposed to be closed and not added")
+            #         print()
 
             # Check if the position is open or closed
-            if closed:
-                if (prevPos not None and prevPos.color == None) \
-                    or (curPos not None and curPos.color == None):
-                    return False
+            # if closed:
+            #     if (prevPos is not None and self.board[prevPos[0]][prevPos[1]].color == None) \
+            #         or (curPos is not None and self.board[curPos[0]][curPos[1]].color == None):
+            #         return False
+            # elif not closed:
+            #     if (prevPos is not None and self.board[prevPos[0]][prevPos[1]].color != None) \
+            #         and (curPos is not None and self.board[curPos[0]][curPos[1]].color != None):
+            #         return False
 
             return True
 
+        for x in range(self.dim):
+            for y in range(self.dim):
+                curPos = (x,y)
+                for direction in directions:
+                    for closed in [True, False]:
+                    # for closed in [False]:
+                        for player in players:
+                            for num in range(minStones, maxStones+1):
+                                if findPattern((player, num, closed), curPos, direction):
+                                    patterns[(player, num, closed)] += 1
+                                    if curPos not in (patternStartingPos[(player, num, closed)]):
+                                        patternStartingPos[(player, num, closed)].append(curPos)
+                                    # if player == "BLUE" and num == 2:
+                                    #     print("\n\tBLUE, 2!")
+                                    #     print("\t", patterns[(player, num, closed)])
+                                    #     print("\tcurPos: ", curPos)
+                                    #     print("\tdirection: ", direction)
+                                    #     print("\tclosed: ", closed)
+                                    #     print("\n\n")
+                        if findPattern((None, 5, closed), curPos, direction):
+                            patterns[(None, 5, closed)] += 1
+                            if curPos not in (patternStartingPos[(None, 5, closed)]):
+                                patternStartingPos[(None, 5, closed)].append(curPos)
 
-
-
-
-        for player in players:
-            for direction in directions:
-                for num in range(2,6):
+        return (patterns, patternStartingPos)
 
 
     ## Prints the state of the game to standard out
@@ -127,18 +186,19 @@ class Gomoku:
 
     ## Returns the state of the game as a single string
     def __str__(self):
+        zeroIndexed = True
         ret = ""
         board = self.board
 
         ## Numbers along top
-        ret += "  " + ' '.join(str(i+1) for i in range(self.dim)) + "\n"
+        ret += "  " + ' '.join(str(i+int(not zeroIndexed)) for i in range(self.dim)) + "\n"
         for i in range(self.dim):
-            ## First row is top row
-            ret += str(i+1) + " " + ' '.join(n[i].__repr__() for n in board) + "\n"
+            # First row is top row
+            ret += str(i+int(not zeroIndexed)) + " " + ' '.join(n[i].__repr__() for n in board) + "\n"
 
-            ## First row is bottom row
-            # ret += str(len(board) - i) + " " + ' '.join(n[i].__repr__() for n in board) + "\n"
+            # First row is bottom row
+            # ret += str(len(board) - i - int(zeroIndexed)) + " " + ' '.join(n[i].__repr__() for n in board) + "\n"
 
         ## Numbers along bottom
-        # ret += "  " + ' '.join(str(i+1) for i in range(self.dim)) + "\n"
+        # ret += "  " + ' '.join(str(i+int(not zeroIndexed)) for i in range(self.dim)) + "\n"
         return ret
