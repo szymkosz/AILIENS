@@ -62,14 +62,16 @@ class Gomoku:
         minStones = 2
         maxStones = 5
 
+        possibleClosed = [True, False]
+
         # Initializes the dictionary { (player, numberOfStonesInARow, Open/Closed) : 0 }
         patterns = { (p,num,closed):0 for p in [players[0],players[1]] \
-                                for num in range(minStones,maxStones+1) for closed in [True,False] }
+                                for num in range(minStones,maxStones+1) for closed in possibleClosed }
         patternStartingPos = { (p,num,closed):[] for p in [players[0],players[1]] \
-                                for num in range(minStones,maxStones+1) for closed in [True,False] }
+                                for num in range(minStones,maxStones+1) for closed in possibleClosed }
 
         # Add dictionary key to include winning block search
-        for closed in [True, False]:
+        for closed in possibleClosed:
             patterns[ (None, 5, closed) ] = 0
             patternStartingPos[ (None, 5, closed) ] = []
 
@@ -147,31 +149,73 @@ class Gomoku:
             #         and (curPos is not None and self.board[curPos[0]][curPos[1]].color != None):
             #         return False
 
+            # If looking for an open pattern, return False. This will get
+            #  populated by another function
+            if not closed:
+                return False
+
             return True
+
+        # Takes in each pattern and checks if a win is still possible in that
+        def patternIsOpen(pattern, pos, direction):
+            player, num, closed = pattern
+            # curCoord = pos
+            curCoord = nextPosition(pos, direction, length=num)
+            prevCoord = nextPosition(pos, direction, reverse=True)
+            if curCoord != None:
+                curPos = self.board[curCoord[0]][curCoord[1]]
+            if prevCoord != None:
+                prevPos = self.board[prevCoord[0]][prevCoord[1]]
+
+            spotsNecessary = 5 - num
+            count = 0
+            isOpen = False
+
+            # Check forward direction
+            while (count < spotsNecessary):
+                if curCoord != None and (curPos.color == player or curPos.color == None):
+                    curPos = self.board[curCoord[0]][curCoord[1]]
+                    count += 1
+                    curCoord = nextPosition(curCoord, direction)
+                else:
+                    break
+
+            # Check reverse direction
+            while (count < spotsNecessary):
+                if prevCoord != None and (prevPos.color == player or prevPos.color == None):
+                    prevPos = self.board[prevCoord[0]][prevCoord[1]]
+                    count += 1
+                    prevCoord = nextPosition(prevCoord, direction, reverse=True)
+                else:
+                    break
+
+            if count >= spotsNecessary:
+                isOpen = True
+            return isOpen
+
 
         for x in range(self.dim):
             for y in range(self.dim):
                 curPos = (x,y)
                 for direction in directions:
-                    for closed in [True, False]:
+                    for closed in possibleClosed:
                     # for closed in [False]:
                         for player in players:
                             for num in range(minStones, maxStones+1):
                                 if findPattern((player, num, closed), curPos, direction):
                                     patterns[(player, num, closed)] += 1
-                                    if curPos not in (patternStartingPos[(player, num, closed)]):
-                                        patternStartingPos[(player, num, closed)].append(curPos)
-                                    # if player == "BLUE" and num == 2:
-                                    #     print("\n\tBLUE, 2!")
-                                    #     print("\t", patterns[(player, num, closed)])
-                                    #     print("\tcurPos: ", curPos)
-                                    #     print("\tdirection: ", direction)
-                                    #     print("\tclosed: ", closed)
-                                    #     print("\n\n")
+                                    if (curPos, direction) not in (patternStartingPos[(player, num, closed)]):
+                                        patternStartingPos[(player, num, closed)].append((curPos, direction))
+                                    if patternIsOpen((player, num, closed), curPos, direction):
+                                        patterns[(player, num, False)] += 1
+                                        patterns[(player, num, closed)] -= 1
+                                        if (curPos, direction) not in (patternStartingPos[(player, num, False)]):
+                                            patternStartingPos[(player, num, False)].append((curPos, direction))
+                                            patternStartingPos[(player, num, True)].remove((curPos, direction))
                         if findPattern((None, 5, closed), curPos, direction):
                             patterns[(None, 5, closed)] += 1
-                            if curPos not in (patternStartingPos[(None, 5, closed)]):
-                                patternStartingPos[(None, 5, closed)].append(curPos)
+                            if (curPos, direction) not in (patternStartingPos[(None, 5, closed)]):
+                                patternStartingPos[(None, 5, closed)].append((curPos, direction))
 
         return (patterns, patternStartingPos)
 
