@@ -77,20 +77,23 @@ print(game)
 
 directions = [(1,0),(0,1),(1,-1),(1,1)]
 
-def outOfBounds(self, pos):
-	return pos[0] < 0 or pos[0] >= self.dim or pos[1] < 0 or pos[1] >= self.dim
+def outOfBounds(pos):
+	return pos[0] < 0 or pos[0] >= game.dim or pos[1] < 0 or pos[1] >= game.dim
 
-def nextPosition(self, pos, direction, reverse=False, length=1):
+def nextPosition(pos, direction, reverse=False, length=1):
 	if reverse:
 		nextPos = (pos[0] - length * direction[0], pos[1] - length * direction[1])
 	else:
 		nextPos = (pos[0] + length * direction[0], pos[1] + length * direction[1])
-	return nextPos if not self.outOfBounds(nextPos) else None
+	return nextPos if not outOfBounds(nextPos) else None
 
+# print(nextPosition((2,2),(1,0),reverse=True, length=2))
 patterns = game.getPatterns()
 # for pattern in patterns[0]:
 # 	print(pattern, patterns[0][pattern])
 for pattern in patterns[1]:
 	print(pattern, patterns[1][pattern])
+for pattern in patterns[2]:
+	print(pattern, patterns[2][pattern])
 # for direction in directions:
 # 	print(nextPosition(game,(3,4),direction))
