@@ -21,10 +21,12 @@ where:
 """
 
 from gomoku import Gomoku
-import time
-import agents
+import time, sys
+from Agents.agent import Agent
 
 game = Gomoku()
+
+a = Agent().getMoves()
 
 print(game)
 
@@ -89,11 +91,17 @@ def nextPosition(pos, direction, reverse=False, length=1):
 
 # print(nextPosition((2,2),(1,0),reverse=True, length=2))
 patterns = game.getPatterns()
-# for pattern in patterns[0]:
-# 	print(pattern, patterns[0][pattern])
-for pattern in patterns[1]:
-	print(pattern, patterns[1][pattern])
-for pattern in patterns[2]:
-	print(pattern, patterns[2][pattern])
+
+print ("\n\nFIRST DICTIONARY\n\n")
+for pattern in patterns[0]:
+	print(pattern, patterns[0][pattern])
+# print ("\n\nSECOND DICTIONARY\n\n")
+# for pattern in patterns[1]:
+# 	print(pattern, patterns[1][pattern])
+# print ("\n\nTHIRD DICTIONARY\n\n")
+# for pattern in patterns[2]:
+# 	print(pattern, patterns[2][pattern])
 # for direction in directions:
 # 	print(nextPosition(game,(3,4),direction))
+
+# print(sys.path)

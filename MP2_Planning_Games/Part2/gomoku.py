@@ -1,6 +1,5 @@
 import sys
 from position import Position
-
 from operator import itemgetter
 
 ## Used for formatting standard output
@@ -17,14 +16,15 @@ class Gomoku:
         self.dim = dim
         self.reds_turn = True       # Red always starts
         self.board = [ [ Position() for i in range(dim) ] for j in range(dim) ]
+        self.emptySquares = [ (x,y) for x in range(dim) for y in range(dim) ]
 
     ## Sets the next piece at the desired coordinates (x,y).
-    #   @param red - flag indicating the color of the piece to set
+    #   @param settingRed - flag indicating the color of the piece to set
     #                True (1) for RED; False (0) for BLUE
     def setPiece(self, x, y, settingRed):
         pos = self.board[x][y]
 
-        # If the piece at (x,y) is empty
+        # If the piece at (x,y) is not empty
         if pos.char != '.':
             raise ValueError("Trying to set a piece in a non-empty position, char: " + str(pos.char))
 
@@ -54,6 +54,7 @@ class Gomoku:
             self.curr_char = chr(ord(self.curr_char) + 1)
             self.reds_turn = True
 
+        self.emptySquares.remove((x,y))
         ## CHECK IF MOVE WON THE GAME
         patterns = self.getPatterns()
 
@@ -162,7 +163,7 @@ class Gomoku:
 
             return True
 
-        # Takes in each pattern and checks if a win is still possible in that
+        # Takes in each pattern and checks if a win is still possible in that block
         def patternIsOpen(pattern, pos, direction):
             player, num, closed = pattern
             curCoord = nextPosition(pos, direction, length=num)
@@ -253,14 +254,15 @@ class Gomoku:
                                 if findPattern((player, num, closed), curPos, direction):
                                     patterns[(player, num, closed)] += 1
                                     if (curPos, direction) not in (patternStartingPos[(player, num, closed)]):
-                                        patternStartingPos[(player, num, closed)].append((curPos, direction))
+                                        endPos = nextPosition(curPos, direction, length=num-1)
+                                        patternStartingPos[(player, num, closed)].append((curPos, endPos, direction))
                                     if patternIsOpen((player, num, closed), curPos, direction):
                                         patterns[(player, num, False)] += 1
                                         patterns[(player, num, closed)] -= 1
                                         if (curPos, direction) not in (patternStartingPos[(player, num, False)]):
-                                            patternStartingPos[(player, num, False)].append((curPos, direction))
+                                            patternStartingPos[(player, num, False)].append((curPos, endPos, direction))
                                             patternMovesToComplete[(player,num, False)].append(getMovesToComplete((player, num, closed), curPos, direction))
-                                            patternStartingPos[(player, num, True)].remove((curPos, direction))
+                                            patternStartingPos[(player, num, True)].remove((curPos, endPos, direction))
                         if findPattern((None, 5, closed), curPos, direction):
                             patterns[(None, 5, closed)] += 1
                             if (curPos, direction) not in (patternStartingPos[(None, 5, closed)]):
@@ -284,7 +286,7 @@ class Gomoku:
         board = self.board
 
         ## Numbers along top
-        ret += "  " + ' '.join(str(i+int(not zeroIndexed)) for i in range(self.dim)) + "\n"
+        # ret += "  " + ' '.join(str(i+int(not zeroIndexed)) for i in range(self.dim)) + "\n"
         for i in range(self.dim):
             # First row is top row
             # ret += str(i+int(not zeroIndexed)) + " " + ' '.join(n[i].__repr__() for n in board) + "\n"
@@ -293,5 +295,5 @@ class Gomoku:
             ret += str(len(board) - i - int(zeroIndexed)) + " " + ' '.join(n[self.dim - i - 1].__repr__() for n in board) + "\n"
 
         ## Numbers along bottom
-        # ret += "  " + ' '.join(str(i+int(not zeroIndexed)) for i in range(self.dim)) + "\n"
+        ret += "  " + ' '.join(str(i+int(not zeroIndexed)) for i in range(self.dim)) + "\n"
         return ret
