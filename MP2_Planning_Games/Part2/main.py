@@ -26,7 +26,7 @@ from Agents.agent import Agent
 
 game = Gomoku()
 
-a = Agent().getMoves()
+# a = Agent().getMoves()
 
 print(game)
 

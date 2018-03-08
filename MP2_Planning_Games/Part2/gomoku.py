@@ -16,7 +16,7 @@ class Gomoku:
         self.dim = dim
         self.reds_turn = True       # Red always starts
         self.board = [ [ Position() for i in range(dim) ] for j in range(dim) ]
-        self.emptySquares = [ (x,y) for x in range(dim) for y in range(dim) ]
+        # self.emptySquares = [ (x,y) for x in range(dim) for y in range(dim) ]
 
     ## Sets the next piece at the desired coordinates (x,y).
     #   @param settingRed - flag indicating the color of the piece to set
@@ -54,11 +54,14 @@ class Gomoku:
             self.curr_char = chr(ord(self.curr_char) + 1)
             self.reds_turn = True
 
-        self.emptySquares.remove((x,y))
+        # self.emptySquares.remove((x,y))
         ## CHECK IF MOVE WON THE GAME
         patterns = self.getPatterns()
 
         return patterns[0][(pos.color, 5, True)] > 0 or patterns[0][(pos.color, 5, False)] > 0
+
+    def unsetPiece(self, x, y, unsettingRed):
+        pass
 
     ## Parses the board and populates a dictionary specifying how many of each
     #   type of pattern is present on the current board.
@@ -67,20 +70,20 @@ class Gomoku:
         minStones = 1
         maxStones = 5
 
-        possibleClosed = [True, False]
+        possibleWin = [True, False]
 
         # Initializes the dictionary { (player, numberOfStonesInARow, Open/Closed) : 0 }
-        patterns = { (p,num,closed):0 for p in [Gomoku.players[0],Gomoku.players[1]] \
-                                for num in range(minStones,maxStones+1) for closed in possibleClosed }
-        patternStartingPos = { (p,num,closed):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
-                                for num in range(minStones,maxStones+1) for closed in possibleClosed }
-        patternMovesToComplete = { (p,num,closed):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
-                                for num in range(minStones,maxStones+1) for closed in possibleClosed }
+        patternCount = { (p,num,canWin):0 for p in [Gomoku.players[0],Gomoku.players[1]] \
+                                for num in range(minStones,maxStones+1) for canWin in possibleWin }
+        patternStartingPos = { (p,num,canWin):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
+                                for num in range(minStones,maxStones+1) for canWin in possibleWin }
+        patternMovesToComplete = { (p,num,canWin):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
+                                for num in range(minStones,maxStones+1) for canWin in possibleWin }
 
         # Add dictionary key to include winning block search
-        for closed in possibleClosed:
-            patterns[ (None, 5, closed) ] = 0
-            patternStartingPos[ (None, 5, closed) ] = []
+        for canWin in possibleWin:
+            patternCount[ (None, 5, canWin) ] = 0
+            patternStartingPos[ (None, 5, canWin) ] = []
 
         # Right, down, diag-right-up, diag-right-down
         directions = [(1,0),(0,1),(1,-1),(1,1)]
@@ -96,7 +99,7 @@ class Gomoku:
             return nextPos if not outOfBounds(nextPos) else None
 
         def findPattern(pattern, pos, direction):
-            player, num, closed = pattern
+            player, num, canWin = pattern
             curPos = pos
 
             # If player == None, we are looking for winning blocks
@@ -127,45 +130,16 @@ class Gomoku:
                     return False
                 curPos = nextPosition(curPos, direction)
 
-            # if not winningBlockSearch:
-            #     if startsPattern and prevPos is not None:
-            #         print("\nPlayer: ", player)
-            #         print("Num: ", num)
-            #         print("Direction: ", direction)
-            #         print("Current Position: ", pos)
-            #         print("Prev Pos: ", prevPos)
-            #         print("End Pos: ", endPos )
-            #         print("End+1 Pos: ", onePosPast)
-            #         print("\tcurPos color: ", self.board[pos[0]][pos[0]].color)
-            #         print("\tprevPos color: ", self.board[prevPos[0]][prevPos[1]].color)
-            #         print("\tendPos color: ", self.board[endPos[0]][endPos[1]].color)
-            #         print("\tonePosPast color: ", self.board[onePosPast[0]][onePosPast[1]].color)
-            #         if closed:
-            #             if (prevPos is not None and self.board[prevPos[0]][prevPos[1]].color == None) \
-            #                 or (curPos is not None and self.board[curPos[0]][curPos[1]].color == None):
-            #                 print("\t\tSupposed to be closed and not added")
-            #         print()
-
-            # Check if the position is open or closed
-            # if closed:
-            #     if (prevPos is not None and self.board[prevPos[0]][prevPos[1]].color == None) \
-            #         or (curPos is not None and self.board[curPos[0]][curPos[1]].color == None):
-            #         return False
-            # elif not closed:
-            #     if (prevPos is not None and self.board[prevPos[0]][prevPos[1]].color != None) \
-            #         and (curPos is not None and self.board[curPos[0]][curPos[1]].color != None):
-            #         return False
-
-            # If looking for an open pattern, return False. This will get
+            # If looking for a winning block, return False. This will get
             #  populated by another function
-            if not closed:
+            if canWin:
                 return False
 
             return True
 
         # Takes in each pattern and checks if a win is still possible in that block
         def patternIsOpen(pattern, pos, direction):
-            player, num, closed = pattern
+            player, num, canWin = pattern
             curCoord = nextPosition(pos, direction, length=num)
             prevCoord = nextPosition(pos, direction, reverse=True)
             if curCoord != None:
@@ -200,7 +174,7 @@ class Gomoku:
             return isOpen
 
         def getMovesToComplete(pattern, pos, direction):
-            player, num, closed = pattern
+            player, num, canWin = pattern
             curCoord = nextPosition(pos, direction, length=num)
             prevCoord = nextPosition(pos, direction, reverse=True)
             if curCoord != None:
@@ -247,28 +221,28 @@ class Gomoku:
             for y in range(self.dim):
                 curPos = (x,y)
                 for direction in directions:
-                    for closed in possibleClosed:
-                    # for closed in [True]:
+                    for canWin in possibleWin:
                         for player in Gomoku.players:
                             for num in range(minStones, maxStones+1):
-                                if findPattern((player, num, closed), curPos, direction):
-                                    patterns[(player, num, closed)] += 1
-                                    if (curPos, direction) not in (patternStartingPos[(player, num, closed)]):
+                                curPattern = (player, num, canWin)
+                                if findPattern(curPattern, curPos, direction):
+                                    patternCount[(player, num, canWin)] += 1
+                                    if (curPos, direction) not in (patternStartingPos[curPattern]):
                                         endPos = nextPosition(curPos, direction, length=num-1)
-                                        patternStartingPos[(player, num, closed)].append((curPos, endPos, direction))
-                                    if patternIsOpen((player, num, closed), curPos, direction):
-                                        patterns[(player, num, False)] += 1
-                                        patterns[(player, num, closed)] -= 1
-                                        if (curPos, direction) not in (patternStartingPos[(player, num, False)]):
-                                            patternStartingPos[(player, num, False)].append((curPos, endPos, direction))
-                                            patternMovesToComplete[(player,num, False)].append(getMovesToComplete((player, num, closed), curPos, direction))
-                                            patternStartingPos[(player, num, True)].remove((curPos, endPos, direction))
-                        if findPattern((None, 5, closed), curPos, direction):
-                            patterns[(None, 5, closed)] += 1
-                            if (curPos, direction) not in (patternStartingPos[(None, 5, closed)]):
-                                patternStartingPos[(None, 5, closed)].append((curPos, direction))
+                                        patternStartingPos[curPattern].append((curPos, endPos, direction))
+                                    if patternIsOpen(curPattern, curPos, direction):
+                                        patternCount[(player, num, True)] += 1
+                                        patternCount[curPattern] -= 1
+                                        if (curPos, direction) not in (patternStartingPos[(player, num, True)]):
+                                            patternStartingPos[(player, num, True)].append((curPos, endPos, direction))
+                                            patternMovesToComplete[(player,num, True)].append(getMovesToComplete((player, num, canWin), curPos, direction))
+                                            patternStartingPos[(player, num, False)].remove((curPos, endPos, direction))
+                        if findPattern((None, 5, canWin), curPos, direction):
+                            patternCount[(None, 5, canWin)] += 1
+                            if (curPos, direction) not in (patternStartingPos[(None, 5, canWin)]):
+                                patternStartingPos[(None, 5, canWin)].append((curPos, direction))
 
-        return (patterns, patternStartingPos, patternMovesToComplete)
+        return (patternCount, patternStartingPos, patternMovesToComplete)
 
 
     ## Prints the state of the game to standard out
