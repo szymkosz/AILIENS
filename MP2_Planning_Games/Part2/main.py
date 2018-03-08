@@ -62,7 +62,7 @@ print(game)
 	# Run the Gomoku game with the specified agents
 	# How should I do this...?
 
-moves = [(3, 4), (3, 3), (4, 5), (4, 3), (5, 3), (2, 2), (2,3), (1,1),
+moves = [(3, 4), (3, 3), (1, 2), (4, 3), (5, 3), (2, 2), (2,3), (1,1),
 		(3,5), (5,4),(3,2),(0,0),(6,5),(6,4),(0,6),(1,5)]
 
 # Random Moves

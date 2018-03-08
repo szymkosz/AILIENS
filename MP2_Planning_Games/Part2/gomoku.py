@@ -214,23 +214,23 @@ class Gomoku:
             # Check forward direction
             while (count < spotsNecessary):
                 if curCoord != None and (curPos.color == player or curPos.color == None):
+                    curPos = self.board[curCoord[0]][curCoord[1]]
                     if curPos.color == None:
                         possibleMoves.append(curCoord)
-                    curPos = self.board[curCoord[0]][curCoord[1]]
                     count += 1
                     curCoord = nextPosition(curCoord, direction)
                 else:
                     break
 
-            # spotsNecessary = 5 - num
-            # count = 0
+            spotsNecessary = 5 - num
+            count = 0
 
             # Check reverse direction
             while (count < spotsNecessary):
                 if prevCoord != None and (prevPos.color == player or prevPos.color == None):
+                    prevPos = self.board[prevCoord[0]][prevCoord[1]]
                     if prevPos.color == None:
                         possibleMoves.append(prevCoord)
-                    prevPos = self.board[prevCoord[0]][prevCoord[1]]
                     count += 1
                     prevCoord = nextPosition(prevCoord, direction, reverse=True)
                 else:
