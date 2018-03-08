@@ -1,22 +1,9 @@
 from gomoku import Gomoku
-from board import Board
 from position import Position
-
-class Agent:
-    def __init__(self, game=Gomoku(), playerNum=1):
-        self.name = "AGENT"
-        self.game = game
-        self.playerNum = playerNum
-        self.player = Gomoku.players[(playerNum-1)%2]
-
-    def getMoves(self):
-        raise NotImplementedError()
-
-    def makeMove(self):
-        raise NotImplementedError()
+from agent import Agent
 
 class Reflex(Agent):
-    def __init__(self, game, playerNum):
+    def __init__(self, game=Gomoku(), playerNum=1):
         super().__init__(game, playerNum)
         self.name = "REFLEX"
 
@@ -53,6 +40,11 @@ class Reflex(Agent):
         #      empty position on both ends. Break a tie by choosing a move in the
         #      following order:
         #           left > down > right > up
+        curPattern = (Gomoku.players[playerNum%2], 3, False)
+        count = patterns[0][curPattern]
+        allPossibleMoves = patterns[2][curPattern]
+        while count > 0:
+            pass
 
         ## 4. Otherwise, find the winning block (a block of 5 consecutive spaces
         #      in which victory is still possible) containing the largest number of
