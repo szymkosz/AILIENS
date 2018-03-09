@@ -87,6 +87,8 @@ class Gomoku:
 
         # Switch the turn back to the player whose piece was unset
         self.reds_turn = not self.reds_turn
+        # A piece was removed from the board, so return True
+        return True
 
     ## Parses the board and populates dictionaries with data on the current state
     #   of the game board for each possible pattern. A pattern is a specific
@@ -278,6 +280,8 @@ class Gomoku:
 
             return sorted(possibleMoves, key=itemgetter(0))
 
+
+        """ --------------- DRIVER FOR getPatterns() --------------- """
         ## Go through each position on the board and look for each kind of pattern
         for x in range(self.dim):
             for y in range(self.dim):
