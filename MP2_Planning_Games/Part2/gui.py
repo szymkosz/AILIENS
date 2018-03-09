@@ -6,6 +6,7 @@ from human import Human
 from minimax import MiniMax 
 from reflex import Reflex
 
+# colors
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
@@ -20,38 +21,47 @@ gameDisplay = Human.gameDisplay
 Jon = Human(game, 1)
 Jess = Reflex(game, 2)
 
+# check if the board has been initalized 
 if Human.boardInitialized == False:
 	initializeBoard()
 
+# game loop
 while not gameExit:
-	# change gameloop to accomodate for other agents
 	if Gomoku.reds_turn:
 		# where do I get the coordinates to set the circle on the board?? 1) Jon.getPiece returns a position type which does not have coordinates,
 		# and 2) setPiece gets its coordinates passed but I am not sure how these coordinates will be passed. I need access to these coordinates
 		win = Jon.makeMove()
 		pygame.draw.circle(gameDisplay, red, coordinates, 40)
+
 	else:
 		win = Jess.makeMove()
 		pygame.draw.circle(gameDisplay, blue, coordinates, 40)
+
+	# print the corresponding character on the piece -> need to replace x and y values with coordinates
+	char = game.board[x][y].char
+	pieceChar = littleFont.render(char, True, white)
+	gameDisplay.blit(pieceChar, [x, y])
 	pygame.display.update()
 
+	# if there is a winner, print winner to screen
 	if win == 1:
 		if Gomoku.reds_turn:
-			text = font.render("Red wins!", True, red)
+			text = bigFont.render("Red wins!", True, red)
 		else:
-			text = font.render("Blue wins!", True, blue)
+			text = bigFont.render("Blue wins!", True, blue)
 		gameDisplay.blit(text, [385, 385])
 		pygame.display.update()
+		# display for 5 seconds before quitting the game
 		time.sleep(5)
 		gameExit = True
 
 	if event.type == pygame.QUIT:
 		gameExit = True
 			
-
 pygame.quit()
 quit()
 
+# initialize an empty game board
 def initializeBoard()
 	pygame.init()
 	gameDisplay = Human.gameDisplay
@@ -65,7 +75,8 @@ def initializeBoard()
 		pygame.draw.rect(gameDisplay, black, [50, 110*y + 50, 770, 10])
 	pygame.display.update()
 	# font
-	font = pygame.font.SysFont(None, 100)
+	bigFont = pygame.font.SysFont(None, 100)
+	littleFont = pygame.font.SysFont(None, 25)
 	Human.boardInitialized = True
 
 # returns tuple of coordinates at center of the square

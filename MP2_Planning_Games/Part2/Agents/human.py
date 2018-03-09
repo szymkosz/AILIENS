@@ -23,6 +23,7 @@ class Human(Agent):
 	def makeMove(self):
 		raise NotImplementedError()
 
+	# returns an instance of type position
 	def getMove(self):
 		# get user clicking input
 		for event in pygame.event.get():
