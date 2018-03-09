@@ -290,11 +290,18 @@ class Gomoku:
                 for direction in directions:
                     # Go through the two categories of patterns, winning and not winning ones
                     for canWin in possibleWin:
+                        ## Find the empty 5 block patterns
+                        if findPattern((None, 5, canWin), curPos, direction):
+                            patternCount[(None, 5, canWin)] += 1
+                            if (curPos, direction) not in (patternStartingPos[(None, 5, canWin)]):
+                                patternStartingPos[(None, 5, canWin)].append((curPos, direction))
+                            continue
                         # For every player (so just 2)
                         for player in Gomoku.players:
                             # For every number in the specified search range
                             for num in range(minStones, maxStones+1):
                                 curPattern = (player, num, canWin)  # Finally can abbreviate pattern into a variable
+
                                 # If the pattern exists at the current position and direction, continue
                                 if findPattern(curPattern, curPos, direction):
                                     # Increment the pattern count
@@ -313,11 +320,6 @@ class Gomoku:
                                             patternStartingPos[(player, num, False)].remove((curPos, endPos, direction))
                                             # Since a win is possible with this pattern, find the moves needed to complete it
                                             patternMovesToComplete[(player,num, True)].append(getMovesToComplete((player, num, canWin), curPos, direction))
-                        ## Find the empty 5 block patterns
-                        if findPattern((None, 5, canWin), curPos, direction):
-                            patternCount[(None, 5, canWin)] += 1
-                            if (curPos, direction) not in (patternStartingPos[(None, 5, canWin)]):
-                                patternStartingPos[(None, 5, canWin)].append((curPos, direction))
 
         return (patternCount, patternStartingPos, patternMovesToComplete)
 
