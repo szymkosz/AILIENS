@@ -12,7 +12,7 @@ black = (0, 0, 0)
 red = (255, 0, 0)
 blue = (0, 0, 255)
 
-coordinateList = [50, 160, 270, 380, 490, 600, 710, 820]
+coordinateList = [50, 160, 270, 380, 490, 600, 710]
 
 gameExit = False
 win = False
@@ -88,15 +88,15 @@ def boardToScreen(x, y):
 	screenY = 110*y + 105;
 	return (screenX, screenY)
 
-#returns tuple of board coordinates
+# returns tuple of board coordinates
 def screenToBoard(x, y):
 	if(x<50 or y<50 or x>820 or y>820):
 		return -1;
 
 	for i in range(0, 7):
 		if x > coordinateList[6-i]:
-			boardX = i 
+			boardX = 6-i 
 		if  y > coordinateList[6-i]:
-			boardY = i
+			boardY = 6-i
 
 	return (boardX, boardY)
