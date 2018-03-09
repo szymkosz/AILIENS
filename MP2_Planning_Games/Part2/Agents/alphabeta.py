@@ -4,10 +4,10 @@ from agent import Agent
 from sys import maxsize
 from tree import Node
 
-class MiniMax(Agent):
+class AlphaBeta(Agent):
     def __init__(self, game=Gomoku(), playerNum=1):
         super().__init__(game, playerNum)
-        self.name = "MINIMAX"
+        self.name = "ALPHA_BETA"
 
     def makeMove(self):
         raise NotImplementedError()
