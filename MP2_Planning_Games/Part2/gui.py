@@ -24,22 +24,22 @@ class GUI(object):
 	win = False
 
 	def __init__(self, game=Gomoku())
-	# check if the board has been initalized 
-	if boardInitialized == False:
-		pygame.init()
-		gameDisplay = pygame.display.set_mode((870, 870))
-		pygame.display.set_caption('Gomoku')
-		# draw board
-		gameDisplay.fill(white)
-		for x in range(0, 8):
-			pygame.draw.rect(gameDisplay, black, [110*x + 50, 50, 10, 770])
-		for y in range(0, 8):
-			pygame.draw.rect(gameDisplay, black, [50, 110*y + 50, 770, 10])
-		pygame.display.update()
-		# font
-		bigFont = pygame.font.SysFont(None, 100)
-		littleFont = pygame.font.SysFont(None, 25)
-		boardInitialized = True
+		# check if the board has been initalized 
+		if boardInitialized == False:
+			pygame.init()
+			gameDisplay = pygame.display.set_mode((870, 870))
+			pygame.display.set_caption('Gomoku')
+			# draw board
+			gameDisplay.fill(white)
+			for x in range(0, 8):
+				pygame.draw.rect(gameDisplay, black, [110*x + 50, 50, 10, 770])
+			for y in range(0, 8):
+				pygame.draw.rect(gameDisplay, black, [50, 110*y + 50, 770, 10])
+			pygame.display.update()
+			# font
+			bigFont = pygame.font.SysFont(None, 100)
+			littleFont = pygame.font.SysFont(None, 25)
+			boardInitialized = True
 
 	def gameLoop(self):
 		while not gameExit:
