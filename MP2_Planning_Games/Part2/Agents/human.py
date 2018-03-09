@@ -1,5 +1,6 @@
 import pygame
 import time
+from gui import initializeBoard, boardToScreen, screenToBoard
 from gomoku import Gomoku
 from position import Position
 from agent import Agent
@@ -26,7 +27,10 @@ class Human(Agent):
 		# get user clicking input
 		for event in pygame.event.get():
 			if event.type == pygame.MOUSEBUTTONUP:
-				mouse_pos = pygame.mouse.get_pos()
+				screenX, screenY = pygame.mouse.get_pos()
+				boardX, boardY = screenToBoard(screenX, screenY)
+				pos = game.board[boardX][boardY]
+				return pos
 				
 
 

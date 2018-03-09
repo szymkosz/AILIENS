@@ -11,7 +11,7 @@ black = (0, 0, 0)
 red = (255, 0, 0)
 blue = (0, 0, 255)
 
-coordinateList = [0, 50, 160, 270, 380, 490, 600, 710, 820, 870]
+coordinateList = [50, 160, 270, 380, 490, 600, 710, 820]
 
 gameExit = False
 win = False
@@ -21,20 +21,7 @@ Jon = Human(game, 1)
 Jess = Reflex(game, 2)
 
 if Human.boardInitialized == False:
-	pygame.init()
-	gameDisplay = Human.gameDisplay
-	gameDisplay = pygame.display.set_mode((870, 870))
-	pygame.display.set_caption('Gomoku')
-	# draw board
-	gameDisplay.fill(white)
-	for x in range(0, 8):
-		pygame.draw.rect(gameDisplay, black, [110*x + 50, 50, 10, 770])
-	for y in range(0, 8):
-		pygame.draw.rect(gameDisplay, black, [50, 110*y + 50, 770, 10])
-	pygame.display.update()
-	# font
-	font = pygame.font.SysFont(None, 100)
-	Human.boardInitialized = True
+	initializeBoard()
 
 while not gameExit:
 	# change gameloop to accomodate for other agents
@@ -65,18 +52,40 @@ while not gameExit:
 pygame.quit()
 quit()
 
-# add button to end game or play again if time
+def initializeBoard()
+	pygame.init()
+	gameDisplay = Human.gameDisplay
+	gameDisplay = pygame.display.set_mode((870, 870))
+	pygame.display.set_caption('Gomoku')
+	# draw board
+	gameDisplay.fill(white)
+	for x in range(0, 8):
+		pygame.draw.rect(gameDisplay, black, [110*x + 50, 50, 10, 770])
+	for y in range(0, 8):
+		pygame.draw.rect(gameDisplay, black, [50, 110*y + 50, 770, 10])
+	pygame.display.update()
+	# font
+	font = pygame.font.SysFont(None, 100)
+	Human.boardInitialized = True
 
 # returns tuple of coordinates at center of the square
 def boardToScreen(x, y):
+	if(x<0 or y<0 or x>6 or y>6):
+		return -1;
+
 	screenX = 110*x + 105;
 	screenY = 110*y + 105;
 	return (screenX, screenY)
 
 #returns tuple of board coordinates
 def screenToBoard(x, y):
-	boardX = 
+	if(x<50 or y<50 or x>820 or y>820):
+		return -1;
+
+	for i in range(0, 7):
+		if x > coordinateList[6-i]:
+			boardX = i 
+		if  y > coordinateList[6-i]:
+			boardY = i
+
 	return (boardX, boardY)
-
-
-
