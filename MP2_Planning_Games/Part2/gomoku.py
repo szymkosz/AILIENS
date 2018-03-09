@@ -2,11 +2,6 @@ import sys
 from position import Position
 from operator import itemgetter
 
-## Used for formatting standard output
-P1_COLOR = '\033[91m'
-P2_COLOR = '\033[94m'
-C_END = '\033[0m'
-
 class Gomoku:
     players = ["RED", "BLUE"]   ## ONLY TWO PLAYERS
 
@@ -17,9 +12,10 @@ class Gomoku:
         self.reds_turn = True       # Red always starts
         self.board = [ [ Position() for i in range(dim) ] for j in range(dim) ]
         self.movesTaken = []
-        # self.emptySquares = [ (x,y) for x in range(dim) for y in range(dim) ]
 
     ## Sets the next piece at the desired coordinates (x,y).
+    #   @param x - x-coordinate of the desired move to make
+    #   @param y - y-coordinate of the desired move to make
     #   @param settingRed - flag indicating the color of the piece to set
     #                True (1) for RED; False (0) for BLUE
     def setPiece(self, x, y, settingRed):
@@ -32,9 +28,9 @@ class Gomoku:
         # Check to see if it is the turn of the player setting the piece
         if settingRed != self.reds_turn:
             if settingRed:
-                raise ValueError("Trying to set a {0}{3[0]}{2} piece when it is {1}{3[1]}{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END, Gomoku.players))
+                raise ValueError("Trying to set a {0}{3[0]}{2} piece when it is {1}{3[1]}{2}'s turn.".format(Position.colors[Gomoku.players[0]], Position.colors[Gomoku.players[1]], Position.colors["END"], Gomoku.players))
             elif not settingRed:
-                raise ValueError("Trying to set a {1}{3[1]}{2} piece when it is {0}{3[0]}{2}'s turn.".format(P1_COLOR, P2_COLOR, C_END, Gomoku.players))
+                raise ValueError("Trying to set a {1}{3[1]}{2} piece when it is {0}{3[0]}{2}'s turn.".format(Position.colors[Gomoku.players[0]], Position.colors[Gomoku.players[1]], Position.colors["END"], Gomoku.players))
 
         # If setting a red piece and it is red's turn
         if settingRed and self.reds_turn:
@@ -59,12 +55,13 @@ class Gomoku:
             self.movesTaken.append((x,y))
             self.reds_turn = True
 
-        # self.emptySquares.remove((x,y))
         ## CHECK IF MOVE WON THE GAME
         patterns = self.getPatterns()
-
         return patterns[0][(pos.color, 5, True)] > 0 or patterns[0][(pos.color, 5, False)] > 0
 
+    ## Function to undo setting a piece on the board. Used by Agent algorithms
+    #   to efficiently explore and evaluate potential moves by allowing them to
+    #   set a piece, examine the board, and unset that piece to evaluate another.
     def unsetPiece(self):
         # If no moves have been taken yet, there are no pieces to unset.
         #  Just do nothing and return False.
@@ -91,16 +88,31 @@ class Gomoku:
         # Switch the turn back to the player whose piece was unset
         self.reds_turn = not self.reds_turn
 
-    ## Parses the board and populates a dictionary specifying how many of each
-    #   type of pattern is present on the current board.
+    ## Parses the board and populates dictionaries with data on the current state
+    #   of the game board for each possible pattern. A pattern is a specific
+    #   combination (encapsulated in a tuple) of the player's color, number of
+    #   stones in a row, and a boolean denoting if a win is possible in this block.
+    #       i.e. (playerColor, numberOfStones, canWin) -> ("RED", 5, True)
+    #
+    #  Returns a tuple of three dictionaries. In each dictionary, a pattern tuple,
+    #   as described above, serves as the key and it maps to the following for each
+    #   index of the tuple:
+    #    [0] - count of each pattern present on the board
+    #               i.e. patternCount[ ("RED", 4, True) ] = 1
+    #    [1] - tuple containing the starting coordinates of the pattern, the
+    #          direction in which the pattern goes, and the end coordinates
+    #               i.e. patternStartingPos[ ("RED", 4, True) ] = [(2,3),(1,0),(6,3)]
+    #    [2] - list of lists of possible moves that would complete a block in
+    #          which that pattern is present
+    #               i.e. patternMovesToComplete[ ("RED", 4, True) ]: [ [(1,3)] ]
     def getPatterns(self):
-        ## Can only check if patterns of >2 are open or closed
+        # Range for the number of stones in a row to look for
         minStones = 1
         maxStones = 5
 
         possibleWin = [True, False]
 
-        # Initializes the dictionary { (player, numberOfStonesInARow, Open/Closed) : 0 }
+        # Initialization of the return dictionaries
         patternCount = { (p,num,canWin):0 for p in [Gomoku.players[0],Gomoku.players[1]] \
                                 for num in range(minStones,maxStones+1) for canWin in possibleWin }
         patternStartingPos = { (p,num,canWin):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
@@ -108,7 +120,7 @@ class Gomoku:
         patternMovesToComplete = { (p,num,canWin):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
                                 for num in range(minStones,maxStones+1) for canWin in possibleWin }
 
-        # Add dictionary key to include winning block search
+        # Add dictionary key to include fully empty block in search
         for canWin in possibleWin:
             patternCount[ (None, 5, canWin) ] = 0
             patternStartingPos[ (None, 5, canWin) ] = []
@@ -116,9 +128,20 @@ class Gomoku:
         # Right, down, diag-right-up, diag-right-down
         directions = [(1,0),(0,1),(1,-1),(1,1)]
 
+        # Determines if the coordinates are out of bounds of the board
         def outOfBounds(pos):
             return pos[0] < 0 or pos[0] >= self.dim or pos[1] < 0 or pos[1] >= self.dim
 
+        # Determines the coordinates of the next position
+        # @param pos - tuple containing the starting coordinates
+        #        direction - tuple containing the direction in which to go
+        #   Opt: reverse - boolean whether to go in the reverse direction instead
+        #                  of the forward direction
+        #        length - integer of the number of steps to go away from the
+        #                 starting coordinates
+        # Can also return the position in the reverse direction by setting the
+        #  reverse flag to True
+        #
         def nextPosition(pos, direction, reverse=False, length=1):
             if reverse:
                 nextPos = (pos[0] - length * direction[0], pos[1] - length * direction[1])
@@ -126,6 +149,8 @@ class Gomoku:
                 nextPos = (pos[0] + length * direction[0], pos[1] + length * direction[1])
             return nextPos if not outOfBounds(nextPos) else None
 
+        # Determines whether the current pattern is present at the current
+        #  coordinate position and in the current direction
         def findPattern(pattern, pos, direction):
             player, num, canWin = pattern
             curPos = pos
@@ -142,11 +167,14 @@ class Gomoku:
             endPos = nextPosition(pos, direction, reverse=False, length=num-1)
             endPosOOB = endPos == None
 
-            # If it is not the pattern-starting stone or the ending stone would
-            #  be out of bounds, return False
+            # If it is not the pattern-starting stone or if the pattern-ending
+            #  stone would be out of bounds, return False
             if (not startsPattern and not winningBlockSearch) or endPosOOB:
                 return False
 
+            # If the stone one position past the number of stones in the current
+            #  pattern belongs to the current player, the pattern is a subset of
+            #  another longer pattern, so return False
             onePosPast = nextPosition(endPos, direction)
             if (onePosPast != None and self.board[onePosPast[0]][onePosPast[1]].color == player) and not (winningBlockSearch):
                 return False
@@ -158,8 +186,8 @@ class Gomoku:
                     return False
                 curPos = nextPosition(curPos, direction)
 
-            # If looking for a winning block, return False. This will get
-            #  populated by another function
+            # If looking for block in which a win is possible, return False.
+            #  This will get populated by patternIsOpen().
             if canWin:
                 return False
 
@@ -168,6 +196,8 @@ class Gomoku:
         # Takes in each pattern and checks if a win is still possible in that block
         def patternIsOpen(pattern, pos, direction):
             player, num, canWin = pattern
+
+            # Go to the stones one position past each end point
             curCoord = nextPosition(pos, direction, length=num)
             prevCoord = nextPosition(pos, direction, reverse=True)
             if curCoord != None:
@@ -177,7 +207,7 @@ class Gomoku:
 
             spotsNecessary = 5 - num
             count = 0
-            isOpen = False
+            canWin = False
 
             # Check forward direction
             while (count < spotsNecessary):
@@ -197,10 +227,14 @@ class Gomoku:
                 else:
                     break
 
+            # If the number of open positions in the possible blocks surrounding
+            #  the pattern exceeds the number of stones necessary to complete the
+            #  pattern, a win is possible with that pattern
             if count >= spotsNecessary:
-                isOpen = True
-            return isOpen
+                canWin = True
+            return canWin
 
+        # Returns a list of possible moves that will complete the current pattern
         def getMovesToComplete(pattern, pos, direction):
             player, num, canWin = pattern
             curCoord = nextPosition(pos, direction, length=num)
@@ -214,6 +248,7 @@ class Gomoku:
             spotsNecessary = 5 - num
             count = 0
 
+            ### TODO: Append possible moves in order of distance away from pattern
             # Check forward direction
             while (count < spotsNecessary):
                 if curCoord != None and (curPos.color == player or curPos.color == None):
@@ -244,27 +279,37 @@ class Gomoku:
             return sorted(possibleMoves, key=itemgetter(0))
 
         ## Go through each position on the board and look for each kind of pattern
-        #   Check if the
         for x in range(self.dim):
             for y in range(self.dim):
                 curPos = (x,y)
+                # Go through every possible direction in which a pattern can point
                 for direction in directions:
+                    # Go through the two categories of patterns, winning and not winning ones
                     for canWin in possibleWin:
+                        # For every player (so just 2)
                         for player in Gomoku.players:
+                            # For every number in the specified search range
                             for num in range(minStones, maxStones+1):
-                                curPattern = (player, num, canWin)
+                                curPattern = (player, num, canWin)  # Finally can abbreviate pattern into a variable
+                                # If the pattern exists at the current position and direction, continue
                                 if findPattern(curPattern, curPos, direction):
+                                    # Increment the pattern count
                                     patternCount[(player, num, canWin)] += 1
+                                    # If this pattern is not yet in the dictionary containing the starting positions, add it
                                     if (curPos, direction) not in (patternStartingPos[curPattern]):
                                         endPos = nextPosition(curPos, direction, length=num-1)
                                         patternStartingPos[curPattern].append((curPos, endPos, direction))
+                                    # If you can still win with this pattern, add it as a canWin pattern
                                     if patternIsOpen(curPattern, curPos, direction):
                                         patternCount[(player, num, True)] += 1
                                         patternCount[curPattern] -= 1
+                                        # Remove this pattern as a non-winning key in each dictionary and add it as a winning key
                                         if (curPos, direction) not in (patternStartingPos[(player, num, True)]):
                                             patternStartingPos[(player, num, True)].append((curPos, endPos, direction))
-                                            patternMovesToComplete[(player,num, True)].append(getMovesToComplete((player, num, canWin), curPos, direction))
                                             patternStartingPos[(player, num, False)].remove((curPos, endPos, direction))
+                                            # Since a win is possible with this pattern, find the moves needed to complete it
+                                            patternMovesToComplete[(player,num, True)].append(getMovesToComplete((player, num, canWin), curPos, direction))
+                        ## Find the empty 5 block patterns
                         if findPattern((None, 5, canWin), curPos, direction):
                             patternCount[(None, 5, canWin)] += 1
                             if (curPos, direction) not in (patternStartingPos[(None, 5, canWin)]):
