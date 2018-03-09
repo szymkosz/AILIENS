@@ -16,6 +16,7 @@ class Gomoku:
         self.dim = dim
         self.reds_turn = True       # Red always starts
         self.board = [ [ Position() for i in range(dim) ] for j in range(dim) ]
+        self.movesTaken = []
         # self.emptySquares = [ (x,y) for x in range(dim) for y in range(dim) ]
 
     ## Sets the next piece at the desired coordinates (x,y).
@@ -39,19 +40,23 @@ class Gomoku:
         if settingRed and self.reds_turn:
 
             # Set the position's char to the next red char and its color to "RED"
+            # Add the coordinates to the movesTaken list
             # Switch the turn
             pos.char = self.curr_char
             pos.color = Gomoku.players[0]
+            self.movesTaken.append((x,y))
             self.reds_turn = False
 
         # Else if setting a blue piece and it is blue's turn
         elif not settingRed and not self.reds_turn:
 
             # Set the position's char to the next blue char and its color to "BLUE"
+            # Add the coordinates to the movesTaken list
             # Switch the turn
             pos.char = self.curr_char.upper()
             pos.color = Gomoku.players[1]
             self.curr_char = chr(ord(self.curr_char) + 1)
+            self.movesTaken.append((x,y))
             self.reds_turn = True
 
         # self.emptySquares.remove((x,y))
@@ -60,8 +65,31 @@ class Gomoku:
 
         return patterns[0][(pos.color, 5, True)] > 0 or patterns[0][(pos.color, 5, False)] > 0
 
-    def unsetPiece(self, x, y, unsettingRed):
-        pass
+    def unsetPiece(self):
+        # If no moves have been taken yet, there are no pieces to unset.
+        #  Just do nothing and return False.
+        if not self.movesTaken:
+            return False
+
+        # Obtain the last move taken and remove if from the movesTaken list
+        coordToUnset = self.movesTaken.pop(-1)
+        posToUnset = self.board[coordToUnset[0]][coordToUnset[1]]
+
+        # Set the position's char back to '.' and the color back to None
+        posToUnset.char = '.'
+        posToUnset.color = None
+
+        ## If it is now RED's turn, BLUE was the last to set a piece, so that
+        #   should be the piece to unset
+        if self.reds_turn:
+
+            # Because BLUE was the last to set a piece, he also incremented the
+            #  game's current char, curr_char, so it must be reversed
+            self.curr_char = chr(ord(self.curr_char) - 1)
+        # Otherwise, nothing needs to be done
+
+        # Switch the turn back to the player whose piece was unset
+        self.reds_turn = not self.reds_turn
 
     ## Parses the board and populates a dictionary specifying how many of each
     #   type of pattern is present on the current board.
