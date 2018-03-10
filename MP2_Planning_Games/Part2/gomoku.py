@@ -249,12 +249,14 @@ class Gomoku:
             # If the adjacent positions are not occupied, add them to the adjacent moves list
             if prevCoord != None:
                 prevPos = self.board[prevCoord[0]][prevCoord[1]]
-                adjacentMoves.append(prevCoord)
+                if prevPos.color == None:
+                    adjacentMoves.append(prevCoord)
                 prevCoord = nextPosition(prevCoord, direction, reverse=True)
 
             if curCoord != None:
                 curPos = self.board[curCoord[0]][curCoord[1]]
-                adjacentMoves.append(curCoord)
+                if curPos.color == None:
+                    adjacentMoves.append(curCoord)
                 curCoord = nextPosition(curCoord, direction)
 
 
@@ -301,7 +303,8 @@ class Gomoku:
             # return sorted(possibleMoves, key=itemgetter(0))
             adjacents = (pos, direction, adjacentMoves)
             nonadjacents = (pos, direction, nonadjacentMoves)
-            return (adjacents, nonadjacents)
+            # return (adjacents, nonadjacents)
+            return (adjacentMoves, nonadjacentMoves)
 
 
         """ --------------- DRIVER FOR getPatterns() --------------- """
@@ -343,8 +346,8 @@ class Gomoku:
                                             patternStartingPos[(player, num, False)].remove((curPos, endPos, direction))
                                             # Since a win is possible with this pattern, find the moves needed to complete it
                                             possibleMovesTuple = getMovesToComplete((player, num, canWin), curPos, direction)
-                                            patternMovesToComplete[(player,num, True)][True] = possibleMovesTuple[0]
-                                            patternMovesToComplete[(player,num, True)][False] = possibleMovesTuple[1]
+                                            if possibleMovesTuple[0]: patternMovesToComplete[(player,num, True)][True] = possibleMovesTuple[0]
+                                            if possibleMovesTuple[1]: patternMovesToComplete[(player,num, True)][False] = possibleMovesTuple[1]
 
         return (patternCount, patternStartingPos, patternMovesToComplete)
 
