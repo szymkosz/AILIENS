@@ -18,12 +18,17 @@ class Gomoku:
     #   @param y - y-coordinate of the desired move to make
     #   @param settingRed - flag indicating the color of the piece to set
     #                True (1) for RED; False (0) for BLUE
-    def setPiece(self, x, y, settingRed):
+    #   @param isHuman - flag indicating if the agent is human
+    def setPiece(self, x, y, settingRed, isHuman=False):
         pos = self.board[x][y]
 
         # If the piece at (x,y) is not empty
         if pos.char != '.':
-            raise ValueError("Trying to set a piece in a non-empty position, char: " + str(pos.char))
+            if isHuman:
+                patterns = self.getPatterns()
+                return patterns[0][(pos.color, 5, True)] > 0 or patterns[0][(pos.color, 5, False)] > 0
+            else:
+                raise ValueError("Trying to set a piece in a non-empty position, char: " + str(pos.char))
 
         # Check to see if it is the turn of the player setting the piece
         if settingRed != self.reds_turn:

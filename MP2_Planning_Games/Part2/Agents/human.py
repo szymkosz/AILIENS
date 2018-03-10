@@ -21,11 +21,9 @@ class Human(Agent):
 	def makeMove(self):
 		x, y = self.getMove()
 		if self.playerNum == 1:
-			return self.game.setPiece(x, y, 1)
+			return self.game.setPiece(x, y, 1, isHuman=True)
 		elif self.playerNum == 2:
-			return self.game.setPiece(x, y, 0)
-
-
+			return self.game.setPiece(x, y, 0, isHuman=True)
 
 	# returns coordinates
 	def getMove(self):
