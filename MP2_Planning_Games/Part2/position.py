@@ -4,6 +4,8 @@
 # C_END = '\033[0m'
 
 class Position:
+    addColor = False
+
     colors = { "RED":    '\033[91m',
                "GREEN":  '\033[92m',
                "YELLOW": '\033[93m',
@@ -18,11 +20,11 @@ class Position:
 
     ## Used for printing board array
     def __repr__(self):
-        if self.char == '.':
+        if self.char == '.' or not Position.addColor:
             return self.char
         return Position.colors[self.color] + self.char + Position.colors["END"]
 
     def __str__(self):
-        if self.char == '.':
+        if self.char == '.' or not Position.addColor:
             return self.char
         return Position.colors[self.color] + self.char + Position.colors["END"]
