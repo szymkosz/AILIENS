@@ -77,7 +77,6 @@ def refreshBoard():
 
 while not gameExit:
 	if keepPlaying == True:
-		print(game.reds_turn)
 		if game.reds_turn:
 			win = Jon.makeMove()
 		else:

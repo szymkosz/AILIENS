@@ -45,7 +45,6 @@ class Human(Agent):
 				
 # returns tuple of board coordinates
 def screenToBoard(x, y):
-	print("screenToBoard: " + str(x) + ", " + str(y))
 	if(x<50 or y<50 or x>820 or y>820):
 		return (-1, -1);
 
