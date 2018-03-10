@@ -8,7 +8,7 @@ class Agent:
         self.playerNum = playerNum
         self.player = Gomoku.players[(playerNum-1)%2]
 
-    def getMoves(self):
+    def getMove(self):
         raise NotImplementedError()
 
     def makeMove(self):
