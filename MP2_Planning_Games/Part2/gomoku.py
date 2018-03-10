@@ -383,3 +383,12 @@ class Gomoku:
         ## Numbers along bottom
         ret += "  " + ' '.join(str(i+int(not zeroIndexed)) for i in range(self.dim)) + "\n"
         return ret
+
+    def boardIsFull(self):
+        board = self.board
+        for x in range(0, 7):
+            for y in range(0, 7):
+                if board[x][y].char == '.':
+                    return False
+        return True
+

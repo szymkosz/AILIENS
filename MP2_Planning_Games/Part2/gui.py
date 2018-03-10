@@ -85,12 +85,21 @@ while not gameExit:
 					
 		refreshBoard()
 
+	# check for draws
+	if game.boardIsFull():
+		text = bigFont.render("DRAW!", True, black)
+
+		text_X = 430 - (text.get_width()/2)
+		gameDisplay.blit(text, [text_X, 860])
+		pygame.display.update()
+		keepPlaying = False
+
 	# if there is a winner, print winner to screen
 	if win == True:
 		if game.reds_turn:
-			text = bigFont.render("Blue wins!", True, blue)
+			text = bigFont.render("BLUE WINS!", True, blue)
 		else:
-			text = bigFont.render("Red wins!", True, red)
+			text = bigFont.render("RED WINS!", True, red)
 
 		text_X = 430 - (text.get_width()/2)
 		gameDisplay.blit(text, [text_X, 860])
