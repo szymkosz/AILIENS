@@ -21,9 +21,9 @@ class Human(Agent):
 	def makeMove(self):
 		x, y = self.getMove()
 		if self.playerNum == 1:
-			self.game.setPiece(x, y, 1)
+			return self.game.setPiece(x, y, 1)
 		elif self.playerNum == 2:
-			self.game.setPiece(x, y, 0)
+			return self.game.setPiece(x, y, 0)
 
 
 

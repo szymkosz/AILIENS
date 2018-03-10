@@ -27,7 +27,7 @@ Jess = Human(game, 2)
 if boardInitialized == False:
 	pygame.init()
 	pygame.display.init()
-	gameDisplay = pygame.display.set_mode((870, 870))
+	gameDisplay = pygame.display.set_mode((870, 940))
 	pygame.display.set_caption('Gomoku')
 	# draw board
 	gameDisplay.fill(white)
@@ -40,7 +40,7 @@ if boardInitialized == False:
 	pygame.display.update()
 	# time.sleep(10) #
 	# font
-	bigFont = pygame.font.SysFont(None, 200)
+	bigFont = pygame.font.SysFont(None, 100)
 	littleFont = pygame.font.SysFont(None, 35)
 	boardInitialized = True
 	# gameLoop(self)
@@ -91,7 +91,9 @@ while not gameExit:
 			text = bigFont.render("Blue wins!", True, blue)
 		else:
 			text = bigFont.render("Red wins!", True, red)
-		gameDisplay.blit(text, [385, 385])
+
+		text_X = 430 - (text.get_width()/2)
+		gameDisplay.blit(text, [text_X, 860])
 		pygame.display.update()
 		keepPlaying = False
 
