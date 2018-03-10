@@ -119,7 +119,8 @@ class Gomoku:
                                 for num in range(minStones,maxStones+1) for canWin in possibleWin }
         patternStartingPos = { (p,num,canWin):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
                                 for num in range(minStones,maxStones+1) for canWin in possibleWin }
-        patternMovesToComplete = { (p,num,canWin):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
+        patternMovesToComplete = { (p,num,canWin): { adjacent: {} for adjacent in possibleWin }  \
+                                for p in [Gomoku.players[0],Gomoku.players[1]] \
                                 for num in range(minStones,maxStones+1) for canWin in possibleWin }
 
         # Add dictionary key to include fully empty block in search
@@ -143,7 +144,6 @@ class Gomoku:
         #                 starting coordinates
         # Can also return the position in the reverse direction by setting the
         #  reverse flag to True
-        #
         def nextPosition(pos, direction, reverse=False, length=1):
             if reverse:
                 nextPos = (pos[0] - length * direction[0], pos[1] - length * direction[1])
@@ -192,7 +192,6 @@ class Gomoku:
             #  This will get populated by patternIsOpen().
             if canWin:
                 return False
-
             return True
 
         # Takes in each pattern and checks if a win is still possible in that block
@@ -239,46 +238,73 @@ class Gomoku:
         # Returns a list of possible moves that will complete the current pattern
         def getMovesToComplete(pattern, pos, direction):
             player, num, canWin = pattern
+
+            adjacentMoves = []
+            nonadjacentMoves = []
+
+            ## Check the adjacent positions first
             curCoord = nextPosition(pos, direction, length=num)
             prevCoord = nextPosition(pos, direction, reverse=True)
-            if curCoord != None:
-                curPos = self.board[curCoord[0]][curCoord[1]]
+
+            # If the adjacent positions are not occupied, add them to the adjacent moves list
             if prevCoord != None:
                 prevPos = self.board[prevCoord[0]][prevCoord[1]]
+                if prevPos.color == None:
+                    adjacentMoves.append(prevCoord)
+                prevCoord = nextPosition(prevCoord, direction, reverse=True)
 
-            possibleMoves = []
-            spotsNecessary = 5 - num
+            if curCoord != None:
+                curPos = self.board[curCoord[0]][curCoord[1]]
+                if curPos.color == None:
+                    adjacentMoves.append(curCoord)
+                curCoord = nextPosition(curCoord, direction)
+
+
+            # Set up the counter to find other possible moves
+            spotsNecessaryForward = 5 - num - int(curCoord != None)
+            spotsNecessaryReverse = 5 - num - int(prevCoord != None)
             count = 0
 
-            ### TODO: Append possible moves in order of distance away from pattern
-            # Check forward direction
-            while (count < spotsNecessary):
-                if curCoord != None and (curPos.color == player or curPos.color == None):
-                    curPos = self.board[curCoord[0]][curCoord[1]]
-                    if curPos.color == None:
-                        possibleMoves.append(curCoord)
-                    count += 1
-                    curCoord = nextPosition(curCoord, direction)
-                else:
-                    break
+            # Set up the loop with the next positions in the forward and reverse directions
+            if prevCoord != None:
+                prevPos = self.board[prevCoord[0]][prevCoord[1]]
+            if curCoord != None:
+                curPos = self.board[curCoord[0]][curCoord[1]]
 
-            spotsNecessary = 5 - num
-            count = 0
+            forwardDone = False
+            reverseDone = False
 
-            # Check reverse direction
-            while (count < spotsNecessary):
-                if prevCoord != None and (prevPos.color == player or prevPos.color == None):
-                    prevPos = self.board[prevCoord[0]][prevCoord[1]]
-                    if prevPos.color == None:
-                        possibleMoves.append(prevCoord)
-                    count += 1
-                    prevCoord = nextPosition(prevCoord, direction, reverse=True)
-                else:
-                    break
+            while (count < spotsNecessaryForward + spotsNecessaryReverse):
+                # First check the reverse direction
+                if not reverseDone:
+                    if prevCoord != None and (prevPos.color == player or prevPos.color == None):
+                        prevPos = self.board[prevCoord[0]][prevCoord[1]]
+                        if prevPos.color == None:
+                            nonadjacentMoves.append(prevCoord)
+                        count += 1
+                        prevCoord = nextPosition(prevCoord, direction, reverse=True)
+                    else:
+                        reverseDone = True
 
-            possibleMoves = sorted(possibleMoves, key=itemgetter(1))
+                # Then check the forward direction
+                if not forwardDone:
+                    if curCoord != None and (curPos.color == player or curPos.color == None):
+                        curPos = self.board[curCoord[0]][curCoord[1]]
+                        if curPos.color == None:
+                            nonadjacentMoves.append(curCoord)
+                        count += 1
+                        curCoord = nextPosition(curCoord, direction)
+                    else:
+                        forwardDone = True
+                if forwardDone and reverseDone: break
 
-            return sorted(possibleMoves, key=itemgetter(0))
+            # possibleMoves = sorted(possibleMoves, key=itemgetter(1))
+
+            # return sorted(possibleMoves, key=itemgetter(0))
+            adjacents = (pos, direction, adjacentMoves)
+            nonadjacents = (pos, direction, nonadjacentMoves)
+            # return (adjacents, nonadjacents)
+            return (adjacentMoves, nonadjacentMoves)
 
 
         """ --------------- DRIVER FOR getPatterns() --------------- """
@@ -319,7 +345,9 @@ class Gomoku:
                                             patternStartingPos[(player, num, True)].append((curPos, endPos, direction))
                                             patternStartingPos[(player, num, False)].remove((curPos, endPos, direction))
                                             # Since a win is possible with this pattern, find the moves needed to complete it
-                                            patternMovesToComplete[(player,num, True)].append(getMovesToComplete((player, num, canWin), curPos, direction))
+                                            possibleMovesTuple = getMovesToComplete((player, num, canWin), curPos, direction)
+                                            if possibleMovesTuple[0]: patternMovesToComplete[(player,num, True)][True] = possibleMovesTuple[0]
+                                            if possibleMovesTuple[1]: patternMovesToComplete[(player,num, True)][False] = possibleMovesTuple[1]
 
         return (patternCount, patternStartingPos, patternMovesToComplete)
 

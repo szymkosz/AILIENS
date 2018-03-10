@@ -9,5 +9,8 @@ class AlphaBeta(Agent):
         super().__init__(game, playerNum)
         self.name = "ALPHA_BETA"
 
+    def getMove(self):
+        pass
+        
     def makeMove(self):
         raise NotImplementedError()
