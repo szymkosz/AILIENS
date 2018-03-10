@@ -1,6 +1,3 @@
-from colorama import Fore
-from colorama import Style
-
 ## Used for formatting standard output
 # P1_COLOR = '\033[91m'
 # P2_COLOR = '\033[94m'
