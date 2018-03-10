@@ -28,8 +28,12 @@ game = Gomoku()
 
 # a = Agent().getMoves()
 
-print(game)
+# print(game)
 
+# patternMovesToComplete = { (p,num,canWin): { adjacent: [] for adjacent in [True, False] }  for p in ["RED","BLUE"] \
+# 						for num in range(1,5+1) for canWin in [True, False] }
+# for key in patternMovesToComplete:
+# 	print(key, patternMovesToComplete[key])
 # if __name__ == "__main__":
 #
 #     incorrectUsageError = "Incorrect Usage: Expected " \
@@ -82,27 +86,31 @@ moves = [(3, 4), (3, 3), (1, 2), (4, 3), (5, 3), (2, 2), (2,3), (1,1),
 for m in moves:
     game.setPiece(m[0], m[1], game.reds_turn)
 
-print(game)
-print("Moves taken: ", game.movesTaken)
-print("\n\n\tSet")
+# print(game)
+# print("Moves taken: ", game.movesTaken)
+# print("\n\n\tSet")
 game.setPiece(5,5, game.reds_turn)
+# print(game)
+# print("Moves taken: ", game.movesTaken)
+# print("\n\n\tunSet")
+# game.unsetPiece()
+# game.unsetPiece()
+# game.unsetPiece()
+# print(game)
+# print("Moves taken: ", game.movesTaken)
+# print("\n\n\tSet")
+# game.setPiece(4,4,  game.reds_turn)
+game.setPiece(5,1, game.reds_turn)
+game.setPiece(6,6, game.reds_turn)
+game.setPiece(4,0, game.reds_turn)
+# print(game.board[4][4])
+# game.setPiece(4,1, game.reds_turn)
+# print(game)
+# print("Moves taken: ", game.movesTaken)
+# print("\n\n\tunset")
+# game.unsetPiece()
 print(game)
-print("Moves taken: ", game.movesTaken)
-print("\n\n\tunSet")
-game.unsetPiece()
-game.unsetPiece()
-game.unsetPiece()
-print(game)
-print("Moves taken: ", game.movesTaken)
-print("\n\n\tSet")
-game.setPiece(4,4, game.reds_turn)
-game.setPiece(4,1, game.reds_turn)
-print(game)
-print("Moves taken: ", game.movesTaken)
-print("\n\n\tunset")
-game.unsetPiece()
-print(game)
-print("Moves taken: ", game.movesTaken)
+# print("Moves taken: ", game.movesTaken)
 
 
 
@@ -119,7 +127,7 @@ directions = [(1,0),(0,1),(1,-1),(1,1)]
 # 	return nextPos if not outOfBounds(nextPos) else None
 
 # print(nextPosition((2,2),(1,0),reverse=True, length=2))
-# patterns = game.getPatterns()
+patterns = game.getPatterns()
 
 # print(game.movesTaken)
 
@@ -129,9 +137,9 @@ directions = [(1,0),(0,1),(1,-1),(1,1)]
 # print ("\n\nSECOND DICTIONARY\n\n")
 # for pattern in patterns[1]:
 # 	print(pattern, patterns[1][pattern])
-# print ("\n\nTHIRD DICTIONARY\n\n")
-# for pattern in patterns[2]:
-# 	print(pattern, patterns[2][pattern])
+print ("\n\nTHIRD DICTIONARY\n\n")
+for pattern in patterns[2]:
+	print(pattern, patterns[2][pattern])
 # for direction in directions:
 # 	print(nextPosition(game,(3,4),direction))
 
