@@ -7,6 +7,7 @@ class Agent:
         self.game = game
         self.playerNum = playerNum
         self.player = Gomoku.players[(playerNum-1)%2]
+        self.firstMove = True
 
     def getMove(self):
         raise NotImplementedError()
