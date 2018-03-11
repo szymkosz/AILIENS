@@ -1,24 +1,72 @@
 class Node(object):
-	def __init__(self, board, curPlayerColor, depth, MIN_OR_MAX, parent, prevMove):
+	def __init__(self, board, curPlayerColor, depth, MIN_OR_MAX, prevMove):
 		# These variables remain unchanged after initialization.
 		self.board = board
 		self.curPlayerColor = curPlayerColor
 		self.depth = depth
 		self.MIN_OR_MAX = MIN_OR_MAX
-		self.parent = parent
 		self.prevMove = prevMove
 
 		# These variables will be updated as the minimax tree is built.
 		self.childChoice = None
 		self.children = []
 		self.value = 0
-		
-		#buildTree(self)
+
+
+## This function identifies the color of the player at the root Node given
+#  an arbitrary node in the tree.  This is important for identifying if a
+#  chain of 5 stones is a win or loss for the original player at the root Node.
+#
+#  The color of the root Node is returned as either "RED" or "BLUE".
+def determineRootColor(node):
+	if node.curPlayerColor == "BLUE":
+		if node.depth % 2 == 0:
+			return "BLUE"
+		else:
+			return "RED"
+	elif node.curPlayerColor == "RED":
+		if node.depth % 2 == 0:
+			return "RED"
+		else:
+			return "BLUE"
+	else:
+		raise ValueError("curPlayerColor must be 'RED' or 'BLUE'!")
+
 
 def buildTree(node):
+	# Before building the children, the current board layout is
+	# checked for a win (a chain of 5 stones) for either player or a draw.
+	boardState = node.board.winOrDraw()
+	rootColor = self.determineRootColor(node)
+
+	# If the current board layout is a win or a draw, no subtree should be built.
+	# Instead, the appropriate value should be assigned to the parameter Node.
+	if boardState is not None:
+		# If the current board layout is a draw, the parameter Node's value is 0.
+		if boardState == "DRAW":
+			node.value = 0
+			return
+		elif boardState == "BLUE" or boardState == "RED":
+			# If the color of this tree's root Node matches the color of the
+			# chain of 5 stones, the parameter Node's value should be set to
+			# positive infinity to represent a win for the original player.
+			# Otherwise, it should be set to negative infinity to represent a
+			# loss for the original player.
+			if rootColor == boardState:
+				node.value = float("inf")
+				return
+			else:
+				node.value = float("-inf")
+				return
+		else:
+			raise ValueError("The winOrDraw function isn't returning a correct value.")
+
+	# If this is level 3, call the evaluation function to set the
+	# parameter Node's value and return.
 	if node.depth >= 3:
 		patterns = node.board.getPatterns()
-		node.value = helper.evalLayout(node.curPlayerColor, patterns)
+		blocks = helper.findBlocks(node.board)
+		node.value = helper.evalLayout(rootColor, patterns, blocks)
 		return
 
 	# Initialize variables for determining whether or not the color of the next
@@ -29,7 +77,6 @@ def buildTree(node):
 	nextPlayerColor = None
 	nextDepth = node.depth + 1
 	nextMIN_OR_MAX = None
-	nextParent = node
 
 	# Determine whether or not the next stone to be placed is red
 	# and what the color of the next player is
@@ -52,19 +99,21 @@ def buildTree(node):
 
 	# Loop over all squares in the current board to consider
 	# all the possibilities for the next move
-	for i in range(len(node.board.board)):
-		for j in range(node.board.board[0]):
-			if node.board.board[i][j].color is None:
+	for x in range(node.board.dim):
+		for y in range(node.board.dim):
+			if node.board.board[x][y].char == '.':
 				# Set the stone in this square to set up the board for evaluating
 				# the children of the newly created node
-				node.board.setPiece(j, i, isSettingRed)
+				node.board.setPiece(x, y, isSettingRed)
 
 				# Add the move to the list of previous moves for storing it in the new Node
-				nextPrevMove = (j, i)
+				nextPrevMove = (x, y)
 
 				# Create the child Node, add it to the parameter's list of child Nodes,
 				# and recurse on it to build its subtree
-				child = Node(node.board, nextPlayerColor, nextDepth, nextMIN_OR_MAX, nextParent, nextPrevMove)
+
+				#child = Node(node.board, nextPlayerColor, nextDepth, nextMIN_OR_MAX, nextParent, nextPrevMove)
+				child = Node(node.board, nextPlayerColor, nextDepth, nextMIN_OR_MAX, nextPrevMove)
 				node.children.append(child)
 				BuildTree(child)
 

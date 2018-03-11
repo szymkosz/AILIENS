@@ -23,6 +23,7 @@ where:
 from gomoku import Gomoku
 import time, sys
 from Agents.agent import Agent
+import helper
 
 game = Gomoku()
 
@@ -78,14 +79,16 @@ game = Gomoku()
 
 
 # raise ValueError()
-
+"""
 moves = [(3, 4), (3, 3), (1, 2), (4, 3), (5, 3), (2, 2), (2,3), (1,1),
 		(3,5), (5,4),(3,2),(0,0),(6,5),(6,4),(0,6),(1,5)]
+"""
+moves = [(1,4), (1,3), (2,4), (2,3), (3,4), (3,3)]
 
 # Random Moves
 for m in moves:
     game.setPiece(m[0], m[1], game.reds_turn)
-
+"""
 # print(game)
 # print("Moves taken: ", game.movesTaken)
 # print("\n\n\tSet")
@@ -111,7 +114,9 @@ game.setPiece(4,0, game.reds_turn)
 # game.unsetPiece()
 print(game)
 # print("Moves taken: ", game.movesTaken)
+"""
 
+print(game)
 
 
 directions = [(1,0),(0,1),(1,-1),(1,1)]
@@ -128,15 +133,15 @@ directions = [(1,0),(0,1),(1,-1),(1,1)]
 
 # print(nextPosition((2,2),(1,0),reverse=True, length=2))
 patterns = game.getPatterns()
-
+blocks = helper.findBlocks(game)
 # print(game.movesTaken)
 
-# print ("\n\nFIRST DICTIONARY\n\n")
-# for pattern in patterns[0]:
-# 	print(pattern, patterns[0][pattern])
-# print ("\n\nSECOND DICTIONARY\n\n")
-# for pattern in patterns[1]:
-# 	print(pattern, patterns[1][pattern])
+print ("\n\nFIRST DICTIONARY\n\n")
+for pattern in patterns[0]:
+	print(pattern, patterns[0][pattern])
+print ("\n\nSECOND DICTIONARY\n\n")
+for pattern in patterns[1]:
+	print(pattern, patterns[1][pattern])
 print ("\n\nTHIRD DICTIONARY\n\n")
 for pattern in patterns[2]:
 	print(pattern, patterns[2][pattern])
@@ -144,3 +149,6 @@ for pattern in patterns[2]:
 # 	print(nextPosition(game,(3,4),direction))
 
 # print(sys.path)
+
+print("")
+print("Evaluation cost: " + str(helper.evalLayout("RED", patterns, blocks)))

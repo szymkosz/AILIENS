@@ -4,7 +4,7 @@
 # C_END = '\033[0m'
 
 class Position:
-    addColor = False
+    addColor = True
 
     colors = { "RED":    '\033[91m',
                "GREEN":  '\033[92m',
