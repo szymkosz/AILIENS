@@ -30,4 +30,9 @@ class MiniMax(Agent):
 
 
     def makeMove(self):
-        return self.getMove()
+        moveToMake = self.getMove()
+
+        # The agent is player1/RED
+        settingRed = self.game.players[0] == self.player
+
+        return self.game.setPiece(moveToMake[0], moveToMake[1], settingRed)
