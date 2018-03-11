@@ -124,7 +124,7 @@ class Gomoku:
                                 for num in range(minStones,maxStones+1) for canWin in possibleWin }
         patternStartingPos = { (p,num,canWin):[] for p in [Gomoku.players[0],Gomoku.players[1]] \
                                 for num in range(minStones,maxStones+1) for canWin in possibleWin }
-        patternMovesToComplete = { (p,num,canWin): { adjacent: {} for adjacent in possibleWin }  \
+        patternMovesToComplete = { (p,num,canWin): { adjacent: [] for adjacent in possibleWin }  \
                                 for p in [Gomoku.players[0],Gomoku.players[1]] \
                                 for num in range(minStones,maxStones+1) for canWin in possibleWin }
 
@@ -308,6 +308,8 @@ class Gomoku:
             # return sorted(possibleMoves, key=itemgetter(0))
             adjacents = (pos, direction, adjacentMoves)
             nonadjacents = (pos, direction, nonadjacentMoves)
+            # adjacentMoves = sorted(adjacentMoves)
+            # nonadjacentMoves = sorted(nonadjacentMoves)
             # return (adjacents, nonadjacents)
             return (adjacentMoves, nonadjacentMoves)
 
@@ -351,8 +353,8 @@ class Gomoku:
                                             patternStartingPos[(player, num, False)].remove((curPos, endPos, direction))
                                             # Since a win is possible with this pattern, find the moves needed to complete it
                                             possibleMovesTuple = getMovesToComplete((player, num, canWin), curPos, direction)
-                                            if possibleMovesTuple[0]: patternMovesToComplete[(player,num, True)][True] = possibleMovesTuple[0]
-                                            if possibleMovesTuple[1]: patternMovesToComplete[(player,num, True)][False] = possibleMovesTuple[1]
+                                            if possibleMovesTuple[0]: patternMovesToComplete[(player,num, True)][True].append(possibleMovesTuple[0])
+                                            if possibleMovesTuple[1]: patternMovesToComplete[(player,num, True)][False].append(possibleMovesTuple[1])
 
         return (patternCount, patternStartingPos, patternMovesToComplete)
 
@@ -391,4 +393,3 @@ class Gomoku:
                 if board[x][y].char == '.':
                     return False
         return True
-
