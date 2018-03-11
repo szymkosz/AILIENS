@@ -411,7 +411,7 @@ class Gomoku:
         patternCount = patterns[0]
 
         numBlueChainsOf5 = patternCount[("BLUE", 5, True)]
-    	numRedChainsOf5 = patternCount[("RED", 5, True)]
+        numRedChainsOf5 = patternCount[("RED", 5, True)]
 
         if numBlueChainsOf5 > 0:
             return "BLUE"
