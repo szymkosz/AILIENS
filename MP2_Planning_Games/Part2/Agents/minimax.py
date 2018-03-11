@@ -2,25 +2,27 @@ from gomoku import Gomoku
 from position import Position
 from agent import Agent
 from sys import maxsize
-
-#from tree import Node
 import tree
 
 class MiniMax(Agent):
     def __init__(self, game=Gomoku(), playerNum=1):
         super().__init__(game, playerNum)
         self.name = "MINIMAX"
-        #self.tree = None
+        self.move_num = 1
+        self.expandedNodes = 0
+
 
     def getMove(self):
         assert self.game is not None, "MINIMAX ERROR: No game has been initialized!"
         assert (self.player == "RED") or (self.player == "BLUE"), \
             "MINIMAX ERROR: Player must be 'RED' or 'BLUE'!"
 
+        self.expandedNodes = 0
+
         # Create a root node and build the search tree to decide the next move
         #root = tree.Node(self.game, self.player, 0, "MAX", None, None)
         root = tree.Node(self.game, self.player, 0, "MAX", None)
-        tree.buildTree(root)
+        tree.buildTree(self, root)
 
         optimalMove = root.childChoice.prevMove
 
@@ -31,6 +33,9 @@ class MiniMax(Agent):
 
     def makeMove(self):
         moveToMake = self.getMove()
+        print("Agent: " + self.name + "  Move: " + str(self.move_num) + "  " + \
+              self.player + " Nodes Expanded: " + str(self.expandedNodes))
+        self.move_num += 1
 
         # The agent is player1/RED
         settingRed = self.game.players[0] == self.player
