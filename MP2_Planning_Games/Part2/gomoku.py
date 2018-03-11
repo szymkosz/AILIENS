@@ -384,11 +384,38 @@ class Gomoku:
         ret += "  " + ' '.join(str(i+int(not zeroIndexed)) for i in range(self.dim)) + "\n"
         return ret
 
+    ## Checks if there are any empty squares in the board.
+    #  This function was added to help the gui know when a draw
+    #  has been reached and the minimax and alpha-beta agents know
+    #  when to cut their search short.
     def boardIsFull(self):
         board = self.board
-        for x in range(0, 7):
-            for y in range(0, 7):
+        for x in range(self.dim):
+            for y in range(self.dim):
                 if board[x][y].char == '.':
                     return False
         return True
 
+    
+    ## This function identifies if there is a win for either player, a draw,
+    #  or neither.
+    #
+    #  If the red player has won, "RED" is returned.
+    #  If the blue player has won, "BLUE" is returned.
+    #  If there is a draw, "DRAW" is returned.
+    #  If there is no victory or draw, a Nonetype is returned.
+    def winOrDraw(self):
+        patterns = self.getPatterns()
+        patternCount = patterns[0]
+
+        numBlueChainsOf5 = patternCount[("BLUE", 5, True)]
+    	numRedChainsOf5 = patternCount[("RED", 5, True)]
+
+        if numBlueChainsOf5 > 0:
+            return "BLUE"
+        elif numRedChainsOf5 > 0:
+            return "RED"
+        elif self.boardIsFull():
+            return "DRAW"
+        else:
+            return None
