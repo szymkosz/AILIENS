@@ -21,8 +21,8 @@ gameExit = False
 win = False
 
 game = Gomoku()
-Jon = Human(game, 1)
-Jess = Human(game, 2)
+# Jon = Human(game, 1)
+# Jess = Human(game, 2)
 # check if the board has been initalized 
 if boardInitialized == False:
 	pygame.init()
@@ -31,19 +31,15 @@ if boardInitialized == False:
 	pygame.display.set_caption('Gomoku')
 	# draw board
 	gameDisplay.fill(white)
-	# pygame.display.update() #
-	#time.sleep(10) #
 	for x in range(0, 8):
 		pygame.draw.rect(gameDisplay, black, [110*x + 50, 50, 10, 780])
 	for y in range(0, 8):
 		pygame.draw.rect(gameDisplay, black, [50, 110*y + 50, 780, 10])
 	pygame.display.update()
-	# time.sleep(10) #
-	# font
 	bigFont = pygame.font.SysFont(None, 100)
 	littleFont = pygame.font.SysFont(None, 35)
 	boardInitialized = True
-	# gameLoop(self)
+	# gameDisplay = pygame.transform.scale(gameDisplay, (556, 600))
 
 # returns tuple of coordinates at center of the square
 def boardToScreen(x, y):

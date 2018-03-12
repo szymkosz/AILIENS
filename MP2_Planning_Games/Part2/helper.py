@@ -263,8 +263,8 @@ def evalLayout(playerColor, patterns, blocks):
     counts.append(blocks[(opponentColor, 4)])
 
     counts = np.asarray(counts)
-    print(counts)
-    print(np.dot(weights, counts))
-    print(blocks)
+    # print(counts)
+    # print(np.dot(weights, counts))
+    # print(blocks)
 
     return np.dot(weights, counts)
