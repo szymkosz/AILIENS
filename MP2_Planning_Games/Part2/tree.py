@@ -147,8 +147,13 @@ def buildTree(agent, node, alpha=float("-inf"), beta=float("inf")):
                 # (If the parameter Node is a MAX node and the child's value is greater
                 # than or equal to the canddidate value or a MIN node and the child's
                 # value is less than or equal to the candidate value)
+				"""
 				if (isMax and child.value >= candidateValue) \
 				or ((not isMax) and child.value <= candidateValue):
+				"""
+				if (isMax and child.value > candidateValue) \
+				or ((not isMax) and child.value < candidateValue) \
+				or (node.childChoice is None):
 					candidateValue = child.value
 					node.value = candidateValue
 					node.childChoice = child
@@ -202,6 +207,63 @@ def buildTree(agent, node, alpha=float("-inf"), beta=float("inf")):
     #         node.value = candidateValue
     #         node.childChoice = child
 
+
+def loopOverChildren(node, alpha=float("-inf"), beta=float("inf")):
+	candidateValue = None
+	isMax = False
+	if node.MIN_OR_MAX == "MIN":
+		candidateValue = float("inf")
+		isMax = False
+	elif node.MIN_OR_MAX == "MAX":
+		candidateValue = float("-inf")
+		isMax = True
+	else:
+		raise ValueError("MIN_OR_MAX must be 'MIN' or 'MAX'!")
+
+	for child in node.children:
+		print(child)
+		loopOverChildren(child, alpha, beta)
+
+		if (isMax and child.value > candidateValue) \
+		or ((not isMax) and child.value < candidateValue) \
+		or (node.childChoice is None):
+			candidateValue = child.value
+			node.value = candidateValue
+			node.childChoice = child
+
+			if isMax:
+				# If the parameter Node is a MAX node and its new value is
+				# greater than or equal to beta, prune it.  Otherwise,
+				# update alpha if the new value is greater than alpha.
+				if node.value >= beta:
+					print("Beta-pruned node with prevMove " + str(node.prevMove))
+					return
+				elif node.value > alpha:
+					alpha = node.value
+			else:
+			   # If the parameter Node is a MIN node and its new value is
+			   # less than or equal to alpha, prune it.  Otherwise,
+			   # update beta if the new value is less than beta.
+			   if node.value <= alpha:
+				   print("Alpha-pruned node with prevMove " + str(node.prevMove))
+				   return
+			   elif node.value < beta:
+				   beta = node.value
+
+def printTree(root):
+	#print("board: " + str(root.board))
+	print("curPlayerColor: " + str(root.curPlayerColor))
+	print("depth: " + str(root.depth))
+	print("MIN_OR_MAX: " + str(root.MIN_OR_MAX))
+	print("prevMove: " + str(root.prevMove))
+
+	print("childChoice: " + str(root.childChoice))
+	print("children: " + str(root.children))
+	print("value: " + str(root.value))
+	print("")
+
+	for child in root.children:
+		printTree(child)
 
 """
 from sys import maxsize

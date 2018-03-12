@@ -20,7 +20,9 @@ where:
 -------------------------------------------------------------------------------
 """
 
+
 from gomoku import Gomoku
+"""
 import time, sys
 from Agents.agent import Agent
 from Agents.alphabeta import AlphaBeta
@@ -29,9 +31,9 @@ from Agents.reflex import Reflex
 from Agents.human import Human
 import helper
 #import gui
-
+"""
 game = Gomoku()
-
+"""
 if __name__ == "__main__":
 
     incorrectUsageError = "Incorrect Usage: Expected " \
@@ -62,11 +64,14 @@ if __name__ == "__main__":
         Jess = Human(game, 2)
     else:
         sys.exit("AgentNotFoundError: Is the agent name spelled correctly?")
-
+"""
+"""
 if sys.argv[1] == "human" or sys.argv[1] == "h" or sys.argv[2] == "human" or sys.argv[2] == "h":
     exec('gui.py')
 
 else:
+	pass
+
     # print(game)
     # win = False
     # for i in range(0, 10):
@@ -89,6 +94,7 @@ else:
 
     print(game)
 
+"""
 # moves = [(6, 4), (6, 2), (5, 5), (5, 4), (5, 6), (5, 3), (5, 2), (5, 1), (4, 6), (6, 6), (4, 5), (6, 5), (4, 4), (5, 0), (4, 3), (4, 2), (6, 0), (4, 1), (6, 1), (3, 5), (4, 0), (3, 6), (3, 4)]
 
 
@@ -187,6 +193,69 @@ for pattern in patterns[2]:
 #   print(nextPosition(game,(3,4),direction))
 
 # print(sys.path)
+
+"""
+THE FOLLOWING CODE IS A SIMPLE TEST OF THE GENERAL ALPHA-BETA PRUNING
+AND MINIMAX ALGORITHMS!
+"""
+
+import tree
+
+"""
+class Node(object):
+    def __init__(self, board, curPlayerColor, depth, MIN_OR_MAX, prevMove):
+        # These variables remain unchanged after initialization.
+        self.board = board
+        self.curPlayerColor = curPlayerColor
+        self.depth = depth
+        self.MIN_OR_MAX = MIN_OR_MAX
+        self.prevMove = prevMove
+
+        # These variables will be updated as the minimax tree is built.
+        self.childChoice = None
+        self.children = []
+        self.value = 0
+"""
+
+rootDepth = 1
+root = tree.Node(game, "RED", rootDepth, "MAX", None)
+
+for i in range(3):
+	root.children.append(tree.Node(game, "BLUE", rootDepth+1, "MIN", (rootDepth+1, i)))
+
+	if i == 0:
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 0)))
+		root.children[i].children[0].value = float("-inf")
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 1)))
+		root.children[i].children[1].value = float("-inf")
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 2)))
+		root.children[i].children[2].value = float("-inf")
+	elif i == 1:
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 3)))
+		root.children[i].children[0].value = float("-inf")
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 4)))
+		root.children[i].children[1].value = float("-inf")
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 5)))
+		root.children[i].children[2].value = float("-inf")
+	elif i == 2:
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 6)))
+		root.children[i].children[0].value = float("-inf")
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 7)))
+		root.children[i].children[1].value = float("-inf")
+		root.children[i].children.append(tree.Node("game", "RED", rootDepth+2, "MAX", (rootDepth+2, 8)))
+		root.children[i].children[2].value = float("-inf")
+
+tree.printTree(root)
+
+tree.loopOverChildren(root)
+
+print("")
+print("")
+print("FINISHED LOOP OVER CHILDREN!")
+print("")
+
+tree.printTree(root)
+
 
 """
 RUN THE FOLLOWING CODE TO TEST THE EVALUATION FUNCTION
