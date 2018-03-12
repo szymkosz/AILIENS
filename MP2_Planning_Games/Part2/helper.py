@@ -200,6 +200,14 @@ import numpy as np
 
 weights = np.asarray([1, 2, 3, 4, -1, -2, -3, -4])
 
+# This is the evaluation function for the minimax and alpha-beta agents.
+#
+# Given a player color, dictionaries of information about chains of stones
+# on the board, and dictionaries of information about blocks of 5 consecutive
+# squares on the board, this function will check for guaranteed wins and losses
+# for the given player color and return positive or negative infinity accordingly
+# if any are found.  Otherwise, a linear combination of the weights with the numbers
+# of blocks of each category is computed and returned.
 # @param playerColor    The color of the agent calling this function.
 #                       This parameter can either be the string "RED" for
 #                       the red player or "BLUE" for the blue player.

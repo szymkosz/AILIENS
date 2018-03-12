@@ -188,5 +188,13 @@ for pattern in patterns[2]:
 
 # print(sys.path)
 
-"""print("")
-print("Evaluation cost: " + str(helper.evalLayout("RED", patterns, blocks)))"""
+"""
+RUN THE FOLLOWING CODE TO TEST THE EVALUATION FUNCTION
+AFTER SETTING UP THE BOARD!
+"""
+#patterns = game.getPatterns()
+
+#blocks = helper.findBlocks(game)"""
+
+#print("")
+#print("Evaluation cost: " + str(helper.evalLayout("RED", patterns, blocks)))
