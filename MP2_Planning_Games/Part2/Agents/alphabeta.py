@@ -11,6 +11,8 @@ class AlphaBeta(Agent):
         self.move_num = 1
         self.expandedNodes = 0
 
+        self.treeDepth = 2
+
 
     def getMove(self):
         assert self.game is not None, "ALPHA_BETA ERROR: No game has been initialized!"
@@ -21,7 +23,7 @@ class AlphaBeta(Agent):
 
         # Create a root node and build the search tree to decide the next move
         #root = tree.Node(self.game, self.player, 0, "MAX", None, None)
-        root = tree.Node(self.game, self.player, 1, "MAX", None)
+        root = tree.Node(self.game, self.player, self.treeDepth, "MAX", None)
         tree.buildTree(self, root)
 
         optimalMove = root.childChoice.prevMove
