@@ -1,6 +1,7 @@
 import sys
 from position import Position
 from operator import itemgetter
+import helper
 
 class Gomoku:
     players = ["RED", "BLUE"]   ## ONLY TWO PLAYERS
@@ -424,11 +425,15 @@ class Gomoku:
     #  If there is a draw, "DRAW" is returned.
     #  If there is no victory or draw, a Nonetype is returned.
     def winOrDraw(self):
-        patterns = self.getPatterns()
-        patternCount = patterns[0]
+        # patterns = self.getPatterns()
+        # patternCount = patterns[0]
 
-        numBlueChainsOf5 = patternCount[("BLUE", 5, True)]
-        numRedChainsOf5 = patternCount[("RED", 5, True)]
+        # numBlueChainsOf5 = patternCount[("BLUE", 5, True)]
+        # numRedChainsOf5 = patternCount[("RED", 5, True)]
+
+        blocks = helper.findBlocks(self)
+        numBlueChainsOf5 = blocks[("BLUE", 5)]
+        numRedChainsOf5 = blocks[("RED", 5)]
 
         if numBlueChainsOf5 > 0:
             return "BLUE"
