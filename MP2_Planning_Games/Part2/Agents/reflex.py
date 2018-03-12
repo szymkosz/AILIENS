@@ -2,6 +2,7 @@ from gomoku import Gomoku
 from position import Position
 from Agents.agent import Agent
 import random
+import helper
 
 class Reflex(Agent):
     def __init__(self, game=Gomoku(), playerNum=1):
@@ -10,6 +11,9 @@ class Reflex(Agent):
 
     def makeMove(self):
         moveToMake = self.getMove()
+
+        if self.firstMove:
+            self.firstMove = False
 
         # The agent is player1/RED
         settingRed = self.game.players[0] == self.player
@@ -37,6 +41,20 @@ class Reflex(Agent):
 
         # print("curPattern: ", curPattern)
         # print("Count: ", count)
+
+        ## 5. The first move can follow any of the following strategies:
+        #       -   Follow rule #4 above (and choose bottom left corner)
+        #   ->  -   Play at random
+        #       -   Make an optimal move (in the middle)
+        if self.firstMove:
+            x = round((self.game.dim - 1) * random.random())
+            y = round((self.game.dim - 1) * random.random())
+            while ((x,y) in self.game.movesTaken):
+                x = round((self.game.dim - 1) * random.random())
+                y = round((self.game.dim - 1) * random.random())
+            nextCoord = (x,y)
+            return nextCoord
+
 
         ## 1. Check whether the agent can win the game by placing one stone
         #      Break a tie by choosing a move in the following order:
@@ -93,18 +111,18 @@ class Reflex(Agent):
         #     To break a tie, find the position which is farthest to the left;
         #      among those which are farthest to the left, find the position
         #      which is closest to the bottom.
-
-
-
-        ## 5. The first move can follow any of the following strategies:
-        #       -   Follow rule #4 above (and choose bottom left corner)
-        #       -   Play at random
-        #       -   Make an optimal move (in the middle)
-        x = round((self.game.dim - 1) * random.random())
-        y = round((self.game.dim - 1) * random.random())
-        while ((x,y) in self.game.movesTaken):
-            x = round((self.game.dim - 1) * random.random())
-            y = round((self.game.dim - 1) * random.random())
-        nextCoord = (x,y)
-        return nextCoord
-        # raise NotImplementedError()
+        # patternsToCheck = [(self.player, 3, True), (self.player, 2, True),
+        #                    (self.player, 1, True), (None, 5, True)]
+        # for pattern in patternsToCheck:
+        #     curPattern = (self.player, 3, True)
+        #     count = patterns[0][curPattern]
+        # print("\tin fourth rule")
+        helperDicts = helper.findCoordinates(self.game)
+        possibleMoves = []
+        for num in reversed(range(Gomoku.minStones, Gomoku.maxStones + 1)):
+            if helperDicts[0][(self.player, num)]:
+                for startingCoordKey in helperDicts[0][(self.player, num)]:
+                    possibleMoves.append(helperDicts[1][startingCoordKey])
+                possibleMoves = sorted(possibleMoves)
+                print(possibleMoves)
+                return possibleMoves[0]
