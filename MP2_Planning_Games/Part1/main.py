@@ -3,13 +3,14 @@
 This file is for running the search algorithms.
 To run a particular algorithm, run the following command:
 
-python main.py <sequence> <algorithm> <N>
+python main.py <sequence> <algorithm> <N> <numTrials>
 where:
 <sequence>  = "stops" or "distance"
 <algorithm> = "A*" or "Astar" or "AStar" when running A* search
             : "ucs" or "UCS" when running uniform-cost search
 <N>         = the length of each widget (3 <= N <= 8); should be provided
             : only if the random widget generator is being run
+<numTrials> = the number of trials to run with the random widget generator
 -------------------------------------------------------------------------------
 """
 
@@ -47,36 +48,69 @@ distances = { "A": {"B": 1064,
 
 shortestPaths = helper.computeShortestPaths(distances, letters)
 
+isRandom = False
+
 
 if __name__ == "__main__":
     incorrectUsageError = "Incorrect Usage: Expected " \
                         + "\"python %s <sequence> <algorithm> " % sys.argv[0] \
-                        + "<N> \"\nOmit <N> if not running the random widget generator."
+                        + "<N> \"\nOmit <N> and <numTrials> if not running the random widget generator."
 
-    assert len(sys.argv) == 3 or len(sys.argv) == 4, incorrectUsageError
+    assert len(sys.argv) == 3 or len(sys.argv) == 5, incorrectUsageError
 
-    if len(sys.argv) == 4:
+    if len(sys.argv) == 5:
         N = int(sys.argv[3])
-        recipes = helper.generateWidgets(N, letters)
+        results = []
 
-    if sys.argv[1] == "stops":
-        if sys.argv[2] == "A*" or sys.argv[2] == "Astar" or sys.argv[2] == "AStar":
-            print("Widgets: " + str(recipes))
-            search.AStar_MinStops(recipes, letters)
-        elif sys.argv[2] == "ucs" or sys.argv[2] == "UCS":
-            print("Widgets: " + str(recipes))
-            search.UCS_MinStops(recipes, letters)
-        else:
-            sys.exit("AlgorithmNotRecognizedError: Is the algorithm spelled correctly?")
+        for i in range(int(sys.argv[4])):
+            recipes = helper.generateWidgets(N, letters)
 
-    elif sys.argv[1] == "distance":
-        if sys.argv[2] == "A*" or sys.argv[2] == "Astar" or sys.argv[2] == "AStar":
-            print("Widgets: " + str(recipes))
-            search.AStar_MinDistance(recipes, distances, shortestPaths, letters)
-        elif sys.argv[2] == "ucs" or sys.argv[2] == "UCS":
-            print("Widgets: " + str(recipes))
-            search.UCS_MinDistance(recipes, distances, shortestPaths, letters)
-        else:
-            sys.exit("AlgorithmNotRecognizedError: Is the algorithm spelled correctly?")
+            if sys.argv[1] == "stops":
+                if sys.argv[2] == "A*" or sys.argv[2] == "Astar" or sys.argv[2] == "AStar":
+                    print("Widgets: " + str(recipes))
+                    results.append(search.AStar_MinStops(recipes, letters))
+                elif sys.argv[2] == "ucs" or sys.argv[2] == "UCS":
+                    print("Widgets: " + str(recipes))
+                    results.append(search.UCS_MinStops(recipes, letters))
+                else:
+                    sys.exit("AlgorithmNotRecognizedError: Is the algorithm spelled correctly?")
+
+            elif sys.argv[1] == "distance":
+                if sys.argv[2] == "A*" or sys.argv[2] == "Astar" or sys.argv[2] == "AStar":
+                    print("Widgets: " + str(recipes))
+                    results.append(search.AStar_MinDistance(recipes, distances, shortestPaths, letters))
+                elif sys.argv[2] == "ucs" or sys.argv[2] == "UCS":
+                    print("Widgets: " + str(recipes))
+                    results.append(search.UCS_MinDistance(recipes, distances, shortestPaths, letters))
+                else:
+                    sys.exit("AlgorithmNotRecognizedError: Is the algorithm spelled correctly?")
+            else:
+                sys.exit("SequenceNotRecognizedError: Is the sequence spelled correctly?")
+
+            print("")
+
+        average = sum(results)/len(results)
+        print("Average Expanded Nodes: " + str(average))
+
     else:
-        sys.exit("SequenceNotRecognizedError: Is the sequence spelled correctly?")
+        if sys.argv[1] == "stops":
+            if sys.argv[2] == "A*" or sys.argv[2] == "Astar" or sys.argv[2] == "AStar":
+                print("Widgets: " + str(recipes))
+                search.AStar_MinStops(recipes, letters)
+            elif sys.argv[2] == "ucs" or sys.argv[2] == "UCS":
+                print("Widgets: " + str(recipes))
+                search.UCS_MinStops(recipes, letters)
+            else:
+                sys.exit("AlgorithmNotRecognizedError: Is the algorithm spelled correctly?")
+
+        elif sys.argv[1] == "distance":
+            if sys.argv[2] == "A*" or sys.argv[2] == "Astar" or sys.argv[2] == "AStar":
+                print("Widgets: " + str(recipes))
+                search.AStar_MinDistance(recipes, distances, shortestPaths, letters)
+            elif sys.argv[2] == "ucs" or sys.argv[2] == "UCS":
+                print("Widgets: " + str(recipes))
+                search.UCS_MinDistance(recipes, distances, shortestPaths, letters)
+            else:
+                sys.exit("AlgorithmNotRecognizedError: Is the algorithm spelled correctly?")
+        else:
+            sys.exit("SequenceNotRecognizedError: Is the sequence spelled correctly?")
