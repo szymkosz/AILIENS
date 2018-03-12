@@ -218,27 +218,28 @@ def evalLayout(playerColor, patterns, blocks):
     else:
         raise ValueError("playerColor must be 'RED' or 'BLUE'!")
 
-    patternCount = patterns[0]
-    patternStartingPos = patterns[1]
     patternMovesToComplete = patterns[2]
     # TODO: Verify these checks for guaranteed wins and losses are correct
 
-    # If this board layout has a chain of 4 stones of the opponent's color,
-    # it is treated as an automatic loss and negative infinity is returned.
-    numOpponentChainsOf4 = patternCount[(opponentColor, 4, True)]
+    # If this board layout has a chain of 4 stones of the opponent's color with an
+    # empty adjacent square, it is treated as an automatic loss and negative infinity is returned.
     opponentChainOf4 = patternMovesToComplete[(opponentColor, 4, True)][True]
 
-    if numOpponentChainsOf4 >=1 and len(opponentChainOf4) >= 1:
+    if len(opponentChainOf4) >= 1:
         return float("-inf")
 
-    # If this board layout has at least 2 chains of 4 stones of the player's color
-    # or at least 1 chain of 4 stones of the player's color with empty squares on both ends,
-    # it is treated as an automatic win and positive infinity is returned.
-    numPlayerChainsOf4 = patternCount[(playerColor, 4, True)]
+    # If this board layout has at least 2 empty squares that can complete a chain
+    # of 4 stones of the player's color, it is treated as an automatic win and
+    # positive infinity is returned.
     playerChainOf4 = patternMovesToComplete[(playerColor, 4, True)][True]
+    emptyAdjacentSquares = 0
 
-    if (numPlayerChainsOf4 >= 2 and len(playerChainOf4) >= 1) or \
-       (numPlayerChainsOf4 == 1 and len(playerChainOf4) >= 2):
+    # Compute the number of empty squares adjacent
+    # to chains of 4 stones the player's color
+    for moves in playerChainOf4:
+        emptyAdjacentSquares += len(moves)
+
+    if emptyAdjacentSquares >= 2:
         return float("inf")
 
     # If this point is reached, the board layout has no guaranteed wins

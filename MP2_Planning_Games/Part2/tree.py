@@ -13,6 +13,7 @@ class Node(object):
 		self.value = 0
 
 
+"""
 ## This function identifies the color of the player at the root Node given
 #  an arbitrary node in the tree.  This is important for identifying if a
 #  chain of 5 stones is a win or loss for the original player at the root Node.
@@ -31,13 +32,17 @@ def determineRootColor(node):
 			return "BLUE"
 	else:
 		raise ValueError("curPlayerColor must be 'RED' or 'BLUE'!")
+"""
 
 
-def buildTree(node):
+def buildTree(agent, node, alpha=float(-"inf"), beta=float("inf")):
+	# Increment the agent's expanded Node counter
+	agent.expandedNodes += 1
+
 	# Before building the children, the current board layout is
 	# checked for a win (a chain of 5 stones) for either player or a draw.
 	boardState = node.board.winOrDraw()
-	rootColor = self.determineRootColor(node)
+	rootColor = agent.player
 
 	# If the current board layout is a win or a draw, no subtree should be built.
 	# Instead, the appropriate value should be assigned to the parameter Node.
@@ -97,6 +102,20 @@ def buildTree(node):
 	else:
 		raise ValueError("MIN_OR_MAX must be 'MIN' or 'MAX'!")
 
+	# Initialize a variable that identifies whether the value of the parameter Node
+	# should be the minimum or maximum value among its children and a variable to
+	# store that value
+	candidateValue = None
+	isMax = False
+	if node.MIN_OR_MAX == "MIN":
+		candidateValue = float("inf")
+		isMax = False
+	elif node.MIN_OR_MAX == "MAX":
+		candidateValue = float("-inf")
+		isMax = True
+	else:
+		raise ValueError("MIN_OR_MAX must be 'MIN' or 'MAX'!")
+
 	# Loop over all squares in the current board to consider
 	# all the possibilities for the next move
 	for x in range(node.board.dim):
@@ -115,12 +134,43 @@ def buildTree(node):
 				#child = Node(node.board, nextPlayerColor, nextDepth, nextMIN_OR_MAX, nextParent, nextPrevMove)
 				child = Node(node.board, nextPlayerColor, nextDepth, nextMIN_OR_MAX, nextPrevMove)
 				node.children.append(child)
-				BuildTree(child)
+				BuildTree(agent, child, alpha, beta)
 
 				# Remove the stone from this square to reset the board for
 				# considering other empty squares to place a stone in
 				node.board.unsetPiece()
 
+				# Update the parameter Node's value and move choice if appropriate
+				# (If the parameter Node is a MAX node and the child's value is greater
+				# than or equal to the canddidate value or a MIN node and the child's
+				# value is less than or equal to the candidate value)
+				if (isMax and child.value >= candidateValue) or\
+				   ((not isMax) and child.value <= candidateValue):
+					candidateValue = child.value
+					node.value = candidateValue
+					node.childChoice = child
+
+					# If the agent is an alpha-beta agent, prune the
+					# parameter Node if appropriate
+					if agent.name == "ALPHA_BETA":
+						if isMax:
+							# If the parameter Node is a MAX node and its new value is
+							# greater than or equal to beta, prune it.  Otherwise,
+							# update alpha if the new value is greater than alpha.
+							if node.value >= beta or:
+								return
+							elif node.value > alpha:
+								alpha = node.value
+					   else:
+						   # If the parameter Node is a MIN node and its new value is
+						   # less than or equal to alpha, prune it.  Otherwise,
+						   # update beta if the new value is less than beta.
+						   if node.value <= alpha:
+							   return
+						   elif node.value < beta:
+							   beta = node.value
+
+	"""
 	# Initialize a variable that identifies whether the value of the parameter Node
 	# should be the minimum or maximum value among its children and a variable to
 	# store that value
@@ -135,6 +185,7 @@ def buildTree(node):
 	else:
 		raise ValueError("MIN_OR_MAX must be 'MIN' or 'MAX'!")
 
+
 	# Loop over all the children Nodes and identify the child with either
 	# the minimum or maximum value accordingly and store that value in the
 	# parameter Node
@@ -147,6 +198,7 @@ def buildTree(node):
 			candidateValue = child.value
 			node.value = candidateValue
 			node.childChoice = child
+	"""
 
 """
 from sys import maxsize

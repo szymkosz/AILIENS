@@ -23,7 +23,7 @@ where:
 from gomoku import Gomoku
 import time, sys
 from Agents.agent import Agent
-from Agents.reflex import Reflex
+#from Agents.reflex import Reflex
 import helper
 
 game = Gomoku()
@@ -80,16 +80,17 @@ game = Gomoku()
 
 
 # raise ValueError()
-# """
+"""
 moves = [(3, 4), (3, 3), (1, 2), (4, 3), (5, 3), (2, 2), (2,3), (1,1),
 		(3,5), (5,4),(3,2),(1,0),(6,5),(6,4),(0,6),(1,5)]
-# """
-# moves = [(1,4), (1,3), (2,4), (2,3), (3,4), (3,3)]
+"""
+moves = [(0,6), (0,5), (1,6), (1,5), (2,6), (2,5), (3,6), (3,5),
+         (0,4), (0,3), (1,4), (1,3), (2,4), (2,3), (3,4), (3,3)]
 
 # Random Moves
 for m in moves:
     game.setPiece(m[0], m[1], game.reds_turn)
-# """
+"""
 # print(game)
 # print("Moves taken: ", game.movesTaken)
 # print("\n\n\tSet")
@@ -117,7 +118,7 @@ game.setPiece(6,0, game.reds_turn)
 # game.unsetPiece()
 # print(game)
 # print("Moves taken: ", game.movesTaken)
-# """
+"""
 
 print(game)
 
@@ -139,6 +140,7 @@ patterns = game.getPatterns()
 
 blocks = helper.findBlocks(game)
 
+"""
 reflex = Reflex(game, 2)
 
 print(reflex.player)
@@ -147,6 +149,7 @@ print(reflex.getMove())
 # print(game.movesTaken)
 # reflex.makeMove()
 print(game)
+"""
 
 print ("\n\nFIRST DICTIONARY\n\n")
 for pattern in patterns[0]:
