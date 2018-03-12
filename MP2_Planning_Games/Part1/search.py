@@ -70,6 +70,8 @@ def AStar_MinStops(recipes, letters):
     print("Minimum Number of Stops: " + str(len(goal.progress)))
     print("Expanded Nodes: " + str(expandedNodes))
 
+    return expandedNodes
+
 
 # Computes the factory sequence with the smallest number of stops using the A* algorithm.
 # In A*, unexpanded nodes on the frontier are sorted with a min Priority Queue.
@@ -128,6 +130,8 @@ def AStar_MinDistance(recipes, distances, shortestPaths, letters):
     print("Minimum Distance: " + str(trueCost))
     print("Expanded Nodes: " + str(expandedNodes))
 
+    return expandedNodes
+
 
 """
 -------------------------------------------------------------------------------
@@ -177,6 +181,8 @@ def UCS_MinStops(recipes, letters):
     print("Optimal Solution: " + goal.progress)
     print("Minimum Number of Stops: " + str(len(goal.progress)))
     print("Expanded Nodes: " + str(expandedNodes))
+
+    return expandedNodes
 
 
 # Computes the factory sequence with the smallest distance using the
@@ -230,3 +236,5 @@ def UCS_MinDistance(recipes, distances, shortestPaths, letters):
     print("Optimal Solution: " + goal.progress)
     print("Minimum Distance: " + str(trueCost))
     print("Expanded Nodes: " + str(expandedNodes))
+
+    return expandedNodes
