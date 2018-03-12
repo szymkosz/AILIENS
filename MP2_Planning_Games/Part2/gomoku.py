@@ -5,6 +5,10 @@ from operator import itemgetter
 class Gomoku:
     players = ["RED", "BLUE"]   ## ONLY TWO PLAYERS
 
+    ## Ranges for getPatterns
+    minStones = 1
+    maxStones = 5
+
     ## Constructor
     def __init__(self, dim=7):
         self.curr_char = 'a'
@@ -114,8 +118,8 @@ class Gomoku:
     #               i.e. patternMovesToComplete[ ("RED", 4, True) ]: [ [(1,3)] ]
     def getPatterns(self):
         # Range for the number of stones in a row to look for
-        minStones = 1
-        maxStones = 5
+        minStones = Gomoku.minStones # 1
+        maxStones = Gomoku.maxStones # 5
 
         possibleWin = [True, False]
 
@@ -203,6 +207,8 @@ class Gomoku:
         def patternIsOpen(pattern, pos, direction):
             player, num, canWin = pattern
 
+            verbose = pos == (6,3) and player == "BLUE" and num == 2 and False
+
             # Go to the stones one position past each end point
             curCoord = nextPosition(pos, direction, length=num)
             prevCoord = nextPosition(pos, direction, reverse=True)
@@ -225,7 +231,7 @@ class Gomoku:
                     break
 
             # Check reverse direction
-            while (count < spotsNecessary):
+            while (count < spotsNecessary - 1):
                 if prevCoord != None and (prevPos.color == player or prevPos.color == None):
                     prevPos = self.board[prevCoord[0]][prevCoord[1]]
                     count += 1
@@ -238,6 +244,14 @@ class Gomoku:
             #  pattern, a win is possible with that pattern
             if count >= spotsNecessary:
                 canWin = True
+
+            if verbose:
+                print("in patternIsOpen: ")
+                print("\tpattern: ", pattern)
+                print("\tcurPos: ", pos)
+                print("\tdirection: ", direction)
+                print("\tcanWin: ", canWin)
+
             return canWin
 
         # Returns a list of possible moves that will complete the current pattern
@@ -256,13 +270,13 @@ class Gomoku:
                 prevPos = self.board[prevCoord[0]][prevCoord[1]]
                 if prevPos.color == None:
                     adjacentMoves.append(prevCoord)
-                prevCoord = nextPosition(prevCoord, direction, reverse=True)
+                # prevCoord = nextPosition(prevCoord, direction, reverse=True)
 
             if curCoord != None:
                 curPos = self.board[curCoord[0]][curCoord[1]]
                 if curPos.color == None:
                     adjacentMoves.append(curCoord)
-                curCoord = nextPosition(curCoord, direction)
+                # curCoord = nextPosition(curCoord, direction)
 
 
             # Set up the counter to find other possible moves
@@ -345,6 +359,9 @@ class Gomoku:
                                         patternStartingPos[curPattern].append((curPos, endPos, direction))
                                     # If you can still win with this pattern, add it as a canWin pattern
                                     if patternIsOpen(curPattern, curPos, direction):
+                                        # TODO: Check this pattern. Not printing correct numbers
+                                        if player == "BLUE" and num == 2:
+                                            print(curPattern)
                                         patternCount[(player, num, True)] += 1
                                         patternCount[curPattern] -= 1
                                         # Remove this pattern as a non-winning key in each dictionary and add it as a winning key

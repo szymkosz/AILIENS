@@ -1,6 +1,6 @@
 from gomoku import Gomoku
 from position import Position
-from agent import Agent
+from Agents.agent import Agent
 from sys import maxsize
 import tree
 
@@ -21,11 +21,12 @@ class MiniMax(Agent):
 
         # Create a root node and build the search tree to decide the next move
         #root = tree.Node(self.game, self.player, 0, "MAX", None, None)
-        root = tree.Node(self.game, self.player, 0, "MAX", None)
+        # root = tree.Node(self.game, self.player, 0, "MAX", None)
+        root = tree.Node(self.game, self.player, 1, "MAX", None)
         tree.buildTree(self, root)
-
+        print(root.value)
         optimalMove = root.childChoice.prevMove
-
+        print(optimalMove)
         assert optimalMove is not None, "MINIMAX ERROR: No move can be made!"
 
         return optimalMove

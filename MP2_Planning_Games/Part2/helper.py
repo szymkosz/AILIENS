@@ -42,6 +42,124 @@ def loopOverBlock(game, x, y, dir):
     return (stoneColor, stoneCount)
 
 
+def addToBlockCoordinatesDictionary(blockCoordinates, stoneColor, stoneCount, x, y, dir):
+    if stoneColor is None:
+        blockCoordinates[("EMPTY", 0)].append((x, y, dir))
+    elif stoneColor == "MIXED":
+        blockCoordinates[("MIXED", 0)].append((x, y, dir))
+    else:
+        blockCoordinates[(stoneColor, stoneCount)].append((x, y, dir))
+
+def loopOverBlockCoordinates(game, x, y, dir):
+    stoneColor = None
+    stoneCount = 0
+    bestMove = None
+
+    for i in range(5):
+        position = None
+        posCoordinates = None
+
+        if dir == "HORIZONTAL":
+            posCoordinates = (x+i, y)
+            position = game.board[x+i][y]
+        elif dir == "VERTICAL":
+            posCoordinates = (x, y+i)
+            position = game.board[x][y+i]
+        elif dir == "DIAGUPRIGHT":
+            posCoordinates = (x+i, y+i)
+            position = game.board[x+i][y+i]
+        elif dir == "DIAGDOWNRIGHT":
+            posCoordinates = (x+i, y-i)
+            position = game.board[x+i][y-i]
+        else:
+            raise ValueError("dir must be 'HORIZONTAL', 'VERTICAL'," + \
+                             "'DIAGUPRIGHT', or 'DIAGDOWNRIGHT'!")
+
+        if position.char != '.':
+            if stoneColor is None:
+                stoneColor = position.color
+            elif position.color != stoneColor:
+                stoneColor = "MIXED"
+                break
+
+            stoneCount += 1
+        elif bestMove is None:
+            leftAdjacent = None
+            rightAdjacent = None
+
+            if dir == "HORIZONTAL":
+                if (x+i -1) >= x:
+                    leftAdjacent = game.board[x+i-1][y]
+                if (x+i +1) <= (x+4):
+                    rightAdjacent = game.board[x+i+1][y]
+            elif dir == "VERTICAL":
+                if (y+i -1) >= y:
+                    leftAdjacent = game.board[x][y+i-1]
+                if (y+i +1) <= (y+4):
+                    rightAdjacent = game.board[x][y+i+1]
+            elif dir == "DIAGUPRIGHT":
+                if (x+i -1) >= x and (y+i -1) >= y:
+                    leftAdjacent = game.board[x+i-1][y+i-1]
+                if (x+i +1) <= (x+4) and (y+i +1) <= (y+4):
+                    rightAdjacent = game.board[x+i+1][y+i+1]
+            elif dir == "DIAGDOWNRIGHT":
+                if (x+i -1) >= x and (y-i +1) <= y:
+                    leftAdjacent = game.board[x+i-1][y-i+1]
+                if (x+i +1) <= (x+4) and (y-i -1) >= (y-4):
+                    rightAdjacent = game.board[x+i+1][y-i-1]
+            else:
+                raise ValueError("dir must be 'HORIZONTAL', 'VERTICAL'," + \
+                                 "'DIAGUPRIGHT', or 'DIAGDOWNRIGHT'!")
+
+            if ((leftAdjacent is not None) and leftAdjacent.char != '.') or\
+               ((rightAdjacent is not None) and rightAdjacent.char != '.'):
+               bestMove = posCoordinates
+
+    return (stoneColor, stoneCount, bestMove)
+
+def findCoordinates(game):
+    blockCoordinates = {}
+    blockPlaceMove = {}
+    blockCoordinates[("EMPTY", 0)] = []
+    blockCoordinates[("MIXED", 0)] = []
+
+    directions = ["HORIZONTAL", "VERTICAL", "DIAGUPRIGHT", "DIAGDOWNRIGHT"]
+
+    for i in range(1, 6):
+        blockCoordinates[("RED", i)] = []
+        blockCoordinates[("BLUE", i)] = []
+
+    # Loop over all horizontal blocks of 5 consecutive squares
+    for x in range(game.dim - 4):
+        for y in range(game.dim):
+            stoneColor, stoneCount, bestMove =  loopOverBlockCoordinates(game, x, y, directions[0])
+            addToBlockCoordinatesDictionary(blockCoordinates, stoneColor, stoneCount, x, y, directions[0])
+            blockPlaceMove[(x, y, directions[0])] = bestMove
+
+    # Loop over all vertical blocks of 5 consecutive squares
+    for x in range(game.dim):
+        for y in range(game.dim - 4):
+            stoneColor, stoneCount, bestMove =  loopOverBlockCoordinates(game, x, y, directions[1])
+            addToBlockCoordinatesDictionary(blockCoordinates, stoneColor, stoneCount, x, y, directions[1])
+            blockPlaceMove[(x, y, directions[1])] = bestMove
+
+    # Loop over all diagonal upright blocks of 5 consecutive squares
+    for x in range(game.dim - 4):
+        for y in range(game.dim - 4):
+            stoneColor, stoneCount, bestMove =  loopOverBlockCoordinates(game, x, y, directions[2])
+            addToBlockCoordinatesDictionary(blockCoordinates, stoneColor, stoneCount, x, y, directions[2])
+            blockPlaceMove[(x, y, directions[2])] = bestMove
+
+    # Loop over all diagonal downright blocks of 5 consecutive squares
+    for x in range(game.dim - 4):
+        for y in range(4, game.dim):
+            stoneColor, stoneCount, bestMove =  loopOverBlockCoordinates(game, x, y, directions[3])
+            addToBlockCoordinatesDictionary(blockCoordinates, stoneColor, stoneCount, x, y, directions[3])
+            blockPlaceMove[(x, y, directions[3])] = bestMove
+
+    return (blockCoordinates, blockPlaceMove)
+
+
 def findBlocks(game):
     patternCounts = {}
     patternCounts[("EMPTY", 0)] = 0
@@ -145,8 +263,8 @@ def evalLayout(playerColor, patterns, blocks):
     counts.append(blocks[(opponentColor, 4)])
 
     counts = np.asarray(counts)
-    print(counts)
-    print(np.dot(weights, counts))
-    print(blocks)
+    # print(counts)
+    # print(np.dot(weights, counts))
+    # print(blocks)
 
     return np.dot(weights, counts)
