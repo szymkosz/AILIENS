@@ -27,6 +27,7 @@ class Reflex(Agent):
         patterns = self.game.getPatterns()
         curPattern = (self.player, 4, True) ## Agent, 4-in-a-row, open
         count = patterns[0][curPattern]
+        nextCoord = None
 
         def unwrapList(toUnwrap, unwrapped):
             if type(toUnwrap) == type([]):
@@ -41,14 +42,6 @@ class Reflex(Agent):
             unwrappedMoves = sorted(unwrappedMoves)
             return unwrappedMoves[0]
 
-
-        # print("curPattern: ", curPattern)
-        # print("Count: ", count)
-
-        ## 5. The first move can follow any of the following strategies:
-        #       -   Follow rule #4 above (and choose bottom left corner)
-        #   ->  -   Play at random
-        #       -   Make an optimal move (in the middle)
         def randomMove():
             x = round((self.game.dim - 1) * random.random())
             y = round((self.game.dim - 1) * random.random())
@@ -58,6 +51,10 @@ class Reflex(Agent):
             nextCoord = (x,y)
             return nextCoord
 
+        ## 5. The first move can follow any of the following strategies:
+        #       -   Follow rule #4 above (and choose bottom left corner)
+        #   ->  -   Play at random
+        #       -   Make an optimal move (in the middle)
         if self.firstMove:
             return randomMove()
 
@@ -66,7 +63,6 @@ class Reflex(Agent):
         #      Break a tie by choosing a move in the following order:
         #           left > down > right > up
         if count > 0:
-            print("\tin first rule")
             # Only one move is needed to win the game, return that move.
             allPossibleMoves = []
             unwrapList(patterns[2][curPattern][True], allPossibleMoves)
@@ -78,15 +74,13 @@ class Reflex(Agent):
         #      empty position that could win the game. Place a stone in that position.
         curPattern = (Gomoku.players[self.playerNum % 2], 4, True)
         count = patterns[0][curPattern]
-        # print("curPattern: ", curPattern)
-        # print("Count: ", count)
+
         if count > 0:
-            print("\tin second rule")
             # Only one move is needed to win, so if there are more than one possible,
             #  the game would be lost anyway, so just get the first possible one.
             allPossibleMoves = []
             unwrapList(patterns[2][curPattern][True], allPossibleMoves)
-            allPossibleMoves = sorted(allPossibleMoves)
+            allPossibleMoves.sort()
             nextCoord = allPossibleMoves[0]
             return nextCoord
 
@@ -96,36 +90,22 @@ class Reflex(Agent):
         #           left > down > right > up
         curPattern = (Gomoku.players[self.playerNum % 2], 3, True)
         count = patterns[0][curPattern]
-        # print("curPattern: ", curPattern)
-        # print("Count: ", count)
+
         if count > 0:
-            print("\tin third rule")
             allPossibleMoves = []
             listToUnwrap = []
-            # print("patterns[2][curPattern][True]", patterns[2][curPattern][True])
-            try:
-                for i in patterns[2][curPattern][True]:
-                    # print("\ti", i)
-                    # print("\tlen(i)", len(i))
-                    if len(i) > 1:
-                        listToUnwrap.append(i)
-                unwrapList(listToUnwrap, allPossibleMoves)
-                # print("listToUnwrap ", listToUnwrap)
-                # print("allPossibleMoves ", allPossibleMoves)
-                allPossibleMoves = sorted(allPossibleMoves)
-                nextCoord = allPossibleMoves[0]
-            except:
-                for i in patterns[2][curPattern][True]:
-                    # print("\ti", i)
-                    # print("\tlen(i)", len(i))
-                    if len(i) > 0:
-                        listToUnwrap.append(i)
-                unwrapList(listToUnwrap, allPossibleMoves)
-                # print("listToUnwrap ", listToUnwrap)
-                # print("allPossibleMoves ", allPossibleMoves)
-                allPossibleMoves = sorted(allPossibleMoves)
-                nextCoord = allPossibleMoves[0]
-            return nextCoord
+
+            for i in patterns[2][curPattern][True]:
+                ## For there to be an empty position on both ends, this list must
+                #   have a length of 2
+                if len(i) > 1:
+                    listToUnwrap.append(i)
+
+            ## Consolidate all of these candidate positions into a single list and tie break
+            unwrapList(listToUnwrap, allPossibleMoves)
+            allPossibleMoves.sort()
+            if allPossibleMoves:
+                return allPossibleMoves[0]
 
         ## 4. Otherwise, find the winning block (a block of 5 consecutive spaces
         #      in which victory is still possible) containing the largest number of
@@ -134,45 +114,41 @@ class Reflex(Agent):
         #     To break a tie, find the position which is farthest to the left;
         #      among those which are farthest to the left, find the position
         #      which is closest to the bottom.
-        # patternsToCheck = [(self.player, 3, True), (self.player, 2, True),
-        #                    (self.player, 1, True), (None, 5, True)]
-        # for pattern in patternsToCheck:
-        #     curPattern = (self.player, 3, True)
-        #     count = patterns[0][curPattern]
-        print("\tin fourth rule")
         helperDicts = helper.findCoordinates(self.game)
-        # for i in helperDicts[0].keys():
-        #     print(i, helperDicts[0][i])
-        # for i in helperDicts[1].keys():
-        #     print(i, helperDicts[1][i])
         possibleMoves = []
-        nextCoord = None
+
+        # Iterate over the possible number of stones in a block in reverse
         for num in reversed(range(Gomoku.minStones, Gomoku.maxStones + 1)):
             possibleMoves = []
-            print(helperDicts[0][(self.player, num)])
+
+            # If there's any possible move, that's it
             if helperDicts[0][(self.player, num)]:
                 for startingCoordKey in helperDicts[0][(self.player, num)]:
                     possibleMoves.append(helperDicts[1][startingCoordKey])
                 possibleMoves.sort()
                 return possibleMoves[0]
 
-        print("next", nextCoord)
+        # Lastly, look at empty blocks of 5 positions
         curPattern = (None, 5, False)
-        print("empty blocks: ", patterns[0][curPattern])
+
         if nextCoord is None and patterns[0][curPattern] > 0:
             possibleMoves = []
             for block in patterns[1][curPattern]:
                 x = block[0][0]
                 y = block[0][1]
                 dir = block[1]
-                for i in range(5):
-                    possibleMoves.append((x + i * dir[0], y + i * dir[1]))
+
+                ## Add the starting and ending coordinates
+                possibleMoves.append((x,y))
+                possibleMoves.append((x + 4 * dir[0], y + 4 * dir[1]))
+
+            # Break a tie
             possibleMoves.sort()
             nextCoord = possibleMoves[0]
 
 
         ## All other options have been exhausted...
-        #   Loop over the board and choose a random position.
+        #   Loop over the board and choose the first open position
         if nextCoord is None:
             possibleMoves = 0
             board = self.game.board
