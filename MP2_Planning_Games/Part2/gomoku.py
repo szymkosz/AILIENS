@@ -231,7 +231,7 @@ class Gomoku:
                     break
 
             # Check reverse direction
-            while (count < spotsNecessary - 1):
+            while (count < spotsNecessary):
                 if prevCoord != None and (prevPos.color == player or prevPos.color == None):
                     prevPos = self.board[prevCoord[0]][prevCoord[1]]
                     count += 1
@@ -285,10 +285,10 @@ class Gomoku:
             count = 0
 
             # Set up the loop with the next positions in the forward and reverse directions
-            if prevCoord != None:
-                prevPos = self.board[prevCoord[0]][prevCoord[1]]
-            if curCoord != None:
-                curPos = self.board[curCoord[0]][curCoord[1]]
+            # if prevCoord != None:
+            #     prevPos = self.board[prevCoord[0]][prevCoord[1]]
+            # if curCoord != None:
+            #     curPos = self.board[curCoord[0]][curCoord[1]]
 
             forwardDone = False
             reverseDone = False
@@ -360,8 +360,8 @@ class Gomoku:
                                     # If you can still win with this pattern, add it as a canWin pattern
                                     if patternIsOpen(curPattern, curPos, direction):
                                         # TODO: Check this pattern. Not printing correct numbers
-                                        if player == "BLUE" and num == 2:
-                                            print(curPattern)
+                                        # if player == "BLUE" and num == 2:
+                                        #     print(curPattern)
                                         patternCount[(player, num, True)] += 1
                                         patternCount[curPattern] -= 1
                                         # Remove this pattern as a non-winning key in each dictionary and add it as a winning key
