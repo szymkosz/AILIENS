@@ -8,6 +8,7 @@ class Reflex(Agent):
     def __init__(self, game=Gomoku(), playerNum=1):
         super().__init__(game, playerNum)
         self.name = "REFLEX"
+        self.firstMove = True
 
     def makeMove(self):
         moveToMake = self.getMove()
