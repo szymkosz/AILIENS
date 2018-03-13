@@ -208,8 +208,6 @@ class Gomoku:
         def patternIsOpen(pattern, pos, direction):
             player, num, canWin = pattern
 
-            verbose = pos == (6,3) and player == "BLUE" and num == 2 and False
-
             # Go to the stones one position past each end point
             curCoord = nextPosition(pos, direction, length=num)
             prevCoord = nextPosition(pos, direction, reverse=True)
@@ -245,14 +243,6 @@ class Gomoku:
             #  pattern, a win is possible with that pattern
             if count >= spotsNecessary:
                 canWin = True
-
-            if verbose:
-                print("in patternIsOpen: ")
-                print("\tpattern: ", pattern)
-                print("\tcurPos: ", pos)
-                print("\tdirection: ", direction)
-                print("\tcanWin: ", canWin)
-
             return canWin
 
         # Returns a list of possible moves that will complete the current pattern
@@ -318,13 +308,8 @@ class Gomoku:
                         forwardDone = True
                 if forwardDone and reverseDone: break
 
-            # possibleMoves = sorted(possibleMoves, key=itemgetter(1))
-
-            # return sorted(possibleMoves, key=itemgetter(0))
             adjacents = (pos, direction, adjacentMoves)
             nonadjacents = (pos, direction, nonadjacentMoves)
-            # adjacentMoves = sorted(adjacentMoves)
-            # nonadjacentMoves = sorted(nonadjacentMoves)
             # return (adjacents, nonadjacents)
             return (adjacentMoves, nonadjacentMoves)
 

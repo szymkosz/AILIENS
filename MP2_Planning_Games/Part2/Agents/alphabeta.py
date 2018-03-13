@@ -11,7 +11,8 @@ class AlphaBeta(Agent):
         self.move_num = 1
         self.expandedNodes = 0
 
-        self.treeDepth = 2
+        # Max of 3
+        self.treeDepth = 1
 
 
     def getMove(self):
@@ -23,7 +24,7 @@ class AlphaBeta(Agent):
 
         # Create a root node and build the search tree to decide the next move
         #root = tree.Node(self.game, self.player, 0, "MAX", None, None)
-        root = tree.Node(self.game, self.player, self.treeDepth, "MAX", None)
+        root = tree.Node(self.game, self.player, 3 - self.treeDepth, "MAX", None)
         tree.buildTree(self, root)
 
         optimalMove = root.childChoice.prevMove

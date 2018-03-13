@@ -239,19 +239,19 @@ def evalLayout(playerColor, patterns, blocks):
     if len(opponentChainOf4) >= 1:
         return float("-inf")
 
-    # If this board layout has at least 2 empty squares that can complete a chain
-    # of 4 stones of the player's color, it is treated as an automatic win and
-    # positive infinity is returned.
-    playerChainOf4 = patternMovesToComplete[(playerColor, 4, True)][True]
-    emptyAdjacentSquares = 0
-
-    # Compute the number of empty squares adjacent
-    # to chains of 4 stones the player's color
-    for moves in playerChainOf4:
-        emptyAdjacentSquares += len(moves)
-
-    if emptyAdjacentSquares >= 2:
-        return float("inf")
+    # # If this board layout has at least 2 empty squares that can complete a chain
+    # # of 4 stones of the player's color, it is treated as an automatic win and
+    # # positive infinity is returned.
+    # playerChainOf4 = patternMovesToComplete[(playerColor, 4, True)][True]
+    # emptyAdjacentSquares = 0
+    #
+    # # Compute the number of empty squares adjacent
+    # # to chains of 4 stones the player's color
+    # for moves in playerChainOf4:
+    #     emptyAdjacentSquares += len(moves)
+    #
+    # if emptyAdjacentSquares >= 2:
+    #     return float("inf")
 
     # If this point is reached, the board layout has no guaranteed wins
     # or losses for this player within the next two moves, so a linear
