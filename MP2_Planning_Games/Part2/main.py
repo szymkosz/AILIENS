@@ -28,9 +28,9 @@ from Agents.agent import Agent
 from Agents.alphabeta import AlphaBeta
 from Agents.minimax import MiniMax
 from Agents.reflex import Reflex
-from Agents.human import Human
+# from Agents.human import Human
 import helper
-import gui
+# import gui
 
 game = Gomoku()
 

@@ -118,7 +118,6 @@ def buildTree(agent, node, alpha=float("-inf"), beta=float("inf")):
 				# Remove the stone from this square to reset the board for
 				# considering other empty squares in which to place a stone
 				node.board.unsetPiece()
-				print(node.childChoice)
 
 				# Update the parameter Node's value and move choice if appropriate
                 # (If the parameter Node is a MAX node and the child's value is greater
