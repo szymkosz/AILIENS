@@ -1,7 +1,50 @@
 import loader
 import numpy as np
 
-loader.loadFile("Data/digitdata/optdigits-orig_train.txt")
+training_data, training_data_by_class, training_labels = loader.parser("Data/digitdata/optdigits-orig_train.txt")
+
+image = training_data[:,0]
+
+print(image.shape)
+image = image.reshape((32,32))
+print(image.shape)
+
+for i in range(32):
+    line = ""
+    for j in range(32):
+        line += str(image[i,j])
+
+    print(line)
+
+print(training_data.shape)
+print(training_labels)
+print(training_labels.shape)
+
+print(training_data_by_class)
+print(len(training_data_by_class))
+
+sum = 0
+
+for i in range(len(training_data_by_class)):
+    print(training_data_by_class[i])
+    print(training_data_by_class[i].shape)
+
+    sum += training_data_by_class[i].shape[1]
+
+print(sum)
+
+image2 = training_data_by_class[0][:,0]
+
+print(image2.shape)
+image2 = image2.reshape((32,32))
+print(image2.shape)
+
+for i in range(32):
+    line = ""
+    for j in range(32):
+        line += str(image2[i,j])
+
+    print(line)
 
 # a = np.array((),dtype=np.int64)
 # b = np.asarray([1,2,3], dtype=np.int64)
