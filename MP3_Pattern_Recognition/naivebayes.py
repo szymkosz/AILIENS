@@ -1,3 +1,5 @@
+import numpy as np
+
 """
 Computes the likelihoods of each pixel given each class and returns them as a
 1024 x 10 numpy array where the jth column contains the likelihoods for the jth

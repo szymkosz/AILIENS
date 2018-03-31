@@ -1,54 +1,95 @@
-"""
-network.py
-~~~~~~~~~~
-
-A module to implement the stochastic gradient descent learning
-algorithm for a feedforward neural network.  Gradients are calculated
-using backpropagation.  Note that I have focused on making the code
-simple, easily readable, and easily modifiable.  It is not optimized,
-and omits many desirable features.
-"""
-
-#### Libraries
-# Standard library
-import random
-
-# Third-party libraries
+# Import the necessary libraries
 import numpy as np
 
-class Network(object):
 
-    def __init__(self, sizes):
-        """The list ``sizes`` contains the number of neurons in the
-        respective layers of the network.  For example, if the list
-        was [2, 3, 1] then it would be a three-layer network, with the
-        first layer containing 2 neurons, the second layer 3 neurons,
-        and the third layer 1 neuron.  The biases and weights for the
-        network are initialized randomly, using a Gaussian
-        distribution with mean 0, and variance 1.  Note that the first
-        layer is assumed to be an input layer, and by convention we
-        won't set any biases for those neurons, since biases are only
-        ever used in computing the outputs from later layers."""
-        self.num_layers = len(sizes)
-        self.sizes = sizes
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-        self.weights = [np.random.randn(y, x)
-                        for x, y in zip(sizes[:-1], sizes[1:])]
+class Perceptron(object):
+    """
+    This is the constructor for the perceptron.  It constructs the weights and biases
+    (if it should have biases) and either initializes all of them randomly or to 0.
+    If they are initialized randomly, their values are pulled from a standard normal
+    distribution with mean 0 and variance 1.
 
-    def feedforward(self, a):
-        """Return the output of the network if ``a`` is input."""
-        for b, w in zip(self.biases, self.weights):
-            a = sigmoid(np.dot(w, a)+b)
-        return a
+    The weights are represented as a 10 x 1,024 numpy matrix.  The ith row of this
+    matrix represents the weight vector for the ith class.
 
-    def evaluate(self, test_data):
-        """Return the number of test inputs for which the neural
-        network outputs the correct result. Note that the neural
-        network's output is assumed to be the index of whichever
-        neuron in the final layer has the highest activation."""
-        test_results = [(np.argmax(self.feedforward(x)), y)
-                        for (x, y) in test_data]
-        return sum(int(x == y) for (x, y) in test_results)
+    The biases are represented as a 10-dimensional numpy vector.  They are stored
+    separately from the weight matrix to make the code simpler, but the math is
+    identical.  If there are no biases, they are set to a Nonetype.
+    """
+    def __init__(self, hasBias, hasRandomInitialization):
+        # Initialize weights
+        self.weights = None
+        if hasRandomInitialization:
+            self.weights = np.random.randn(10, 1024)
+        else:
+            self.weights = np.zeros(10, 1024)
+
+        # Initialize biases, if they should be present
+        self.biases = None
+        if hasBias:
+            if hasRandomInitialization:
+                self.biases = np.random.randn(10, 1)
+            else:
+                self.biases = np.zeros(10, 1)
+
+
+    """
+    The classify function assigns a label to an image.  This is accomplished with
+    the following procedure:
+
+    1.  The image, represented as a 1,024-dimensional numpy vector of its bitmap, is multiplied
+        with the perceptron's 10 x 1,024 weight matrix to generate a 10-dimensional
+        numpy vector.  If the perceptron has biases, they are then added to this result.
+
+    2.  The result of step 1 is then passed into np.sign (numpy's signum function)
+        to generate the activations of the 10 neurons in the form of a 10-dimensional
+        numpy vector.  This is the non-differentiable activation function from lecture.
+
+    3.  The index of the first occurrence of the largest value in the result
+        from step 2 is computed with np.argmax.  This is the label that is
+        returned by this function.
+    """
+    def classify(self, image):
+        # Compute the activations of the neurons
+        activations = None
+        if self.biases is not None:
+            activations = np.sign(np.dot(self.weights, image) + self.biases)
+        else:
+            activations = np.sign(np.dot(self.weights, image))
+
+        # Return the index of the first occurrence of the largest activation
+        return np.argmax(activations)
+
+
+    def update_weights(self, training_image, true_label, wrong_label, learning_rate_decay_function, num_training_image):
+        if true_label == wrong_label:
+            return
+
+        eta = learning_rate_decay_function(num_training_image)
+
+        self.weights[true_label, :] += (eta * training_image).T
+        self.weights[wrong_label, :] -= (eta * training_image).T
+
+        if self.biases is not None:
+            self.biases[true_label] += eta
+            self.biases[wrong_label] -= eta
+
+
+    
+    def train(self, training_data, training_labels, learning_rate_decay_function, hasRandomTrainingOrder, epochs):
+        for i in range(epochs):
+            training_order = np.arange(len(training_labels))
+            if hasRandomTrainingOrder:
+                training_order = np.random.shuffle(training_order)
+
+            for j in range(len(training_order)):
+                training_image_index = training_order[j]
+                training_image = training_data[:,training_image_index]
+                training_label = training_labels[training_image_index]
+
+                assigned_label = self.classify(training_image)
+                self.update_weights(training_image, training_label, assigned_label, learning_rate_decay_function, j)
+
 
 #### Miscellaneous functions
 def sigmoid(z):
