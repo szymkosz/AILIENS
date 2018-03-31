@@ -61,37 +61,70 @@ class Perceptron(object):
         return np.argmax(activations)
 
 
-    def update_weights(self, training_image, true_label, wrong_label, learning_rate_decay_function, num_training_image):
-        if true_label == wrong_label:
+    """
+    The update_weights function will update the weights (and biases if present) of the
+    perceptron given a training image, its true label, the label assigned to it by
+    the perceptron, a function for computing the learning rate, and the number of the training
+    training image within an epoch for computing the learning rate.
+
+    If the true and assigned labels are the same, nothing happens.  Otherwise, a learning rate
+    "eta" and the product of eta and the training_image are computed.  Then this product is added
+    to the weight vector for the true class and subtracted from the weight vector for the
+    misclassified class.
+    """
+    def update_weights(self, training_image, true_label, assigned_label, learning_rate_decay_function, num_training_image):
+        # If the true and assigned labels are identical, there is nothing further to do.
+        if true_label == assigned_label:
             return
 
+        # Computes the learning rate and the update vector for the weight
+        # vectors of the true and misclassified classes
         eta = learning_rate_decay_function(num_training_image)
+        update = eta * training_image
 
-        self.weights[true_label, :] += (eta * training_image).T
-        self.weights[wrong_label, :] -= (eta * training_image).T
+        # Update the weight vectors of the true and misclassified classes
+        self.weights[true_label, :] += update.T
+        self.weights[assigned_label, :] -= update.T
 
+        # If there are biases, updating them is equivalent to adding eta
+        # to the bias of the true class and subtracting eta from the bias of the
+        # misclassified class.
         if self.biases is not None:
             self.biases[true_label] += eta
-            self.biases[wrong_label] -= eta
+            self.biases[assigned_label] -= eta
 
 
-    
+    """
+    Given a set of training images, their true labels, a function to compute learning rates,
+    whether or not the images are passed over in random order, and the number of epochs,
+    the train function trains the perceptron.
+    """
     def train(self, training_data, training_labels, learning_rate_decay_function, hasRandomTrainingOrder, epochs):
+        # Pass over the training data and train in multiple epochs
         for i in range(epochs):
+            # This numpy vector will control whether the training data is
+            # passed over in fixed, sequential or random order.
             training_order = np.arange(len(training_labels))
             if hasRandomTrainingOrder:
                 training_order = np.random.shuffle(training_order)
 
+            # Pass over the training images in the determined order, classifying
+            # them and then updating the perceptron's weights and biases
             for j in range(len(training_order)):
+                # Identify the training image and its corresponding label for this iteration
                 training_image_index = training_order[j]
                 training_image = training_data[:,training_image_index]
                 training_label = training_labels[training_image_index]
 
+                # Classify the image and then update the perceptron's weights and biases
                 assigned_label = self.classify(training_image)
-                self.update_weights(training_image, training_label, assigned_label, learning_rate_decay_function, j)
+                self.update_weights(training_image, training_label, assigned_label, learning_rate_decay_function, j+1)
 
 
 #### Miscellaneous functions
 def sigmoid(z):
     """The sigmoid function."""
     return 1.0/(1.0+np.exp(-z))
+
+def compute_learning_rate(num_training_image):
+    return (1 / num_training_image)
