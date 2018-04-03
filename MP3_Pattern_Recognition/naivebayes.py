@@ -34,7 +34,12 @@ Computes the priors probabilites and returns them as a 10-dimensional numpy vect
 where the ith entry is the priors probability for the ith class.
 """
 def compute_priors(training_data, images_by_class):
-    pass
+    priors = np.zeros(10)
+    num_training_images = len(training_data)
+    for i in range(10):
+        images_in_class = len(images_by_class[i])
+        priors[i] = images_in_class/num_training_images
+    return priors
 
 """
 Use maximum-a-posteriori (MAP) to assign labels to the test data given likelihoods
@@ -62,7 +67,15 @@ Computes the confusion matrix given the true labels of the test images and
 their assigned labels.
 """
 def compute_confusion_matrix(true_labels, assigned_labels):
-    pass
+    confusion = np.zeros((len(true_labels),len(assigned_labels)))
+    for i in range(len(true_labels)):
+        for j in range(len(assigned_labels)):
+            confusion[ true_labels[i] , assigned_labels[j] ] += 1
+
+    for i in range(len(confusion)):
+        confusion[i,:] /= np.sum(confusion[i,:])
+
+    return confusion
 
 
 """
@@ -76,7 +89,11 @@ probabilites, and the second column contains the column indices of the test imag
 with the minimum posterior probabilites.
 """
 def max_and_min_posteriors(posteriors):
-    pass
+    max_min_post = np.zeros((10,2))
+    max_min_post[:,0] = np.argmax(posteriors, axis=1)
+    max_min_post[:,1] = np.argmin(posteriors, axis=1)
+
+    return max_min_post
 
 
 def find_maximum_confusion_class_pairs(confusion):

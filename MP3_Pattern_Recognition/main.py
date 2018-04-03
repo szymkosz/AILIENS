@@ -1,5 +1,9 @@
-import loader
+import parser as loader
 import numpy as np
+
+ar = np.array([[1,1,1,2],[0,2,1,-1]])
+
+print(ar.shape,np.sum(ar, axis=1),np.argmax(ar,axis=1))
 
 training_data, training_data_by_class, training_labels = loader.parser("Data/digitdata/optdigits-orig_train.txt")
 
