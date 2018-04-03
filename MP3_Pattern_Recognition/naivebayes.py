@@ -59,6 +59,10 @@ posteriors:         Let T be the total number of test images.
                     for the jth test image.
 """
 def maximum_a_posteriori(test_data, likelihoods, priors):
+    log_likelihoods = np.log(likelihoods)
+    log_priors = np.log(priors)
+    posteriors_class = np.sum(log_likelihoods,axis=1) + log_priors
+
     pass
 
 
@@ -97,7 +101,35 @@ def max_and_min_posteriors(posteriors):
 
 
 def find_maximum_confusion_class_pairs(confusion):
-    pass
+    number_of_pairs = 4
+    pairs = []
+
+    # Assume square matrix
+    n = len(confusion)
+    flat_confusion = confusion.reshape(n*n,)
+
+    ## Expecting the diagonal entries to have the top n max values
+    num_values = number_of_pairs + n
+
+    # Extract the flattened indices of the top n + number_of_pairs entries
+    max_idx = np.argpartition(flat_confusion, -(num_values))[-(num_values):]
+
+    # Sort them
+    max_idx = max_idx[np.argsort(flat_confusion[ind])]
+
+    # Extract the x and y coordinates
+    pairs_idx = np.unravel_index(max_idx, confusion.shape) # 2-tuple of two arrays of x and y coordinates
+
+    # Go through every returned index
+    for i in reversed(range(num_values)):
+        x = pairs_idx[0][i]
+        y = pairs_idx[1][i]
+
+        # If x == y, this entry is along the diagonal. Skip it.
+        if x != y and len(pairs) != number_of_pairs:
+            pairs.append( (x, y) )
+
+    return pairs
 
 """
 Plots the log likelihood maps and log odds ratio maps for the four pairs of digits
