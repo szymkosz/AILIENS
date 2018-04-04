@@ -3,10 +3,10 @@ import numpy as np
 
 
 """
-This is the driver function for training a naive beyes classifier with the training data
+This is the driver function for training a naive bayes classifier with the training data
 and then classifying the test data.
 """
-def run_naivebeyes(training_data_tuple, test_data_tuple, laplace):
+def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
     training_data, training_data_by_class, training_labels = training_data_tuple
     test_data, test_data_by_class, test_labels = test_data_tuple
 

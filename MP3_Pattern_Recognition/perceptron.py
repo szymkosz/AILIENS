@@ -36,17 +36,17 @@ class Perceptron(object):
         # Initialize weights
         self.weights = None
         if hasRandomInitialization:
-            self.weights = np.random.randn(10, 1024)
+            self.weights = np.random.randn((10, 1024))
         else:
-            self.weights = np.zeros(10, 1024)
+            self.weights = np.zeros((10, 1024))
 
         # Initialize biases, if they should be present
         self.biases = None
         if hasBias:
             if hasRandomInitialization:
-                self.biases = np.random.randn(10, 1)
+                self.biases = np.random.randn((10, 1))
             else:
-                self.biases = np.zeros(10, 1)
+                self.biases = np.zeros((10, 1))
 
 
     """

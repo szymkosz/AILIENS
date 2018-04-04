@@ -6,16 +6,16 @@ Should there be a command-line argument for learning-rate decay function?
 
 
 
-This is the driver file for training a naive beyes classifier or perceptron with the training data
+This is the driver file for training a naive bayes classifier or perceptron with the training data
 and then classifying the test data.
 
-To train and classify with a naive beyes classifier with particular hyperparameters,
+To train and classify with a naive bayes classifier with particular hyperparameters,
 run the following command:
 
-python main.py <beyes> <laplace>
+python main.py <bayes> <laplace>
 
 where:
-<beyes>     = "beyes" or "naivebeyes" (ignoring case)
+<bayes>     = "bayes" or "naivebayes" (ignoring case)
 <laplace>   = The laplacian smoothing constant to use for computing the likelihoods
 
 To train and classify with a perceptron with particular hyperparameters, run the
@@ -37,16 +37,16 @@ where:
 #import numpy as np
 import sys
 from parser import parser
-import naivebeyes
+import naivebayes
 import perceptron
 
 
 if __name__ == "__main__":
     incorrectUsageError = "Incorrect Usage: Expected " \
-                        + "\"python %s <beyes> <laplace>\" or " % sys.argv[0] \
+                        + "\"python %s <bayes> <laplace>\" or " % sys.argv[0] \
                         + "\"python %s <perceptron> <hasBias> <weightsAreRandom> <hasRandomTrainingOrder> <epochs>\"" % sys.argv[0]
 
-    assert len(sys.argv) >= 4, incorrectUsageError
+    assert len(sys.argv) >= 3, incorrectUsageError
 
     training_data_filename = "Data/digitdata/optdigits-orig_train.txt"
     test_data_filename = "Data/digitdata/optdigits-orig_test.txt"
@@ -54,26 +54,31 @@ if __name__ == "__main__":
     training_data_tuple = parser(training_data_filename)
     test_data_tuple = parser(test_data_filename)
 
-    if sys.argv[2].lower() == "beyes" or sys.argv[2].lower() == "naivebeyes":
+    if sys.argv[1].lower() == "bayes" or sys.argv[1].lower() == "naivebayes":
         # Check the validity of the command-line arguments
-        assert len(sys.argv) == 4, incorrectUsageError
+        assert len(sys.argv) == 3, incorrectUsageError
 
-        # Run code for training and classifying with naive beyes classifier
-        naivebeyes.run_naivebeyes(training_data_tuple, test_data_tuple, sys.argv[3])
+        # Run code for training and classifying with naive bayes classifier
+        naivebayes.run_naivebayes(training_data_tuple, test_data_tuple, int(sys.argv[2]))
 
-    elif sys.argv[2].lower() == "perceptron":
-        # Check the validity of the command-line arguments
-        assert len(sys.argv) == 7, incorrectUsageError
-        for i in range(3,6):
-            assert sys.argv[i] == 0 or sys.argv[i] == 1, "INVALID ARGUMENT ERROR: " \
+    elif sys.argv[1].lower() == "perceptron":
+        # Check that the number of command-line arguments is correct
+        assert len(sys.argv) == 6, incorrectUsageError
+
+        # Parse the boolean parameters into booleans and evaluate their validity
+        parsedBooleans = []
+        for i in range(2,5):
+            parsedValue = int(sys.argv[i])
+            assert parsedValue == 0 or parsedValue == 1, "INVALID ARGUMENT ERROR: " \
                                                        + "<hasBias>, <weightsAreRandom>, and <hasRandomTrainingOrder> " \
                                                        + "must be 0 or 1!"
+            parsedBooleans.append(parsedValue == 1)
 
         # Run code for training and classifying with perceptron
-        perceptron.run_perceptron(training_data_tuple, test_data_tuple, sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+        perceptron.run_perceptron(training_data_tuple, test_data_tuple, parsedBooleans[0], parsedBooleans[1], parsedBooleans[2], int(sys.argv[5]))
 
     else:
-        sys.exit("INVALID ARGUMENT ERROR: The third argument must be \"beyes\", \"naivebeyes\", or \"perceptron\" (ignoring case)!")
+        sys.exit("INVALID ARGUMENT ERROR: The third argument must be \"bayes\", \"naivebayes\", or \"perceptron\" (ignoring case)!")
 
 """
 ar = np.array([[1,1,1,2],[0,2,1,-1]])
