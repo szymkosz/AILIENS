@@ -18,16 +18,15 @@ def compute_likelihoods(images_by_class, laplace):
             num_observations = np.sum(curImages[i,:])
 
             likelihood = (num_observations + laplace) / (num_class_images + (2*laplace))
-
             curLikelihoods.append(likelihood)
 
         curLikelihoods = np.asarray(curLikelihoods)
-
         likelihoods = np.vstack((likelihoods, curLikelihoods))
 
     likelihoods = likelihoods.T
 
     return likelihoods
+
 
 """
 Computes the priors probabilites and returns them as a 10-dimensional numpy vector
@@ -41,10 +40,16 @@ def compute_priors(training_data, images_by_class):
         priors[i] = images_in_class/num_training_images
     return priors
 
+
 """
 Use maximum-a-posteriori (MAP) to assign labels to the test data given likelihoods
 and priors probabilities (i.e. compute the sums over all 10 classes and assign the label
-that corresponds to the maximum sum)
+that corresponds to the maximum sum).
+
+The test_data matrix has dimensions 1,024 x T where T is the total number of test images
+and each column corresponds to the bitmap of a single test image.  The likelihoods are
+a 1,024 x 10 numpy matrix where the entry in row i and column j is P(F(i/32, i%32) = 1 | class = j).
+The priors are a 10-dimensional numpy array where the ith entry corresponds to P(class = i).
 
 Returns a 2-tuple of the assigned labels for all test images and all the posterior probabilities
 for each image in each class.  The details of the returned tuple are as follows:
@@ -59,12 +64,44 @@ posteriors:         Let T be the total number of test images.
                     for the jth test image.
 """
 def maximum_a_posteriori(test_data, likelihoods, priors):
-    log_likelihoods = np.log(likelihoods)
+    # Since the given likelihoods are P(Fij = 1 | class = k),
+    # the likelihoods P(Fij = 0 | class = k) must be computed.
+    opposite_likelihoods = (np.ones(likelihoods.shape) - likelihoods)
+
+    posteriors = np.empty((0,10))
+    assigned_labels = []
+    num_test_images = test_data.shape[1]
     log_priors = np.log(priors)
-    posteriors_class = np.sum(log_likelihoods,axis=1) + log_priors
 
-    pass
+    for i in range(num_test_images):
+        # To get the likelihoods for this image, it is necessary to identify
+        # the pixels set to 0 and the pixels set to 1 and then index the corresponding
+        # rows of the corresponding likelihood matrices.
+        curImage = test_data[:,i]
+        indices_with_ones = np.equal(curImage, np.ones(curImage.shape))
+        indices_with_zeros = np.equal(curImage, np.zeros(curImage.shape))
 
+        # The likelihoods for this image are assembled by initializing a matrix of zeros,
+        # adding the likelihoods P(F(i/32, i%32) = 1 | class = j) to the rows where pixel
+        # (i/32, i%32) is set to 1 and adding the likelihoods P(F(i/32, i%32) = 0 | class = j) to the rows
+        # where pixel (i/32, i%32) is set to 0.
+        curImageLikelihoods = np.zeros(likelihoods.shape)
+        curImageLikelihoods[indices_with_ones,:] = likelihoods[indices_with_ones,:]
+        curImageLikelihoods[indices_with_zeros,:] = opposite_likelihoods[indices_with_zeros,:]
+
+        # Compute the log sum
+        curImage_log_likelihoods = np.log(curImageLikelihoods)
+        curImagePosteriors = np.sum(curImage_log_likelihoods,axis=1) + log_priors
+        posteriors = np.vstack((posteriors, curImagePosteriors))
+
+        # Assign the class label based on the index of the highest posterior probability
+        curImage_assigned_label = np.argmax(curImagePosteriors)
+        assigned_labels.append(curImage_assigned_label)
+
+    assigned_labels = np.asarray(assigned_labels)
+    posteriors = posteriors.T
+
+    return (assigned_labels, posteriors)
 
 """
 Computes the confusion matrix given the true labels of the test images and
@@ -130,6 +167,7 @@ def find_maximum_confusion_class_pairs(confusion):
             pairs.append( (x, y) )
 
     return pairs
+
 
 """
 Plots the log likelihood maps and log odds ratio maps for the four pairs of digits
