@@ -103,21 +103,6 @@ def maximum_a_posteriori(test_data, likelihoods, priors):
 
     return (assigned_labels, posteriors)
 
-"""
-Computes the confusion matrix given the true labels of the test images and
-their assigned labels.
-"""
-def compute_confusion_matrix(true_labels, assigned_labels):
-    confusion = np.zeros((len(true_labels),len(assigned_labels)))
-    for i in range(len(true_labels)):
-        for j in range(len(assigned_labels)):
-            confusion[ true_labels[i] , assigned_labels[j] ] += 1
-
-    for i in range(len(confusion)):
-        confusion[i,:] /= np.sum(confusion[i,:])
-
-    return confusion
-
 
 """
 Returns a 10 x 2 matrix of the column indices of the max and min posterior

@@ -1,5 +1,6 @@
 # Import the necessary libraries
 import numpy as np
+import helper
 
 
 class Perceptron(object):
@@ -100,6 +101,7 @@ class Perceptron(object):
     the train function trains the perceptron.
     """
     def train(self, training_data, training_labels, learning_rate_decay_function, hasRandomTrainingOrder, epochs):
+        accuracy_by_epoch = np.zeros(epochs)
         # Pass over the training data and train in multiple epochs
         for i in range(epochs):
             # This numpy vector will control whether the training data is
@@ -107,6 +109,8 @@ class Perceptron(object):
             training_order = np.arange(len(training_labels))
             if hasRandomTrainingOrder:
                 training_order = np.random.shuffle(training_order)
+
+            curEpoch_assigned_labels = np.zeros(len(training_labels))
 
             # Pass over the training images in the determined order, classifying
             # them and then updating the perceptron's weights and biases
@@ -118,13 +122,35 @@ class Perceptron(object):
 
                 # Classify the image and then update the perceptron's weights and biases
                 assigned_label = self.classify(training_image)
+                curEpoch_assigned_labels[training_image_index] = assigned_label
                 self.update_weights(training_image, training_label, assigned_label, learning_rate_decay_function, j+1)
+
+            accuracy_by_epoch[i] = np.sum(np.equal(training_labels, curEpoch_assigned_labels))
+
+        print("Accuracy By Epoch: " + str(accuracy_by_epoch))
 
 
 #### Miscellaneous functions
+def classify_test_data(test_data, test_labels):
+    num_test_images = test_data.shape[1]
+    assigned_labels = np.zeros(num_test_images)
+
+    for i in range(num_test_images):
+        assigned_labels[i] = self.classify(test_data[:,i])
+
+    overall_accuracy = compute_overall_accuracy(test_labels, assigned_labels)
+    print("Overall Accuracy on Test Data Set: " + str(overall_accuracy))
+
+    confusion_matrix = compute_confusion_matrix(test_labels, assigned_labels)
+    print("Confusion Matrix")
+    print()
+    print(confusion_matrix)
+
+
 def sigmoid(z):
     """The sigmoid function."""
     return 1.0/(1.0+np.exp(-z))
+
 
 def compute_learning_rate(num_training_image):
     return (1 / num_training_image)
