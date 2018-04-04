@@ -1,6 +1,81 @@
-import parser as loader
-import numpy as np
+"""
+-------------------------------------------------------------------------------
+Should there be a command-line argument for learning-rate decay function?
 
+
+
+
+
+This is the driver file for training a naive beyes classifier or perceptron with the training data
+and then classifying the test data.
+
+To train and classify with a naive beyes classifier with particular hyperparameters,
+run the following command:
+
+python main.py <beyes> <laplace>
+
+where:
+<beyes>     = "beyes" or "naivebeyes" (ignoring case)
+<laplace>   = The laplacian smoothing constant to use for computing the likelihoods
+
+To train and classify with a perceptron with particular hyperparameters, run the
+following command:
+
+python main.py <perceptron> <hasBias> <weightsAreRandom> <hasRandomTrainingOrder> <epochs>
+
+where:
+<perceptron>                = "perceptron" (ignoring case)
+<hasBias>                   = 0 if the perceptron shouldn't have biases, 1 if it should
+<weightsAreRandom>          = 0 if the perceptron's weights (and biases if they are present)
+                            : should be initialized to zero, 1 if they should be initialized randomly
+<hasRandomTrainingOrder>    = 0 if the order of the training examples should be fixed
+                            : between epochs, 1 if it should be random between epochs
+<epochs>                    = number of epochs (passes) over the training data during the training phase
+-------------------------------------------------------------------------------
+"""
+
+#import numpy as np
+import sys
+from parser import parser
+import naivebeyes
+import perceptron
+
+
+if __name__ == "__main__":
+    incorrectUsageError = "Incorrect Usage: Expected " \
+                        + "\"python %s <beyes> <laplace>\" or " % sys.argv[0] \
+                        + "\"python %s <perceptron> <hasBias> <weightsAreRandom> <hasRandomTrainingOrder> <epochs>\"" % sys.argv[0]
+
+    assert len(sys.argv) >= 4, incorrectUsageError
+
+    training_data_filename = "Data/digitdata/optdigits-orig_train.txt"
+    test_data_filename = "Data/digitdata/optdigits-orig_test.txt"
+
+    training_data_tuple = parser(training_data_filename)
+    test_data_tuple = parser(test_data_filename)
+
+    if sys.argv[2].lower() == "beyes" or sys.argv[2].lower() == "naivebeyes":
+        # Check the validity of the command-line arguments
+        assert len(sys.argv) == 4, incorrectUsageError
+
+        # Run code for training and classifying with naive beyes classifier
+        naivebeyes.run_naivebeyes(training_data_tuple, test_data_tuple, sys.argv[3])
+
+    elif sys.argv[2].lower() == "perceptron":
+        # Check the validity of the command-line arguments
+        assert len(sys.argv) == 7, incorrectUsageError
+        for i in range(3,6):
+            assert sys.argv[i] == 0 or sys.argv[i] == 1, "INVALID ARGUMENT ERROR: " \
+                                                       + "<hasBias>, <weightsAreRandom>, and <hasRandomTrainingOrder> " \
+                                                       + "must be 0 or 1!"
+
+        # Run code for training and classifying with perceptron
+        perceptron.run_perceptron(training_data_tuple, test_data_tuple, sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+
+    else:
+        sys.exit("INVALID ARGUMENT ERROR: The third argument must be \"beyes\", \"naivebeyes\", or \"perceptron\" (ignoring case)!")
+
+"""
 ar = np.array([[1,1,1,2],[0,2,1,-1]])
 
 print(ar.shape,np.sum(ar, axis=1),np.argmax(ar,axis=1))
@@ -49,6 +124,7 @@ for i in range(32):
         line += str(image2[i,j])
 
     print(line)
+"""
 
 # a = np.array((),dtype=np.int64)
 # b = np.asarray([1,2,3], dtype=np.int64)

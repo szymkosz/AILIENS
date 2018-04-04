@@ -1,4 +1,28 @@
+# Import the necessary files and libraries
 import numpy as np
+
+
+"""
+This is the driver function for training a naive beyes classifier with the training data
+and then classifying the test data.
+"""
+def run_naivebeyes(training_data_tuple, test_data_tuple, laplace):
+    training_data, training_data_by_class, training_labels = training_data_tuple
+    test_data, test_data_by_class, test_labels = test_data_tuple
+
+    likelihoods = compute_likelihoods(training_data_by_class, laplace)
+    priors = compute_priors(training_data, training_data_by_class)
+    assigned_labels, posteriors = maximum_a_posteriori(test_data, likelihoods, priors)
+
+    confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
+    print("Confusion Matrix:")
+    print()
+    print(confusion_matrix)
+
+
+
+    pass
+
 
 """
 Computes the likelihoods of each pixel given each class and returns them as a
@@ -67,8 +91,8 @@ def maximum_a_posteriori(test_data, likelihoods, priors):
     opposite_likelihoods = (np.ones(likelihoods.shape) - likelihoods)
 
     posteriors = np.empty((0,10))
-    assigned_labels = []
     num_test_images = test_data.shape[1]
+    assigned_labels = np.zeros(num_test_images)
     log_priors = np.log(priors)
 
     for i in range(num_test_images):
@@ -94,9 +118,8 @@ def maximum_a_posteriori(test_data, likelihoods, priors):
 
         # Assign the class label based on the index of the highest posterior probability
         curImage_assigned_label = np.argmax(curImagePosteriors)
-        assigned_labels.append(curImage_assigned_label)
+        assigned_labels[i] = curImage_assigned_label
 
-    assigned_labels = np.asarray(assigned_labels)
     posteriors = posteriors.T
 
     return (assigned_labels, posteriors)

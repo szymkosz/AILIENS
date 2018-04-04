@@ -3,6 +3,21 @@ import numpy as np
 import helper
 
 
+"""
+This is the driver function for training a perceptron with the training data
+and then classifying the test data.
+"""
+def run_perceptron(training_data_tuple, test_data_tuple, hasBias, weightsAreRandom, hasRandomTrainingOrder, epochs):
+    # Extract the training and test data and labels, and construct a perceptron
+    training_data, training_data_by_class, training_labels = training_data_tuple
+    test_data, test_data_by_class, test_labels = test_data_tuple
+    perceptron = Perceptron(hasBias, weightsAreRandom)
+
+    # Train and classify with perceptron
+    perceptron.train(training_data, training_labels, compute_learning_rate, hasRandomTrainingOrder, epochs)
+    classify_test_data(perceptron, test_data, test_labels)
+
+
 class Perceptron(object):
     """
     This is the constructor for the perceptron.  It constructs the weights and biases
@@ -131,18 +146,18 @@ class Perceptron(object):
 
 
 #### Miscellaneous functions
-def classify_test_data(test_data, test_labels):
+def classify_test_data(perceptron, test_data, test_labels):
     num_test_images = test_data.shape[1]
     assigned_labels = np.zeros(num_test_images)
 
     for i in range(num_test_images):
-        assigned_labels[i] = self.classify(test_data[:,i])
+        assigned_labels[i] = perceptron.classify(test_data[:,i])
 
-    overall_accuracy = compute_overall_accuracy(test_labels, assigned_labels)
+    overall_accuracy = helper.compute_overall_accuracy(test_labels, assigned_labels)
     print("Overall Accuracy on Test Data Set: " + str(overall_accuracy))
 
-    confusion_matrix = compute_confusion_matrix(test_labels, assigned_labels)
-    print("Confusion Matrix")
+    confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
+    print("Confusion Matrix:")
     print()
     print(confusion_matrix)
 
