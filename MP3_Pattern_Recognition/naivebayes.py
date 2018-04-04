@@ -10,17 +10,15 @@ def compute_likelihoods(images_by_class, laplace):
 
     for k in range(len(images_by_class)):
         curImages = images_by_class[k]
+        num_pixels = curImages.shape[0]
         num_class_images = curImages.shape[1]
 
-        curLikelihoods = []
+        curLikelihoods = np.zeros(num_pixels)
 
-        for i in range(curImages.shape[0]):
+        for i in range(num_pixels):
             num_observations = np.sum(curImages[i,:])
+            curLikelihoods[i] = (num_observations + laplace) / (num_class_images + (2*laplace))
 
-            likelihood = (num_observations + laplace) / (num_class_images + (2*laplace))
-            curLikelihoods.append(likelihood)
-
-        curLikelihoods = np.asarray(curLikelihoods)
         likelihoods = np.vstack((likelihoods, curLikelihoods))
 
     likelihoods = likelihoods.T
@@ -34,9 +32,9 @@ where the ith entry is the priors probability for the ith class.
 """
 def compute_priors(training_data, images_by_class):
     priors = np.zeros(10)
-    num_training_images = len(training_data)
+    num_training_images = training_data.shape[1]
     for i in range(10):
-        images_in_class = len(images_by_class[i])
+        images_in_class = (images_by_class[i]).shape[1]
         priors[i] = images_in_class/num_training_images
     return priors
 

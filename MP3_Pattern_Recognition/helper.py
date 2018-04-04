@@ -10,10 +10,22 @@ Computes the confusion matrix given the true labels of the test images and
 their assigned labels.
 """
 def compute_confusion_matrix(true_labels, assigned_labels):
+    assert len(true_labels) == len(assigned_labels), "LENGTH NOT SAME ERROR: true labels " + \
+                                                     "and assigned labels don't have same length!"
+
+    """
+    This code is wrong.  The shape should be (10,10) and there should only be one loop.
+
     confusion = np.zeros((len(true_labels),len(assigned_labels)))
     for i in range(len(true_labels)):
         for j in range(len(assigned_labels)):
             confusion[ true_labels[i] , assigned_labels[j] ] += 1
+    """
+
+    # Here is a correct implementation:
+    confusion = np.zeros((10,10))
+    for i in range(len(true_labels)):
+        confusion[ true_labels[i] , assigned_labels[i] ] += 1
 
     for i in range(len(confusion)):
         confusion[i,:] /= np.sum(confusion[i,:])
