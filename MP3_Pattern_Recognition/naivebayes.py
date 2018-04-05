@@ -1,6 +1,10 @@
 # Import the necessary files and libraries
 import numpy as np
+import helper
 
+# Values of .1 to .5 and 5.2 to 6.4 for the laplacian constant yield the best overall
+# accuracy on the test data set.  Digits 7 and 8 have 100% accuracy for values from .1 to .5
+# and digits 0 and 8 have 100% accuracy for values from 5.2 to 6.4.
 
 """
 This is the driver function for training a naive bayes classifier with the training data
@@ -10,18 +14,37 @@ def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
     training_data, training_data_by_class, training_labels = training_data_tuple
     test_data, test_data_by_class, test_labels = test_data_tuple
 
-    likelihoods = compute_likelihoods(training_data_by_class, laplace)
+    likelihoods = compute_likelihoods(training_data_by_class, i)
     priors = compute_priors(training_data, training_data_by_class)
     assigned_labels, posteriors = maximum_a_posteriori(test_data, likelihoods, priors)
 
+    overall_accuracy = helper.compute_overall_accuracy(test_labels, assigned_labels)
+    print("Overall Accuracy on Test Data Set: " + str(overall_accuracy))
+
     confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
-    print("Confusion Matrix:")
-    print()
+    print("Confusion Matrix:\n")
     print(confusion_matrix)
+    print("")
+    """
+    max_and_min_image_indices = max_and_min_posteriors(posteriors)
 
+    for i in range(10):
+        curMax_index = max_and_min_image_indices[i, 0]
+        curMin_index = max_and_min_image_indices[i, 1]
 
+        max_image = test_data[:,curMax_index]
+        print("Class %d maximum posterior test token:\n" % i)
+        helper.print_image(max_image)
+        print("")
 
-    pass
+        min_image = test_data[:,curMin_index]
+        print("Class %d minimum posterior test token:\n" % i)
+        helper.print_image(min_image)
+        print("")
+
+    #find_maximum_confusion_class_pairs(confusion)
+    #odds_ratios(likelihoods, digit_pair)
+    """
 
 
 """
@@ -39,6 +62,7 @@ def compute_likelihoods(images_by_class, laplace):
 
         curLikelihoods = np.zeros(num_pixels)
 
+        # Computes P(F(i/32,i%32) = 1 | class = k) over all 1,024 pixels for the current class k
         for i in range(num_pixels):
             num_observations = np.sum(curImages[i,:])
             curLikelihoods[i] = (num_observations + laplace) / (num_class_images + (2*laplace))
@@ -92,7 +116,7 @@ def maximum_a_posteriori(test_data, likelihoods, priors):
 
     posteriors = np.empty((0,10))
     num_test_images = test_data.shape[1]
-    assigned_labels = np.zeros(num_test_images)
+    assigned_labels = np.zeros(num_test_images, dtype=np.int32)
     log_priors = np.log(priors)
 
     for i in range(num_test_images):
@@ -113,7 +137,7 @@ def maximum_a_posteriori(test_data, likelihoods, priors):
 
         # Compute the log sum
         curImage_log_likelihoods = np.log(curImageLikelihoods)
-        curImagePosteriors = np.sum(curImage_log_likelihoods,axis=1) + log_priors
+        curImagePosteriors = np.sum(curImage_log_likelihoods,axis=0) + log_priors
         posteriors = np.vstack((posteriors, curImagePosteriors))
 
         # Assign the class label based on the index of the highest posterior probability
@@ -136,7 +160,7 @@ probabilites, and the second column contains the column indices of the test imag
 with the minimum posterior probabilites.
 """
 def max_and_min_posteriors(posteriors):
-    max_min_post = np.zeros((10,2))
+    max_min_post = np.zeros((10,2), dtype=np.int32)
     max_min_post[:,0] = np.argmax(posteriors, axis=1)
     max_min_post[:,1] = np.argmin(posteriors, axis=1)
 
@@ -169,8 +193,11 @@ def find_maximum_confusion_class_pairs(confusion):
         y = pairs_idx[1][i]
 
         # If x == y, this entry is along the diagonal. Skip it.
-        if x != y and len(pairs) != number_of_pairs:
+        if x != y:
             pairs.append( (x, y) )
+
+            if len(pairs) != number_of_pairs:
+                break
 
     return pairs
 

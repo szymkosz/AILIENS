@@ -36,7 +36,7 @@ where:
 
 #import numpy as np
 import sys
-from parser import parser
+from loader import parser
 import naivebayes
 import perceptron
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         assert len(sys.argv) == 3, incorrectUsageError
 
         # Run code for training and classifying with naive bayes classifier
-        naivebayes.run_naivebayes(training_data_tuple, test_data_tuple, int(sys.argv[2]))
+        naivebayes.run_naivebayes(training_data_tuple, test_data_tuple, float(sys.argv[2]))
 
     elif sys.argv[1].lower() == "perceptron":
         # Check that the number of command-line arguments is correct

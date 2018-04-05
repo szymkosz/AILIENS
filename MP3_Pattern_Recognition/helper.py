@@ -43,3 +43,14 @@ def compute_overall_accuracy(true_labels, assigned_labels):
     assert len(true_labels) == len(assigned_labels), "LENGTH NOT SAME ERROR: true labels " + \
                                                      "and assigned labels don't have same length!"
     return (np.sum(np.equal(true_labels, assigned_labels)) / len(true_labels))
+
+
+def print_image(image):
+    reshaped_image = image.reshape((32,32))
+
+    for i in range(32):
+        line = ""
+        for j in range(32):
+            line += str(reshaped_image[i,j])
+
+        print(line)

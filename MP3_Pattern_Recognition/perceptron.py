@@ -57,24 +57,15 @@ class Perceptron(object):
         with the perceptron's 10 x 1,024 weight matrix to generate a 10-dimensional
         numpy vector.  If the perceptron has biases, they are then added to this result.
 
-    2.  The result of step 1 is then passed into np.sign (numpy's signum function)
-        to generate the activations of the 10 neurons in the form of a 10-dimensional
-        numpy vector.  This is the non-differentiable activation function from lecture.
-
-    3.  The index of the first occurrence of the largest value in the result
-        from step 2 is computed with np.argmax.  This is the label that is
+    2.  The index of the first occurrence of the largest value in the result
+        from step 1 is computed with np.argmax.  This is the label that is
         returned by this function.
     """
     def classify(self, image):
-        # Compute the activations of the neurons
-        activations = None
         if self.biases is not None:
-            activations = np.sign(np.dot(self.weights, image) + self.biases)
+            return np.argmax(np.dot(self.weights, image) + self.biases)
         else:
-            activations = np.sign(np.dot(self.weights, image))
-
-        # Return the index of the first occurrence of the largest activation
-        return np.argmax(activations)
+            return np.argmax(np.dot(self.weights, image))
 
 
     """
@@ -157,8 +148,7 @@ def classify_test_data(perceptron, test_data, test_labels):
     print("Overall Accuracy on Test Data Set: " + str(overall_accuracy))
 
     confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
-    print("Confusion Matrix:")
-    print()
+    print("Confusion Matrix:\n")
     print(confusion_matrix)
 
 
