@@ -223,13 +223,15 @@ def make_plots(likelihoods, digit_pair):
     # Extract relevant likelihoods for this pair
     first_likelihoods = np.reshape(likelihoods[:,digit_pair[0]],(32,32))
     second_likelihoods = np.reshape(likelihoods[:,digit_pair[1]],(32,32))
-    odds_ratios = np.divide(second_likelihoods,first_likelihoods)
-    # odds_ratios = second_likelihoods - first_likelihoods
 
     # Convert to log
     first_likelihoods = np.log(first_likelihoods)
     second_likelihoods = np.log(second_likelihoods)
-    odds_ratios = np.log(odds_ratios)
+
+    # odds_ratios = np.divide(second_likelihoods,first_likelihoods)
+    odds_ratios = second_likelihoods - first_likelihoods
+
+    # odds_ratios = np.log(odds_ratios)
 
     def add_plot(ax, dataset):
 
@@ -280,4 +282,4 @@ def make_plots(likelihoods, digit_pair):
     with PdfPages("Confusion Pair ({0}, {1}).pdf".format(digit_pair[0], digit_pair[1])) as pdf:
         pdf.savefig()
 
-    # plt.show()
+    plt.show()
