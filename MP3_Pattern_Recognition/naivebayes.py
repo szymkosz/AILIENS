@@ -1,5 +1,6 @@
 # Import the necessary files and libraries
 import numpy as np
+import matplotlib.pyplot as plt
 import helper
 
 # Values of .1 to .5 and 5.2 to 6.4 for the laplacian constant yield the best overall
@@ -14,7 +15,7 @@ def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
     training_data, training_data_by_class, training_labels = training_data_tuple
     test_data, test_data_by_class, test_labels = test_data_tuple
 
-    likelihoods = compute_likelihoods(training_data_by_class, i)
+    likelihoods = compute_likelihoods(training_data_by_class, laplace)
     priors = compute_priors(training_data, training_data_by_class)
     assigned_labels, posteriors = maximum_a_posteriori(test_data, likelihoods, priors)
 
@@ -41,10 +42,10 @@ def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
         print("Class %d minimum posterior test token:\n" % i)
         helper.print_image(min_image)
         print("")
-
-    #find_maximum_confusion_class_pairs(confusion)
-    #odds_ratios(likelihoods, digit_pair)
     """
+
+    digit_pairs = find_maximum_confusion_class_pairs(confusion_matrix)
+    odds_ratios(likelihoods, digit_pairs)
 
 
 """
@@ -182,7 +183,7 @@ def find_maximum_confusion_class_pairs(confusion):
     max_idx = np.argpartition(flat_confusion, -(num_values))[-(num_values):]
 
     # Sort them
-    max_idx = max_idx[np.argsort(flat_confusion[ind])]
+    max_idx = max_idx[np.argsort(flat_confusion[max_idx])]
 
     # Extract the x and y coordinates
     pairs_idx = np.unravel_index(max_idx, confusion.shape) # 2-tuple of two arrays of x and y coordinates
@@ -196,7 +197,7 @@ def find_maximum_confusion_class_pairs(confusion):
         if x != y:
             pairs.append( (x, y) )
 
-            if len(pairs) != number_of_pairs:
+            if len(pairs) == number_of_pairs:
                 break
 
     return pairs
@@ -206,8 +207,77 @@ def find_maximum_confusion_class_pairs(confusion):
 Plots the log likelihood maps and log odds ratio maps for the four pairs of digits
 with the highest confusion rates.
 """
-def odds_ratios(likelihoods, digit_pair):
-    pass
+def odds_ratios(likelihoods, digit_pairs):
 
+    # Iterate over all digit pairs
+    for pair in digit_pairs:
+        # Call helper function to plot likelihoods of each
+        #  digit in each pair and their respective odds ratio
+        make_plots(likelihoods, pair)
+
+"""
+Helper function for plotting the log likelihoods and log odds ratios map for a
+single digit pair.
+"""
 def make_plots(likelihoods, digit_pair):
-    pass
+    # Extract relevant likelihoods for this pair
+    first_likelihoods = np.reshape(likelihoods[:,digit_pair[0]],(32,32))
+    second_likelihoods = np.reshape(likelihoods[:,digit_pair[1]],(32,32))
+    odds_ratios = np.divide(second_likelihoods,first_likelihoods)
+    # odds_ratios = second_likelihoods - first_likelihoods
+
+    # Convert to log
+    first_likelihoods = np.log(first_likelihoods)
+    second_likelihoods = np.log(second_likelihoods)
+    odds_ratios = np.log(odds_ratios)
+
+    def add_plot(ax, dataset):
+
+        ## Overhead to make colorbar work
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+        divider = make_axes_locatable(ax)
+
+        ax_cb = divider.new_horizontal(size="10%", pad=0.05)
+        fig1 = ax.get_figure()
+        fig1.add_axes(ax_cb)
+
+        ## Heat map
+        im = ax.imshow(dataset, cmap='jet')
+
+        ## Turn off axis labels and tick marks
+        ax.tick_params(
+            axis='both',
+            which='both',
+            bottom='off',
+            left='off',
+            labelbottom='off',
+            labelleft='off')
+
+        plt.colorbar(im, cax=ax_cb)
+        ax_cb.yaxis.tick_right()
+        ax_cb.yaxis.set_tick_params(labelright=True)
+
+    fig = plt.figure()
+
+    # Plot likelihoods of first digit in pair
+    ax = plt.subplot(1,3,1)
+    add_plot(ax, first_likelihoods)
+
+    # Plot likelihoods of second digit in pair
+    ax = plt.subplot(1,3,2)
+    add_plot(ax, second_likelihoods)
+
+    # Plot odds ratios for pair
+    ax = plt.subplot(1,3,3)
+    add_plot(ax, odds_ratios)
+
+    # Used for good spacing
+    plt.tight_layout()
+
+    ## Save to file as PDF
+    from matplotlib.backends.backend_pdf import PdfPages
+    with PdfPages("Confusion Pair ({0}, {1}).pdf".format(digit_pair[0], digit_pair[1])) as pdf:
+        pdf.savefig()
+
+    # plt.show()
