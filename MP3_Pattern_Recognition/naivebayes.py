@@ -249,10 +249,10 @@ def make_plots(likelihoods, digit_pair):
         ax.tick_params(
             axis='both',
             which='both',
-            bottom='off',
-            left='off',
-            labelbottom='off',
-            labelleft='off')
+            bottom=False,
+            left=False,
+            labelbottom=False,
+            labelleft=False)
 
         plt.colorbar(im, cax=ax_cb)
         ax_cb.yaxis.tick_right()
