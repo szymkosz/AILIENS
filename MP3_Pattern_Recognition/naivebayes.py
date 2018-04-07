@@ -229,7 +229,7 @@ def make_plots(likelihoods, digit_pair):
     second_likelihoods = np.log(second_likelihoods)
 
     # odds_ratios = np.divide(second_likelihoods,first_likelihoods)
-    odds_ratios = second_likelihoods - first_likelihoods
+    odds_ratios = first_likelihoods - second_likelihoods
 
     # odds_ratios = np.log(odds_ratios)
 
