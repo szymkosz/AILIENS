@@ -145,7 +145,49 @@ class Perceptron(object):
     """
     def plot_weights():
         # Plot self.weights
-        pass
+        def add_plot(ax, dataset):
+
+            ## Overhead to make colorbar work
+            from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+            divider = make_axes_locatable(ax)
+
+            ax_cb = divider.new_horizontal(size="10%", pad=0.05)
+            fig1 = ax.get_figure()
+            fig1.add_axes(ax_cb)
+
+            ## Heat map
+            im = ax.imshow(dataset, cmap='jet')
+
+            ## Turn off axis labels and tick marks
+            ax.tick_params(
+                axis='both',
+                which='both',
+                bottom=False,
+                left=False,
+                labelbottom=False,
+                labelleft=False)
+
+            plt.colorbar(im, cax=ax_cb)
+            ax_cb.yaxis.tick_right()
+            ax_cb.yaxis.set_tick_params(labelright=True)
+
+        fig = plt.figure()
+
+        # Plot likelihoods of first digit in pair
+        for i in range(len(self.weights)):
+            ax = plt.subplot(3, 4, i+1)
+            add_plot(ax, np.reshape(self.weights[i]), (3,3))
+
+        # Used for good spacing
+        plt.tight_layout()
+
+        ## Save to file as PDF
+        from matplotlib.backends.backend_pdf import PdfPages
+        with PdfPages("Perceptro_Weights.pdf" as pdf:
+            pdf.savefig()
+
+        plt.show()
 
 
 #### Miscellaneous functions
