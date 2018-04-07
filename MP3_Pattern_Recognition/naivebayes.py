@@ -26,9 +26,9 @@ def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
     print("Confusion Matrix:\n")
     print(confusion_matrix)
     print("")
-    """
-    max_and_min_image_indices = max_and_min_posteriors(posteriors)
 
+    max_and_min_image_indices = max_and_min_posteriors(posteriors, test_data, test_labels)
+    """
     for i in range(10):
         curMax_index = max_and_min_image_indices[i, 0]
         curMin_index = max_and_min_image_indices[i, 1]
@@ -170,22 +170,28 @@ def max_and_min_posteriors(posteriors, test_data, true_labels):
     max_min_post = np.zeros((10,2), dtype=np.int32)
 
     for i in range(10):
-        cur_idxs = np.where(true_labels == i)
+        # Subset the class
+        cur_idxs = np.asarray(np.where(true_labels == i))
+        cur_idxs = cur_idxs.reshape((len(cur_idxs[0]),1))
+        cur_posteriors = posteriors[i,cur_idxs]
 
-        cur_posteriors = posteriors[i,cur_idx]
-        cur_test_images = test_data[cur_idx]
-
+        # Find the max and min indices within subset
         min_idx = np.argmin(cur_posteriors)
         max_idx = np.argmax(cur_posteriors)
 
+        # Retrieve original indices (in range T)
         min_idx = cur_idxs[min_idx]
-        max_idx = cur_idx[max_idx]
+        max_idx = cur_idxs[max_idx]
 
+        # Populate max_min_post array
         max_min_post[i,0] = max_idx
         max_min_post[i,1] = min_idx
 
-        print_image(test_data[max_idx])
-        print_image(test_data[min_idx])
+        # Print images
+        print("\n\nClass {0} Maximum Posterior Token\n".format(i))
+        helper.print_image(test_data[:,max_idx])
+        print("\n\nClass {0} Minimum Posterior Token\n".format(i))
+        helper.print_image(test_data[:,min_idx])
 
     return max_min_post
 
