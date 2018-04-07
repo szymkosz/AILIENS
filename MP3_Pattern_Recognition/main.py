@@ -21,10 +21,11 @@ where:
 To train and classify with a perceptron with particular hyperparameters, run the
 following command:
 
-python main.py <perceptron> <hasBias> <weightsAreRandom> <hasRandomTrainingOrder> <epochs>
+python main.py <perceptron> <learning_rate_power> <hasBias> <weightsAreRandom> <hasRandomTrainingOrder> <epochs>
 
 where:
 <perceptron>                = "perceptron" (ignoring case)
+<learning_rate_power>       = The value of the exponent in the learning rate function (1/(num_epoch**learning_rate_power))
 <hasBias>                   = 0 if the perceptron shouldn't have biases, 1 if it should
 <weightsAreRandom>          = 0 if the perceptron's weights (and biases if they are present)
                             : should be initialized to zero, 1 if they should be initialized randomly
@@ -63,11 +64,11 @@ if __name__ == "__main__":
 
     elif sys.argv[1].lower() == "perceptron":
         # Check that the number of command-line arguments is correct
-        assert len(sys.argv) == 6, incorrectUsageError
+        assert len(sys.argv) == 7, incorrectUsageError
 
         # Parse the boolean parameters into booleans and evaluate their validity
         parsedBooleans = []
-        for i in range(2,5):
+        for i in range(3,6):
             parsedValue = int(sys.argv[i])
             assert parsedValue == 0 or parsedValue == 1, "INVALID ARGUMENT ERROR: " \
                                                        + "<hasBias>, <weightsAreRandom>, and <hasRandomTrainingOrder> " \
@@ -75,7 +76,7 @@ if __name__ == "__main__":
             parsedBooleans.append(parsedValue == 1)
 
         # Run code for training and classifying with perceptron
-        perceptron.run_perceptron(training_data_tuple, test_data_tuple, parsedBooleans[0], parsedBooleans[1], parsedBooleans[2], int(sys.argv[5]))
+        perceptron.run_perceptron(training_data_tuple, test_data_tuple, int(sys.argv[2]), parsedBooleans[0], parsedBooleans[1], parsedBooleans[2], int(sys.argv[6]))
 
     else:
         sys.exit("INVALID ARGUMENT ERROR: The third argument must be \"bayes\", \"naivebayes\", or \"perceptron\" (ignoring case)!")
