@@ -17,6 +17,8 @@ def run_perceptron(training_data_tuple, test_data_tuple, hasBias, weightsAreRand
     perceptron.train(training_data, training_labels, compute_learning_rate, hasRandomTrainingOrder, epochs)
     classify_test_data(perceptron, test_data, test_labels)
 
+    perceptron.plot_weights()
+
 
 class Perceptron(object):
     """
@@ -143,7 +145,7 @@ class Perceptron(object):
     a 10 x 1,024 matrix where the ith row is the weight vector for the ith digit class.
     Each row should be plotted as a 32 x 32 image in a similar vein to the log odds ratio plots.
     """
-    def plot_weights():
+    def plot_weights(self):
         # Plot self.weights
         def add_plot(ax, dataset):
 
@@ -184,7 +186,7 @@ class Perceptron(object):
 
         ## Save to file as PDF
         from matplotlib.backends.backend_pdf import PdfPages
-        with PdfPages("Perceptro_Weights.pdf" as pdf:
+        with PdfPages("Perceptro_Weights.pdf") as pdf:
             pdf.savefig()
 
         plt.show()
