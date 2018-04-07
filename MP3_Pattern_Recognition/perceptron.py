@@ -1,6 +1,7 @@
 # Import the necessary libraries
 import numpy as np
 import helper
+import matplotlib.pyplot as plt
 
 
 """
