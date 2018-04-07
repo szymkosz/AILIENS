@@ -186,11 +186,14 @@ class Perceptron(object):
 
         # Plot likelihoods of first digit in pair
         for i in range(len(self.weights)):
-            ax = plt.subplot(4, 3, i+1)
+            if i + 1 == len(self.weights):
+                ax = plt.subplot(4,3,i+2)
+            else:
+                ax = plt.subplot(4, 3, i+1)
             add_plot(ax, np.reshape(self.weights[i], (32,32)))
 
         # Used for good spacing
-        plt.tight_layout()
+        # plt.tight_layout()
 
         ## Save to file as PDF
         from matplotlib.backends.backend_pdf import PdfPages
