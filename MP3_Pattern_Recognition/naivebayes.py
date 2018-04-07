@@ -160,13 +160,34 @@ column contains the column indices of the test images with the maximum posterior
 probabilites, and the second column contains the column indices of the test images
 with the minimum posterior probabilites.
 """
-def max_and_min_posteriors(posteriors):
+# def max_and_min_posteriors(posteriors):
+#     max_min_post = np.zeros((10,2), dtype=np.int32)
+#     max_min_post[:,0] = np.argmax(posteriors, axis=1)
+#     max_min_post[:,1] = np.argmin(posteriors, axis=1)
+#
+#     return max_min_post
+def max_and_min_posteriors(posteriors, test_data, true_labels):
     max_min_post = np.zeros((10,2), dtype=np.int32)
-    max_min_post[:,0] = np.argmax(posteriors, axis=1)
-    max_min_post[:,1] = np.argmin(posteriors, axis=1)
+
+    for i in range(10):
+        cur_idxs = np.where(true_labels == i)
+
+        cur_posteriors = posteriors[i,cur_idx]
+        cur_test_images = test_data[cur_idx]
+
+        min_idx = np.argmin(cur_posteriors)
+        max_idx = np.argmax(cur_posteriors)
+
+        min_idx = cur_idxs[min_idx]
+        max_idx = cur_idx[max_idx]
+
+        max_min_post[i,0] = max_idx
+        max_min_post[i,1] = min_idx
+
+        print_image(test_data[max_idx])
+        print_image(test_data[min_idx])
 
     return max_min_post
-
 
 def find_maximum_confusion_class_pairs(confusion):
     number_of_pairs = 4
