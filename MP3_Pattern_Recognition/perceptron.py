@@ -7,15 +7,16 @@ import helper
 This is the driver function for training a perceptron with the training data
 and then classifying the test data.
 """
-def run_perceptron(training_data_tuple, test_data_tuple, hasBias, weightsAreRandom, hasRandomTrainingOrder, epochs):
+def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_power, hasBias, weightsAreRandom, hasRandomTrainingOrder, epochs):
     # Extract the training and test data and labels, and construct a perceptron
     training_data, training_data_by_class, training_labels = training_data_tuple
     test_data, test_data_by_class, test_labels = test_data_tuple
     perceptron = Perceptron(hasBias, weightsAreRandom)
 
     # Train and classify with perceptron
-    perceptron.train(training_data, training_labels, compute_learning_rate, hasRandomTrainingOrder, epochs)
+    perceptron.train(training_data, training_labels, learning_rate_power, hasRandomTrainingOrder, epochs)
     classify_test_data(perceptron, test_data, test_labels)
+    #perceptron.plot_weights()
 
 
 class Perceptron(object):
@@ -79,14 +80,13 @@ class Perceptron(object):
     to the weight vector for the true class and subtracted from the weight vector for the
     misclassified class.
     """
-    def update_weights(self, training_image, true_label, assigned_label, learning_rate_decay_function, num_training_image):
+    def update_weights(self, training_image, true_label, assigned_label, eta):
         # If the true and assigned labels are identical, there is nothing further to do.
         if true_label == assigned_label:
             return
 
         # Computes the learning rate and the update vector for the weight
         # vectors of the true and misclassified classes
-        eta = learning_rate_decay_function(num_training_image)
         update = eta * training_image
 
         # Update the weight vectors of the true and misclassified classes
@@ -106,10 +106,15 @@ class Perceptron(object):
     whether or not the images are passed over in random order, and the number of epochs,
     the train function trains the perceptron.
     """
-    def train(self, training_data, training_labels, learning_rate_decay_function, hasRandomTrainingOrder, epochs):
+    def train(self, training_data, training_labels, learning_rate_power, hasRandomTrainingOrder, epochs):
         accuracy_by_epoch = np.zeros(epochs)
+
         # Pass over the training data and train in multiple epochs
         for i in range(epochs):
+            # Compute the learning rate for this epoch
+            num_epoch = i+1
+            eta = compute_learning_rate(num_epoch, learning_rate_power)
+
             # This numpy vector will control whether the training data is
             # passed over in fixed, sequential or random order.
             training_order = np.arange(len(training_labels))
@@ -129,13 +134,15 @@ class Perceptron(object):
                 # Classify the image and then update the perceptron's weights and biases
                 assigned_label = self.classify(training_image)
                 curEpoch_assigned_labels[training_image_index] = assigned_label
-                self.update_weights(training_image, training_label, assigned_label, learning_rate_decay_function, j+1)
+                self.update_weights(training_image, training_label, assigned_label, eta)
 
             accuracy_by_epoch[i] = np.sum(np.equal(training_labels, curEpoch_assigned_labels))
 
         print("Accuracy By Epoch: " + str(accuracy_by_epoch))
 
 
+    def compute_learning_rate(num_epoch, learning_rate_power):
+        return (1 / (num_epoch**learning_rate_power))
 
 
     """
@@ -162,6 +169,3 @@ def classify_test_data(perceptron, test_data, test_labels):
     confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
     print("Confusion Matrix:\n")
     print(confusion_matrix)
-
-def compute_learning_rate(num_training_image):
-    return (1 / num_training_image)
