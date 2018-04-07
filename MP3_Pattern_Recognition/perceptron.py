@@ -1,6 +1,7 @@
 # Import the necessary libraries
 import numpy as np
 import helper
+import matplotlib.pyplot as plt
 
 
 """
@@ -17,6 +18,8 @@ def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_power, ha
     perceptron.train(training_data, training_labels, learning_rate_power, hasRandomTrainingOrder, epochs)
     classify_test_data(perceptron, test_data, test_labels)
     #perceptron.plot_weights()
+
+    perceptron.plot_weights()
 
 
 class Perceptron(object):
@@ -150,9 +153,51 @@ class Perceptron(object):
     a 10 x 1,024 matrix where the ith row is the weight vector for the ith digit class.
     Each row should be plotted as a 32 x 32 image in a similar vein to the log odds ratio plots.
     """
-    def plot_weights():
+    def plot_weights(self):
         # Plot self.weights
-        pass
+        def add_plot(ax, dataset):
+
+            ## Overhead to make colorbar work
+            from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+            divider = make_axes_locatable(ax)
+
+            ax_cb = divider.new_horizontal(size="10%", pad=0.05)
+            fig1 = ax.get_figure()
+            fig1.add_axes(ax_cb)
+
+            ## Heat map
+            im = ax.imshow(dataset, cmap='jet')
+
+            ## Turn off axis labels and tick marks
+            ax.tick_params(
+                axis='both',
+                which='both',
+                bottom=False,
+                left=False,
+                labelbottom=False,
+                labelleft=False)
+
+            plt.colorbar(im, cax=ax_cb)
+            ax_cb.yaxis.tick_right()
+            ax_cb.yaxis.set_tick_params(labelright=True)
+
+        fig = plt.figure()
+
+        # Plot likelihoods of first digit in pair
+        for i in range(len(self.weights)):
+            ax = plt.subplot(4, 3, i+1)
+            add_plot(ax, np.reshape(self.weights[i], (32,32)))
+
+        # Used for good spacing
+        plt.tight_layout()
+
+        ## Save to file as PDF
+        from matplotlib.backends.backend_pdf import PdfPages
+        with PdfPages("Perceptron_Weights.pdf") as pdf:
+            pdf.savefig()
+
+        plt.show()
 
 
 #### Miscellaneous functions
