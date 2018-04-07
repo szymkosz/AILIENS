@@ -136,6 +136,18 @@ class Perceptron(object):
         print("Accuracy By Epoch: " + str(accuracy_by_epoch))
 
 
+
+
+    """
+    This function plots the perceptron's weights for each digit class.  The weights are
+    a 10 x 1,024 matrix where the ith row is the weight vector for the ith digit class.
+    Each row should be plotted as a 32 x 32 image in a similar vein to the log odds ratio plots.
+    """
+    def plot_weights():
+        # Plot self.weights
+        pass
+
+
 #### Miscellaneous functions
 def classify_test_data(perceptron, test_data, test_labels):
     num_test_images = test_data.shape[1]
@@ -150,12 +162,6 @@ def classify_test_data(perceptron, test_data, test_labels):
     confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
     print("Confusion Matrix:\n")
     print(confusion_matrix)
-
-
-def sigmoid(z):
-    """The sigmoid function."""
-    return 1.0/(1.0+np.exp(-z))
-
 
 def compute_learning_rate(num_training_image):
     return (1 / num_training_image)
