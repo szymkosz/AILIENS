@@ -180,7 +180,7 @@ class Perceptron(object):
         # Plot likelihoods of first digit in pair
         for i in range(len(self.weights)):
             ax = plt.subplot(3, 4, i+1)
-            add_plot(ax, np.reshape(self.weights[i]), (3,3))
+            add_plot(ax, np.reshape(self.weights[i], (32,32))
 
         # Used for good spacing
         plt.tight_layout()
