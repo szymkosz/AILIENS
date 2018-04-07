@@ -8,14 +8,14 @@ import matplotlib.pyplot as plt
 This is the driver function for training a perceptron with the training data
 and then classifying the test data.
 """
-def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_power, hasBias, weightsAreRandom, hasRandomTrainingOrder, epochs):
+def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_exponent, hasBias, weightsAreRandom, hasRandomTrainingOrder, epochs):
     # Extract the training and test data and labels, and construct a perceptron
     training_data, training_data_by_class, training_labels = training_data_tuple
     test_data, test_data_by_class, test_labels = test_data_tuple
     perceptron = Perceptron(hasBias, weightsAreRandom)
 
     # Train and classify with perceptron
-    perceptron.train(training_data, training_labels, learning_rate_power, hasRandomTrainingOrder, epochs)
+    perceptron.train(training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs)
     classify_test_data(perceptron, test_data, test_labels)
     #perceptron.plot_weights()
 
@@ -109,14 +109,14 @@ class Perceptron(object):
     whether or not the images are passed over in random order, and the number of epochs,
     the train function trains the perceptron.
     """
-    def train(self, training_data, training_labels, learning_rate_power, hasRandomTrainingOrder, epochs):
+    def train(self, training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs):
         accuracy_by_epoch = np.zeros(epochs)
 
         # Pass over the training data and train in multiple epochs
         for i in range(epochs):
             # Compute the learning rate for this epoch
             num_epoch = i+1
-            eta = self.compute_learning_rate(num_epoch, learning_rate_power)
+            eta = self.compute_learning_rate(num_epoch, learning_rate_exponent)
 
             # This numpy vector will control whether the training data is
             # passed over in fixed, sequential or random order.
@@ -139,19 +139,25 @@ class Perceptron(object):
                 curEpoch_assigned_labels[training_image_index] = assigned_label
                 self.update_weights(training_image, training_label, assigned_label, eta)
 
-            accuracy_by_epoch[i] = (np.sum(np.equal(training_labels, curEpoch_assigned_labels))) / len(training_labels)
+            accuracy_by_epoch[i] = helper.compute_overall_accuracy(training_labels, curEpoch_assigned_labels)
 
         print("Accuracy By Epoch: " + str(accuracy_by_epoch))
 
 
-    def compute_learning_rate(self, num_epoch, learning_rate_power):
-        return (1 / (num_epoch**learning_rate_power))
+    """
+    This function computes the learning rate for a given epoch according to the
+    formula (1/(num_epoch**learning_rate_exponent)) where num_epoch is the number of the
+    current epoch (always >=1) and learning_rate_exponent is the exponent of the denominator,
+    decided when the program is run from the command line in main.py.
+    """
+    def compute_learning_rate(self, num_epoch, learning_rate_exponent):
+        return (1 / (num_epoch**learning_rate_exponent))
 
 
     """
     This function plots the perceptron's weights for each digit class.  The weights are
     a 10 x 1,024 matrix where the ith row is the weight vector for the ith digit class.
-    Each row should be plotted as a 32 x 32 image in a similar vein to the log odds ratio plots.
+    Each row is plotted as a 32 x 32 image in a similar vein to the plots from part 1.
     """
     def plot_weights(self):
         # Plot self.weights
@@ -203,7 +209,11 @@ class Perceptron(object):
         plt.show()
 
 
-#### Miscellaneous functions
+"""
+This function takes in a perceptron, a test dataset, and the dataset's labels
+and uses the perceptron to classify the test dataset.  The overall accuracy and
+confusion matrix are then computed and printed.
+"""
 def classify_test_data(perceptron, test_data, test_labels):
     num_test_images = test_data.shape[1]
     assigned_labels = np.zeros(num_test_images, dtype=np.int32)

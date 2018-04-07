@@ -15,20 +15,15 @@ def compute_confusion_matrix(true_labels, assigned_labels):
     assert len(true_labels) == len(assigned_labels), "LENGTH NOT SAME ERROR: true labels " + \
                                                      "and assigned labels don't have same length!"
 
-    """
-    This code is wrong.  The shape should be (10,10) and there should only be one loop.
-
-    confusion = np.zeros((len(true_labels),len(assigned_labels)))
-    for i in range(len(true_labels)):
-        for j in range(len(assigned_labels)):
-            confusion[ true_labels[i] , assigned_labels[j] ] += 1
-    """
-
-    # Here is a correct implementation:
+    # Initializes the confusion matrix as a 10 x 10 matrix of zeros and for every
+    # entry (i,j), counts up the number of images with true label i that were assigned
+    # label j
     confusion = np.zeros((10,10))
     for i in range(len(true_labels)):
         confusion[ true_labels[i] , assigned_labels[i] ] += 1
 
+    # Normalizes every row to sum to 1, making every entry (i,j) represent the
+    # percentage of images with true label i that were assigned label j
     for i in range(len(confusion)):
         confusion[i,:] /= np.sum(confusion[i,:])
 
@@ -45,6 +40,10 @@ def compute_overall_accuracy(true_labels, assigned_labels):
     return (np.sum(np.equal(true_labels, assigned_labels)) / len(true_labels))
 
 
+"""
+This function takes in an image of a digit as a 1,024-dimensional numpy vector
+and prints it as the original 32 x 32 image.
+"""
 def print_image(image):
     reshaped_image = image.reshape((32,32))
 
