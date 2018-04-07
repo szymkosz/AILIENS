@@ -116,7 +116,7 @@ class Perceptron(object):
         for i in range(epochs):
             # Compute the learning rate for this epoch
             num_epoch = i+1
-            eta = compute_learning_rate(num_epoch, learning_rate_power)
+            eta = self.compute_learning_rate(num_epoch, learning_rate_power)
 
             # This numpy vector will control whether the training data is
             # passed over in fixed, sequential or random order.
@@ -124,7 +124,7 @@ class Perceptron(object):
             if hasRandomTrainingOrder:
                 training_order = np.random.shuffle(training_order)
 
-            curEpoch_assigned_labels = np.zeros(len(training_labels))
+            curEpoch_assigned_labels = np.zeros(len(training_labels), dtype=np.int32)
 
             # Pass over the training images in the determined order, classifying
             # them and then updating the perceptron's weights and biases
@@ -139,12 +139,12 @@ class Perceptron(object):
                 curEpoch_assigned_labels[training_image_index] = assigned_label
                 self.update_weights(training_image, training_label, assigned_label, eta)
 
-            accuracy_by_epoch[i] = np.sum(np.equal(training_labels, curEpoch_assigned_labels))
+            accuracy_by_epoch[i] = (np.sum(np.equal(training_labels, curEpoch_assigned_labels))) / len(training_labels)
 
         print("Accuracy By Epoch: " + str(accuracy_by_epoch))
 
 
-    def compute_learning_rate(num_epoch, learning_rate_power):
+    def compute_learning_rate(self, num_epoch, learning_rate_power):
         return (1 / (num_epoch**learning_rate_power))
 
 
@@ -203,7 +203,7 @@ class Perceptron(object):
 #### Miscellaneous functions
 def classify_test_data(perceptron, test_data, test_labels):
     num_test_images = test_data.shape[1]
-    assigned_labels = np.zeros(num_test_images)
+    assigned_labels = np.zeros(num_test_images, dtype=np.int32)
 
     for i in range(num_test_images):
         assigned_labels[i] = perceptron.classify(test_data[:,i])
