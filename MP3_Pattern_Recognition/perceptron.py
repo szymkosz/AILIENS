@@ -17,8 +17,6 @@ def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_exponent,
     # Train and classify with perceptron
     perceptron.train(training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs)
     classify_test_data(perceptron, test_data, test_labels)
-    #perceptron.plot_weights()
-
     perceptron.plot_weights()
 
 
@@ -40,7 +38,7 @@ class Perceptron(object):
         # Initialize weights
         self.weights = None
         if hasRandomInitialization:
-            self.weights = np.random.randn((10, 1024))
+            self.weights = np.random.randn(10, 1024)
         else:
             self.weights = np.zeros((10, 1024))
 
@@ -48,9 +46,9 @@ class Perceptron(object):
         self.biases = None
         if hasBias:
             if hasRandomInitialization:
-                self.biases = np.random.randn((10, 1))
+                self.biases = np.random.randn(10)
             else:
-                self.biases = np.zeros((10, 1))
+                self.biases = np.zeros((10,))
 
 
     """
@@ -67,6 +65,7 @@ class Perceptron(object):
     """
     def classify(self, image):
         if self.biases is not None:
+            #print(self.biases)
             return np.argmax(np.dot(self.weights, image) + self.biases)
         else:
             return np.argmax(np.dot(self.weights, image))
@@ -75,20 +74,22 @@ class Perceptron(object):
     """
     The update_weights function will update the weights (and biases if present) of the
     perceptron given a training image, its true label, the label assigned to it by
-    the perceptron, a function for computing the learning rate, and the number of the training
-    training image within an epoch for computing the learning rate.
+    the perceptron, and a precomputed learning rate "eta".
 
-    If the true and assigned labels are the same, nothing happens.  Otherwise, a learning rate
-    "eta" and the product of eta and the training_image are computed.  Then this product is added
+    If the true and assigned labels are the same, nothing happens.  Otherwise, the
+    product of eta and the training_image is computed.  Then this product is added
     to the weight vector for the true class and subtracted from the weight vector for the
     misclassified class.
+
+    If the perceptron has biases, eta will be added to the bias of the true class
+    and subtracted from the bias of the misclassified class.
     """
     def update_weights(self, training_image, true_label, assigned_label, eta):
         # If the true and assigned labels are identical, there is nothing further to do.
         if true_label == assigned_label:
             return
 
-        # Computes the learning rate and the update vector for the weight
+        # Computes the update vector for the weight
         # vectors of the true and misclassified classes
         update = eta * training_image
 
@@ -122,7 +123,7 @@ class Perceptron(object):
             # passed over in fixed, sequential or random order.
             training_order = np.arange(len(training_labels))
             if hasRandomTrainingOrder:
-                training_order = np.random.shuffle(training_order)
+                np.random.shuffle(training_order)
 
             curEpoch_assigned_labels = np.zeros(len(training_labels), dtype=np.int32)
 
@@ -141,7 +142,9 @@ class Perceptron(object):
 
             accuracy_by_epoch[i] = helper.compute_overall_accuracy(training_labels, curEpoch_assigned_labels)
 
-        print("Accuracy By Epoch: " + str(accuracy_by_epoch))
+        epoch_indices = np.arange(epochs) + np.ones(epochs)
+        print("Epoch Number:      " + str(epoch_indices))
+        print("Accuracy By Epoch: " + str(accuracy_by_epoch) + "\n")
 
 
     """
@@ -206,7 +209,7 @@ class Perceptron(object):
         with PdfPages("Perceptron_Weights.pdf") as pdf:
             pdf.savefig()
 
-        plt.show()
+        #plt.show()
 
 
 """
@@ -222,7 +225,7 @@ def classify_test_data(perceptron, test_data, test_labels):
         assigned_labels[i] = perceptron.classify(test_data[:,i])
 
     overall_accuracy = helper.compute_overall_accuracy(test_labels, assigned_labels)
-    print("Overall Accuracy on Test Data Set: " + str(overall_accuracy))
+    print("Overall Accuracy on Test Data Set: " + str(overall_accuracy) + "\n")
 
     confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
     print("Confusion Matrix:\n")

@@ -24,11 +24,10 @@ def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
 
     confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
     print("Confusion Matrix:\n")
-    print(confusion_matrix)
-    print("")
+    print(confusion_matrix + "\n")
 
     max_and_min_image_indices = max_and_min_posteriors(posteriors, test_data, test_labels)
-    """
+
     for i in range(10):
         curMax_index = max_and_min_image_indices[i, 0]
         curMin_index = max_and_min_image_indices[i, 1]
@@ -42,7 +41,6 @@ def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
         print("Class %d minimum posterior test token:\n" % i)
         helper.print_image(min_image)
         print("")
-    """
 
     digit_pairs = find_maximum_confusion_class_pairs(confusion_matrix)
     odds_ratios(likelihoods, digit_pairs)
@@ -160,12 +158,6 @@ column contains the column indices of the test images with the maximum posterior
 probabilites, and the second column contains the column indices of the test images
 with the minimum posterior probabilites.
 """
-# def max_and_min_posteriors(posteriors):
-#     max_min_post = np.zeros((10,2), dtype=np.int32)
-#     max_min_post[:,0] = np.argmax(posteriors, axis=1)
-#     max_min_post[:,1] = np.argmin(posteriors, axis=1)
-#
-#     return max_min_post
 def max_and_min_posteriors(posteriors, test_data, true_labels):
     max_min_post = np.zeros((10,2), dtype=np.int32)
 
@@ -187,14 +179,17 @@ def max_and_min_posteriors(posteriors, test_data, true_labels):
         max_min_post[i,0] = max_idx
         max_min_post[i,1] = min_idx
 
-        # Print images
-        print("\n\nClass {0} Maximum Posterior Token\n".format(i))
-        helper.print_image(test_data[:,max_idx])
-        print("\n\nClass {0} Minimum Posterior Token\n".format(i))
-        helper.print_image(test_data[:,min_idx])
-
     return max_min_post
 
+
+"""
+This function returns a list of four tuples, each tuple representing a pair of
+digit types with the highest confusion rates, given the confusion matrix.  Each
+tuple (i,j) represents the ith row and jth column of one of the 4 highest
+confusion rates.
+
+The diagonal entries of the confusion matrix are not considered.
+"""
 def find_maximum_confusion_class_pairs(confusion):
     number_of_pairs = 4
     pairs = []
@@ -232,7 +227,7 @@ def find_maximum_confusion_class_pairs(confusion):
 
 """
 Plots the log likelihood maps and log odds ratio maps for the four pairs of digits
-with the highest confusion rates.
+with the highest confusion rates
 """
 def odds_ratios(likelihoods, digit_pairs):
 
@@ -242,8 +237,9 @@ def odds_ratios(likelihoods, digit_pairs):
         #  digit in each pair and their respective odds ratio
         make_plots(likelihoods, pair)
 
+
 """
-Helper function for plotting the log likelihoods and log odds ratios map for a
+Helper function for plotting the log likelihoods and log odds ratios maps for a
 single digit pair.
 """
 def make_plots(likelihoods, digit_pair):
@@ -309,4 +305,4 @@ def make_plots(likelihoods, digit_pair):
     with PdfPages("Confusion Pair ({0}, {1}).pdf".format(digit_pair[0], digit_pair[1])) as pdf:
         pdf.savefig()
 
-    plt.show()
+    #plt.show()
