@@ -36,6 +36,7 @@ class Perceptron(object):
     """
     def __init__(self, hasBias, hasRandomInitialization):
         # Initialize weights
+        np.random.seed(938)
         self.weights = None
         if hasRandomInitialization:
             self.weights = np.random.randn(10, 1024)
@@ -112,6 +113,7 @@ class Perceptron(object):
     """
     def train(self, training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs):
         accuracy_by_epoch = np.zeros(epochs)
+        np.random.seed(7382)
 
         # Pass over the training data and train in multiple epochs
         for i in range(epochs):
