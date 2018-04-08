@@ -24,7 +24,8 @@ def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
 
     confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
     print("Confusion Matrix:\n")
-    print(confusion_matrix + "\n")
+    print(confusion_matrix)
+    print("")
 
     max_and_min_image_indices = max_and_min_posteriors(posteriors, test_data, test_labels)
 
