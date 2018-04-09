@@ -72,9 +72,7 @@ def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_exponent,
 
 """
 This is the driver function for reproducing the best empirical results discovered
-
-To reproduce the best empirical results discovered for either the differentiable or
-non-differentiable perceptron, run the following command:
+for either the differentiable or non-differentiable perceptron.
 """
 def reproduce_best_results(training_data_tuple, test_data_tuple):
     # Set the parameters that produced the best test dataset accuracy
@@ -143,8 +141,14 @@ class Perceptron(object):
     The biases are represented as a 10-dimensional numpy vector.  They are stored
     separately from the weight matrix to make the code simpler, but the math is
     identical.  If there are no biases, they are set to a Nonetype.
+
+    The third parameter is used to determine if the perceptron uses the
+    differentiable or non-differentiable learning rule.
     """
-    def __init__(self, hasBias, hasRandomInitialization):
+    def __init__(self, hasBias, hasRandomInitialization, isDifferentiable=False):
+        # Store whether or not this is a differentiable perceptron
+        self.isDifferentiable = isDifferentiable
+        
         # Initialize weights
         np.random.seed(938)
         self.weights = None
