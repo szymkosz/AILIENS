@@ -5,18 +5,128 @@ import matplotlib.pyplot as plt
 
 
 """
-This is the driver function for training a perceptron with the training data
-and then classifying the test data.
+This is the driver function for training a perceptron with particular parameters
+on the training data and then classifying the test data.
 """
-def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_exponent, hasBias, weightsAreRandom, hasRandomTrainingOrder, epochs):
-    # Extract the training and test data and labels, and construct a perceptron
+def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_exponent, epochs):
+    # Extract the training and test data and labels
+    training_data, training_data_by_class, training_labels = training_data_tuple
+    test_data, test_data_by_class, test_labels = test_data_tuple
+
+    # Initialize arrays for storing the training dataset
+    # accuracies by epoch and test dataset accuracies
+    training_epoch_accuracies = np.zeros((8, epochs))
+    overall_accuracies = np.zeros((8,))
+
+    # Create, train, and classify with all perceptrons of all 8 possible combinations
+    # of having biases or not having them, initializing weights to zero or initializing
+    # them randomly, and passing through the training examples in a fixed order or in a
+    # random order
+    for i in range(8):
+        hasBias = ((i & 4) == 4)
+        weightsAreRandom = ((i & 2) == 2)
+        hasRandomTrainingOrder = ((i & 1) == 1)
+
+        # Train and classify with perceptron
+        perceptron = Perceptron(hasBias, weightsAreRandom)
+        training_epoch_accuracies[i,:] = perceptron.train(training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs)
+        assigned_labels = classify_test_data(perceptron, test_data, test_labels)
+
+        overall_accuracies[i] = helper.compute_overall_accuracy(test_labels, assigned_labels)
+        print("Overall Accuracy on Test Data Set: " + str(overall_accuracies[i]) + "\n")
+
+        confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
+        print("Confusion Matrix:\n")
+        print(confusion_matrix)
+
+    # Print all the test dataset accuracies
+    print("Overall Accuracies on Test Data Set: " + str(overall_accuracies))
+
+    # Initialize all the x-coordinates of all the points to be plotted
+    epoch_indices = np.arange(epochs) + np.ones(epochs)
+
+    for i in range(8):
+        hasBias = ((i & 4) == 4)
+        weightsAreRandom = ((i & 2) == 2)
+        hasRandomTrainingOrder = ((i & 1) == 1)
+
+        plot_label = "(hasBias, weightsAreRandom, hasRandomTrainingOrder) = ({0}, {1}, {2})".format(hasBias, weightsAreRandom, hasRandomTrainingOrder)
+        #plot_label = "Has Bias = {0}, Weights Are Random = {1}, Has Random Training Order = {2}".format(hasBias, weightsAreRandom, hasRandomTrainingOrder)
+        plt.plot(epoch_indices, training_epoch_accuracies[i,:], label=plot_label)
+
+    plt.xlabel("Epoch")
+    plt.ylabel("Training Accuracy")
+
+    plt.title("Training Accuracy Vs. Epoch")
+    plt.legend(loc="lower right", fontsize=6)
+
+    # Save to file as PDF
+    file_name = "Learning_Rate_Exponent={0},Epochs={1}.pdf".format(learning_rate_exponent, epochs)
+
+    from matplotlib.backends.backend_pdf import PdfPages
+    with PdfPages(file_name) as pdf:
+        pdf.savefig()
+
+    #plt.show()
+
+
+"""
+This is the driver function for reproducing the best empirical results discovered
+
+To reproduce the best empirical results discovered for either the differentiable or
+non-differentiable perceptron, run the following command:
+"""
+def reproduce_best_results(training_data_tuple, test_data_tuple):
+    # Set the parameters that produced the best test dataset accuracy
+    learning_rate_exponent = 3
+    hasBias = True
+    weightsAreRandom = True
+    hasRandomTrainingOrder = True
+    epochs = 30
+
+    print("Best learning_rate_exponent: " + str(learning_rate_exponent))
+    print("Best number of epochs: " + str(epochs))
+
+    # Extract the training and test data and labels, and construct the perceptron
     training_data, training_data_by_class, training_labels = training_data_tuple
     test_data, test_data_by_class, test_labels = test_data_tuple
     perceptron = Perceptron(hasBias, weightsAreRandom)
 
     # Train and classify with perceptron
-    perceptron.train(training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs)
-    classify_test_data(perceptron, test_data, test_labels)
+    training_epoch_accuracies = perceptron.train(training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs)
+    assigned_labels = classify_test_data(perceptron, test_data, test_labels)
+
+    # Compute the perceptron's accuracy on the test dataset and print it
+    overall_accuracy = helper.compute_overall_accuracy(test_labels, assigned_labels)
+    print("Overall Accuracy on Test Data Set: " + str(overall_accuracy) + "\n")
+
+    # Compute the perceptron's confusion matrix on the test dataset and print it
+    confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
+    print("Confusion Matrix:\n")
+    print(confusion_matrix)
+
+    # Plot the training curve
+    epoch_indices = np.arange(epochs) + np.ones(epochs)
+    plot_label = "(hasBias, weightsAreRandom, hasRandomTrainingOrder) = ({0}, {1}, {2})".format(hasBias, weightsAreRandom, hasRandomTrainingOrder)
+    plt.plot(epoch_indices, training_epoch_accuracies, label=plot_label)
+
+    # Set the axis labels, title, and legend
+    plt.xlabel("Epoch")
+    plt.ylabel("Training Accuracy")
+    plt.title("Training Accuracy Vs. Epoch")
+    plt.legend(loc="lower right", fontsize=8)
+
+    # Save to file as PDF
+    file_name = "Best_Perceptron_Training_Curve.pdf"
+
+    from matplotlib.backends.backend_pdf import PdfPages
+    with PdfPages(file_name) as pdf:
+        pdf.savefig()
+
+    #plt.show()
+
+    # For the extra credit, plot the learned
+    # weight vectors of the perceptron
     perceptron.plot_weights()
 
 
@@ -107,8 +217,8 @@ class Perceptron(object):
 
 
     """
-    Given a set of training images, their true labels, a function to compute learning rates,
-    whether or not the images are passed over in random order, and the number of epochs,
+    Given a set of training images, their true labels, the exponent of the denominator in
+    the learning-rate function, whether or not the images are passed over in random order, and the number of epochs,
     the train function trains the perceptron.
     """
     def train(self, training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs):
@@ -144,9 +254,7 @@ class Perceptron(object):
 
             accuracy_by_epoch[i] = helper.compute_overall_accuracy(training_labels, curEpoch_assigned_labels)
 
-        epoch_indices = np.arange(epochs) + np.ones(epochs)
-        print("Epoch Number:      " + str(epoch_indices))
-        print("Accuracy By Epoch: " + str(accuracy_by_epoch) + "\n")
+        return accuracy_by_epoch
 
 
     """
@@ -211,13 +319,13 @@ class Perceptron(object):
         with PdfPages("Perceptron_Weights.pdf") as pdf:
             pdf.savefig()
 
-        #plt.show()
+        plt.show()
 
 
 """
 This function takes in a perceptron, a test dataset, and the dataset's labels
-and uses the perceptron to classify the test dataset.  The overall accuracy and
-confusion matrix are then computed and printed.
+and uses the perceptron to classify the test dataset.  The labels assigned by the
+perceptron are then returned.
 """
 def classify_test_data(perceptron, test_data, test_labels):
     num_test_images = test_data.shape[1]
@@ -226,9 +334,4 @@ def classify_test_data(perceptron, test_data, test_labels):
     for i in range(num_test_images):
         assigned_labels[i] = perceptron.classify(test_data[:,i])
 
-    overall_accuracy = helper.compute_overall_accuracy(test_labels, assigned_labels)
-    print("Overall Accuracy on Test Data Set: " + str(overall_accuracy) + "\n")
-
-    confusion_matrix = helper.compute_confusion_matrix(test_labels, assigned_labels)
-    print("Confusion Matrix:\n")
-    print(confusion_matrix)
+    return assigned_labels
