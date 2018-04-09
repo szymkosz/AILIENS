@@ -183,6 +183,17 @@ class Perceptron(object):
 
 
     """
+    Extra credit portion for Part 2:
+    This function implements the differentiable perceptron learning rule. It returns
+    the label assigned to the image.
+    """
+    def softmax(self, image):
+        numerator = np.exp(np.dot(self.weights, image))
+        denominator = np.sum(np.exp(np.dot(self.weights, image)), axis = 0)
+        return numerator/denominator
+
+
+    """
     The update_weights function will update the weights (and biases if present) of the
     perceptron given a training image, its true label, the label assigned to it by
     the perceptron, and a precomputed learning rate "eta".
