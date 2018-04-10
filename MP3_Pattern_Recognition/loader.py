@@ -21,8 +21,14 @@ labels (2th entry): Let T be the total number of images in the file represented
 """
 def parser(fileName):
     images, labels = loadFile(fileName)
-    images_by_class = organize_by_class(images, labels)
+    images_by_class = organize_by_class(images, labels, 10)
 
+    return (images, images_by_class, labels)
+
+def face_parser(dataFileName, labelFileName):
+    images = load_face_data(dataFileName)
+    labels = load_face_labels(labelFileName)
+    images_by_class = organize_by_class(images, labels, 2)
     return (images, images_by_class, labels)
 
 
@@ -63,12 +69,12 @@ separating the images by their class labels.  See the details of the
 third returned entry in the documentation of parser to understand what this
 function returns.
 """
-def organize_by_class(images, labels):
+def organize_by_class(images, labels, numClasses):
     images_by_class = []
     num_images = labels.shape[0]
 
-    for i in range(10):
-        curClass = np.empty((0,1024), dtype=np.int32)
+    for i in range(numClasses):
+        curClass = np.empty((0,images.shape[0]), dtype=np.int32)
 
         for j in range(num_images):
             if labels[j] == i:
@@ -78,3 +84,34 @@ def organize_by_class(images, labels):
         images_by_class.append(curClass)
 
     return images_by_class
+
+def load_face_data(fileName):
+    file = open(fileName, 'r')
+    images = np.empty((0,4200), dtype=np.int32)
+    while True:
+        try:
+            curImage = np.array((), dtype=np.int32)
+            for i in range(70):
+                line = np.asarray(list(file.readline())[:-1])
+                line = np.where(line == '#', np.ones(line.shape, dtype=np.int32), np.zeros(line.shape, dtype=np.int32))
+                curImage = np.hstack((curImage, line))
+            images = np.vstack((images,curImage))
+        except:
+            break
+    images = images.T
+    return images
+
+def load_face_labels(fileName):
+    file = open(fileName, 'r')
+    labels = []
+    i = 0
+    while True:
+        try:
+            line = list(file.readline())
+            labels.append(int(line[0]))
+        except:
+            break
+
+    labels = np.asarray(labels, dtype=np.int32)
+    
+    return labels

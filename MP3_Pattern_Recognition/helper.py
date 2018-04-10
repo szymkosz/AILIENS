@@ -11,14 +11,14 @@ HELPER FUNCTIONS GO IN THIS FILE!
 Computes the confusion matrix given the true labels of the test images and
 their assigned labels.
 """
-def compute_confusion_matrix(true_labels, assigned_labels):
+def compute_confusion_matrix(true_labels, assigned_labels, numClasses):
     assert len(true_labels) == len(assigned_labels), "LENGTH NOT SAME ERROR: true labels " + \
                                                      "and assigned labels don't have same length!"
 
     # Initializes the confusion matrix as a 10 x 10 matrix of zeros and for every
     # entry (i,j), counts up the number of images with true label i that were assigned
     # label j
-    confusion = np.zeros((10,10))
+    confusion = np.zeros((numClasses, numClasses))
     for i in range(len(true_labels)):
         confusion[ true_labels[i] , assigned_labels[i] ] += 1
 
@@ -45,11 +45,15 @@ This function takes in an image of a digit as a 1,024-dimensional numpy vector
 and prints it as the original 32 x 32 image.
 """
 def print_image(image):
-    reshaped_image = image.reshape((32,32))
+    if image.shape[0] == 1024:
+        dims = (32, 32)
+    else:
+        dims = (70, 60)
+    reshaped_image = image.reshape(dims)
 
-    for i in range(32):
+    for i in range(dims[0]):
         line = ""
-        for j in range(32):
+        for j in range(dims[1]):
             line += str(reshaped_image[i,j])
 
         print(line)
