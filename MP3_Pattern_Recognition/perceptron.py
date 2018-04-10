@@ -202,8 +202,8 @@ class Perceptron(object):
     """
     Extra credit portion for Part 2:
     This function implements the softmax function in the differentiable perceptron
-    learning rule. It returns a 10-dimensional vector of the softmax function
-    applied over the dot products of the image with all 10 digit classes.
+    learning rule. It returns the softmax of the dot product of the training image
+    with the weight vector of the cth class.
     """
     def softmax(self, training_image, c):
         w_c = self.weights[c,:]
@@ -214,7 +214,7 @@ class Perceptron(object):
 
         numerator = np.exp(dot_product)
         denominator = 0.0
-        
+
         if self.biases is not None:
             denominator = np.sum(np.exp(np.dot(self.weights, training_image) + self.biases))
         else:
@@ -257,6 +257,10 @@ class Perceptron(object):
             self.biases[assigned_label] -= eta
 
 
+    """
+    This is the differentiable learning rule.  The mathematical formula used is
+    in the report.
+    """
     def differentiable_update_weights(self, training_image, true_label, eta):
         for c in range(10):
             softmax_of_dot_product = self.softmax(training_image, c)
