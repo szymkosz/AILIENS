@@ -148,7 +148,7 @@ class Perceptron(object):
     def __init__(self, hasBias, hasRandomInitialization, isDifferentiable=False):
         # Store whether or not this is a differentiable perceptron
         self.isDifferentiable = isDifferentiable
-        
+
         # Initialize weights
         np.random.seed(938)
         self.weights = None
@@ -315,6 +315,7 @@ class Perceptron(object):
             plt.colorbar(im, cax=ax_cb)
             ax_cb.yaxis.tick_right()
             ax_cb.yaxis.set_tick_params(labelright=True)
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=8)
 
         fig = plt.figure()
 
@@ -325,9 +326,12 @@ class Perceptron(object):
             else:
                 ax = plt.subplot(4, 3, i+1)
             add_plot(ax, np.reshape(self.weights[i], (32,32)))
+            plt.title("Class {0}".format(i))
+
+        # plt.suptitle("Learned Perceptron Weights", fontsize=16)
 
         # Used for good spacing
-        # plt.tight_layout()
+        plt.tight_layout()
 
         ## Save to file as PDF
         from matplotlib.backends.backend_pdf import PdfPages
