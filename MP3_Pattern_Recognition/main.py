@@ -62,6 +62,8 @@ if __name__ == "__main__":
 
     assert len(sys.argv) >= 3, incorrectUsageError
 
+    face = False
+
     try:
         if sys.argv[3].lower() == "face":
             face = True

@@ -11,7 +11,7 @@ HELPER FUNCTIONS GO IN THIS FILE!
 Computes the confusion matrix given the true labels of the test images and
 their assigned labels.
 """
-def compute_confusion_matrix(true_labels, assigned_labels, numClasses):
+def compute_confusion_matrix(true_labels, assigned_labels, numClasses=10):
     assert len(true_labels) == len(assigned_labels), "LENGTH NOT SAME ERROR: true labels " + \
                                                      "and assigned labels don't have same length!"
 
