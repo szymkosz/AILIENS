@@ -214,7 +214,7 @@ class Perceptron(object):
 
         numerator = np.exp(dot_product)
         denominator = 0.0
-
+        
         if self.biases is not None:
             denominator = np.sum(np.exp(np.dot(self.weights, training_image) + self.biases))
         else:
