@@ -6,11 +6,13 @@ and then classifying the test data.
 To train and classify with a naive bayes classifier and a particular laplacian smoothing constant,
 run the following command:
 
-python main.py <bayes> <laplace>
+python main.py <bayes> <laplace> <face>
 
 where:
 <bayes>     = "bayes" or "naivebayes" (ignoring case)
 <laplace>   = The laplacian smoothing constant to use for computing the likelihoods
+<face>      = "face" (ignoring case) if the face data should be used.  Omit this
+            : argument to use the digit data.
 
 
 To train and classify with a perceptron (differentiable or non-differentiable)
@@ -61,7 +63,7 @@ if __name__ == "__main__":
     assert len(sys.argv) >= 3, incorrectUsageError
 
     try:
-        if sys.argv[3] == "face":
+        if sys.argv[3].lower() == "face":
             face = True
     except:
         face = False
