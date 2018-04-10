@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 This is the driver function for training a perceptron with particular parameters
 on the training data and then classifying the test data.
 """
-def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_exponent, epochs):
+def run_perceptron(training_data_tuple, test_data_tuple, isDifferentiable, learning_rate_exponent, epochs):
     # Extract the training and test data and labels
     training_data, training_data_by_class, training_labels = training_data_tuple
     test_data, test_data_by_class, test_labels = test_data_tuple
@@ -28,7 +28,7 @@ def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_exponent,
         hasRandomTrainingOrder = ((i & 1) == 1)
 
         # Train and classify with perceptron
-        perceptron = Perceptron(hasBias, weightsAreRandom)
+        perceptron = Perceptron(hasBias, weightsAreRandom, isDifferentiable)
         training_epoch_accuracies[i,:] = perceptron.train(training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs)
         assigned_labels = classify_test_data(perceptron, test_data, test_labels)
 
@@ -74,13 +74,26 @@ def run_perceptron(training_data_tuple, test_data_tuple, learning_rate_exponent,
 This is the driver function for reproducing the best empirical results discovered
 for either the differentiable or non-differentiable perceptron.
 """
-def reproduce_best_results(training_data_tuple, test_data_tuple):
+def reproduce_best_results(training_data_tuple, test_data_tuple, isDifferentiable):
     # Set the parameters that produced the best test dataset accuracy
-    learning_rate_exponent = 3
-    hasBias = True
-    weightsAreRandom = True
-    hasRandomTrainingOrder = True
-    epochs = 30
+    learning_rate_exponent = 0
+    hasBias = False
+    weightsAreRandom = False
+    hasRandomTrainingOrder = False
+    epochs = 0
+
+    if isDifferentiable:
+        learning_rate_exponent = 3
+        hasBias = True
+        weightsAreRandom = False
+        hasRandomTrainingOrder = True
+        epochs = 30
+    else:
+        learning_rate_exponent = 3
+        hasBias = True
+        weightsAreRandom = True
+        hasRandomTrainingOrder = True
+        epochs = 30
 
     print("Best learning_rate_exponent: " + str(learning_rate_exponent))
     print("Best number of epochs: " + str(epochs))
@@ -88,7 +101,7 @@ def reproduce_best_results(training_data_tuple, test_data_tuple):
     # Extract the training and test data and labels, and construct the perceptron
     training_data, training_data_by_class, training_labels = training_data_tuple
     test_data, test_data_by_class, test_labels = test_data_tuple
-    perceptron = Perceptron(hasBias, weightsAreRandom)
+    perceptron = Perceptron(hasBias, weightsAreRandom, isDifferentiable)
 
     # Train and classify with perceptron
     training_epoch_accuracies = perceptron.train(training_data, training_labels, learning_rate_exponent, hasRandomTrainingOrder, epochs)
@@ -148,7 +161,7 @@ class Perceptron(object):
     def __init__(self, hasBias, hasRandomInitialization, isDifferentiable=False):
         # Store whether or not this is a differentiable perceptron
         self.isDifferentiable = isDifferentiable
-        
+
         # Initialize weights
         np.random.seed(938)
         self.weights = None
@@ -188,12 +201,36 @@ class Perceptron(object):
 
     """
     Extra credit portion for Part 2:
-    This function implements the differentiable perceptron learning rule. It returns
-    the label assigned to the image.
+    This function implements the softmax function in the differentiable perceptron
+    learning rule. It returns a 10-dimensional vector of the softmax function
+    applied over the dot products of the image with all 10 digit classes.
     """
-    def softmax(self, image):
-        numerator = np.exp(np.dot(self.weights, image))
-        denominator = np.sum(np.exp(np.dot(self.weights, image)), axis = 0)
+    def softmax(self, training_image, c):
+        w_c = self.weights[c,:]
+        dot_product = np.dot(w_c, training_image)
+
+        if self.biases is not None:
+            dot_product += self.biases[c]
+
+        numerator = np.exp(dot_product)
+        denominator = 0.0
+
+        if self.biases is not None:
+            denominator = np.sum(np.exp(np.dot(self.weights, training_image) + self.biases))
+        else:
+            denominator = np.sum(np.exp(np.dot(self.weights, training_image)))
+
+        """
+        denominator = 0.0
+
+        if self.biases is not None:
+            for i in range(10):
+                denominator += np.exp(np.dot(self.weights[i,:], training_image) + self.biases[i])
+        else:
+            for i in range(10):
+                denominator += np.exp(np.dot(self.weights[i,:], training_image))
+        """
+
         return numerator/denominator
 
 
@@ -231,6 +268,29 @@ class Perceptron(object):
             self.biases[assigned_label] -= eta
 
 
+    def differentiable_update_weights(self, training_image, true_label, eta):
+        for c in range(10):
+            softmax_of_dot_product = self.softmax(training_image, c)
+            difference = softmax_of_dot_product
+
+            if true_label == c:
+                difference -= 1
+
+            softmax_derivative = softmax_of_dot_product * (1 - softmax_of_dot_product)
+            precomputed_product = .5 * difference * softmax_derivative
+
+            total_derivative = precomputed_product * training_image
+            self.weights[c,:] -= eta * total_derivative
+
+            if self.biases is not None:
+                self.biases[c] -= eta * precomputed_product
+            """
+            for k in range(1024):
+                total_derivative = precomputed_product * training_image[k]
+                self.weights[c,k] -= eta * total_derivative
+            """
+
+
     """
     Given a set of training images, their true labels, the exponent of the denominator in
     the learning-rate function, whether or not the images are passed over in random order, and the number of epochs,
@@ -265,7 +325,11 @@ class Perceptron(object):
                 # Classify the image and then update the perceptron's weights and biases
                 assigned_label = self.classify(training_image)
                 curEpoch_assigned_labels[training_image_index] = assigned_label
-                self.update_weights(training_image, training_label, assigned_label, eta)
+
+                if self.isDifferentiable:
+                    self.differentiable_update_weights(training_image, training_label, eta)
+                else:
+                    self.update_weights(training_image, training_label, assigned_label, eta)
 
             accuracy_by_epoch[i] = helper.compute_overall_accuracy(training_labels, curEpoch_assigned_labels)
 
