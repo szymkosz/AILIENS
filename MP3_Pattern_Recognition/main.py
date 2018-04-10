@@ -96,16 +96,31 @@ if __name__ == "__main__":
         #     naivebayes.run_naivebayes(training_data_tuple, test_data_tuple, i)
 
     elif sys.argv[1].lower() == "perceptron":
-        if sys.argv[2].lower() == "best":
-            # Run code for reproducing the best empirical results
-            # discovered for the non-differentiable perceptron
-            perceptron.reproduce_best_results(training_data_tuple, test_data_tuple)
-        else:
+        if sys.argv[2].lower() == "differentiable":
             # Check that the number of command-line arguments is correct
             assert len(sys.argv) >= 4, incorrectUsageError
 
+            if sys.argv[3].lower() == "best":
+                # Run code for reproducing the best empirical results
+                # discovered for the differentiable perceptron
+                perceptron.reproduce_best_results(training_data_tuple, test_data_tuple, True)
+            else:
+                # Check that the number of command-line arguments is correct
+                assert len(sys.argv) == 5, incorrectUsageError
+
+                # Run code for training and classifying with perceptron
+                perceptron.run_perceptron(training_data_tuple, test_data_tuple, True, int(sys.argv[3]), int(sys.argv[4]))
+        
+        elif sys.argv[2].lower() == "best":
+            # Run code for reproducing the best empirical results
+            # discovered for the non-differentiable perceptron
+            perceptron.reproduce_best_results(training_data_tuple, test_data_tuple, False)
+        else:
+            # Check that the number of command-line arguments is correct
+            assert len(sys.argv) == 4, incorrectUsageError
+
             # Run code for training and classifying with perceptron
-            perceptron.run_perceptron(training_data_tuple, test_data_tuple, int(sys.argv[2]), int(sys.argv[3]))
+            perceptron.run_perceptron(training_data_tuple, test_data_tuple, False, int(sys.argv[2]), int(sys.argv[3]))
 
     else:
         sys.exit("INVALID ARGUMENT ERROR: The third argument must be \"bayes\", \"naivebayes\", \"perceptron\", or \"face\" (ignoring case)!")
