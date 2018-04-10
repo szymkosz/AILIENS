@@ -12,7 +12,7 @@ This is the driver function for training a naive bayes classifier with the train
 and then classifying the test data.
 """
 def run_naivebayes(training_data_tuple, test_data_tuple, laplace):
-    print_min_max_tokens = False    ## Flag to print out the min and max posterior prob tokens to std out
+    print_min_max_tokens = True    ## Flag to print out the min and max posterior prob tokens to std out
 
     print("\n\n\nLaplacian Constant: ", laplace)
 
