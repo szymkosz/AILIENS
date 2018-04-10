@@ -83,7 +83,7 @@ def reproduce_best_results(training_data_tuple, test_data_tuple, isDifferentiabl
     epochs = 0
 
     if isDifferentiable:
-        learning_rate_exponent = 3
+        learning_rate_exponent = 1
         hasBias = True
         weightsAreRandom = False
         hasRandomTrainingOrder = True
@@ -220,17 +220,6 @@ class Perceptron(object):
         else:
             denominator = np.sum(np.exp(np.dot(self.weights, training_image)))
 
-        """
-        denominator = 0.0
-
-        if self.biases is not None:
-            for i in range(10):
-                denominator += np.exp(np.dot(self.weights[i,:], training_image) + self.biases[i])
-        else:
-            for i in range(10):
-                denominator += np.exp(np.dot(self.weights[i,:], training_image))
-        """
-
         return numerator/denominator
 
 
@@ -284,11 +273,6 @@ class Perceptron(object):
 
             if self.biases is not None:
                 self.biases[c] -= eta * precomputed_product
-            """
-            for k in range(1024):
-                total_derivative = precomputed_product * training_image[k]
-                self.weights[c,k] -= eta * total_derivative
-            """
 
 
     """
