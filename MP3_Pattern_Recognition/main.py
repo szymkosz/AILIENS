@@ -44,9 +44,9 @@ where:
 #import numpy as np
 import sys
 from loader import parser
+from loader import face_parser
 import naivebayes
 import perceptron
-
 
 if __name__ == "__main__":
     """
@@ -60,18 +60,40 @@ if __name__ == "__main__":
 
     assert len(sys.argv) >= 3, incorrectUsageError
 
+    try:
+        if sys.argv[3] == "face":
+            face = True
+    except:
+        face = False
+
+
     training_data_filename = "Data/digitdata/optdigits-orig_train.txt"
     test_data_filename = "Data/digitdata/optdigits-orig_test.txt"
 
-    training_data_tuple = parser(training_data_filename)
-    test_data_tuple = parser(test_data_filename)
+    face_training_data_filename = "Data/facedata/facedatatrain.txt"
+    face_training_data_labels_filename = "Data/facedata/facedatatrainlabels.txt"
+    face_testing_data_filename = "Data/facedata/facedatatest.txt"
+    face_testing_data_labels_filename = "Data/facedata/facedatatestlabels.txt"
+
+
+    if face:
+        training_data_tuple = face_parser(face_training_data_filename, face_training_data_labels_filename)
+        test_data_tuple = face_parser(face_testing_data_filename, face_testing_data_labels_filename)
+    else:
+        training_data_tuple = parser(training_data_filename)
+        test_data_tuple = parser(test_data_filename)
 
     if sys.argv[1].lower() == "bayes" or sys.argv[1].lower() == "naivebayes":
         # Check the validity of the command-line arguments
-        assert len(sys.argv) == 3, incorrectUsageError
+        assert len(sys.argv) in [3,4], incorrectUsageError
 
         # Run code for training and classifying with naive bayes classifier
         naivebayes.run_naivebayes(training_data_tuple, test_data_tuple, float(sys.argv[2]))
+
+        # # Used for testing different Laplacian constants
+        # from numpy import arange
+        # for i in arange(0,10,0.1):
+        #     naivebayes.run_naivebayes(training_data_tuple, test_data_tuple, i)
 
     elif sys.argv[1].lower() == "perceptron":
         if sys.argv[2].lower() == "differentiable":
@@ -88,7 +110,7 @@ if __name__ == "__main__":
 
                 # Run code for training and classifying with perceptron
                 perceptron.run_perceptron(training_data_tuple, test_data_tuple, True, int(sys.argv[3]), int(sys.argv[4]))
-        
+
         elif sys.argv[2].lower() == "best":
             # Run code for reproducing the best empirical results
             # discovered for the non-differentiable perceptron
@@ -101,4 +123,4 @@ if __name__ == "__main__":
             perceptron.run_perceptron(training_data_tuple, test_data_tuple, False, int(sys.argv[2]), int(sys.argv[3]))
 
     else:
-        sys.exit("INVALID ARGUMENT ERROR: The third argument must be \"bayes\", \"naivebayes\", or \"perceptron\" (ignoring case)!")
+        sys.exit("INVALID ARGUMENT ERROR: The third argument must be \"bayes\", \"naivebayes\", \"perceptron\", or \"face\" (ignoring case)!")
