@@ -47,7 +47,6 @@ from loader import parser
 from loader import face_parser
 import naivebayes
 import perceptron
-import numpy as np
 
 if __name__ == "__main__":
     """
@@ -90,9 +89,10 @@ if __name__ == "__main__":
 
         # Run code for training and classifying with naive bayes classifier
         naivebayes.run_naivebayes(training_data_tuple, test_data_tuple, float(sys.argv[2]))
-        
+
         # # Used for testing different Laplacian constants
-        # for i in np.arange(0,10,0.1):
+        # from numpy import arange
+        # for i in arange(0,10,0.1):
         #     naivebayes.run_naivebayes(training_data_tuple, test_data_tuple, i)
 
     elif sys.argv[1].lower() == "perceptron":
@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
                 # Run code for training and classifying with perceptron
                 perceptron.run_perceptron(training_data_tuple, test_data_tuple, True, int(sys.argv[3]), int(sys.argv[4]))
-        
+
         elif sys.argv[2].lower() == "best":
             # Run code for reproducing the best empirical results
             # discovered for the non-differentiable perceptron
