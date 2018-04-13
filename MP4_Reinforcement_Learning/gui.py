@@ -1,13 +1,16 @@
 import pygame
 import time
-from pong import Pong
+# from pong import Pong
 # from Agents.human import Human
+
+# call loadFile from loader.py
 
 # colors
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
 
+gameDisplay = None
 x_paddle = 510
 old_y_paddle = 210
 old_x_ball = 260
@@ -15,6 +18,7 @@ old_y_ball = 260
 radius = 10
 
 def pong_gui():
+	global gameDisplay
 	gui_init()
 	# game loop
 	while True:
@@ -26,7 +30,8 @@ def pong_gui():
 
 
 def gui_init():
-	game = Pong()
+	global gameDisplay
+	# game = Pong()
 	pygame.init()
 	pygame.display.init()
 	gameDisplay = pygame.display.set_mode((520, 520))
@@ -41,15 +46,17 @@ def gui_init():
 	# draw ball
 	old_x_ball = 260
 	old_y_ball = 260
-	move_ball()
+	move_ball(260, 260)
 
-def move_paddle(y_coord)
-	pygame.draw.rect(gameDisplay, white, [x_paddle, old_y_coord, 10, 100]) # clear old paddle
+def move_paddle(y_coord):
+	global gameDisplay, old_y_paddle
+	pygame.draw.rect(gameDisplay, white, [x_paddle, old_y_paddle, 10, 100]) # clear old paddle
 	pygame.draw.rect(gameDisplay, black, [x_paddle, y_coord, 10, 100]) # draw new paddle
 	old_y_paddle = y_coord
 	pygame.display.update()
 
-def move_ball(x_coord, y_coord)
+def move_ball(x_coord, y_coord):
+	global gameDisplay, old_x_ball, old_y_ball, radius
 	pygame.draw.circle(gameDisplay, white, (old_x_ball, old_y_ball), radius) # clear old ball
 	pygame.draw.circle(gameDisplay, red, (x_coord, y_coord), radius) # draw new ball
 	old_x_ball = x_coord
