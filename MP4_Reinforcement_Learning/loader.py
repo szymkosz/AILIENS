@@ -40,3 +40,56 @@ def loadFile(fileName):
     states = data[:,:-1]
     actions = data[:,-1]
     return (states, actions)
+
+
+
+
+training_output_filename = "training_results.npz"
+
+def save_training_results_to_file(weights, biases):
+    reshaped_weights = []
+    weight_shapes = []
+
+    for matrix in weights:
+        reshaped_weights.append(matrix.flatten())
+        weight_shapes.append(matrix.shape)
+
+    np.savez(training_output_filename, weights=reshaped_weights, weight_shapes=weight_shapes, biases=biases)
+
+def load_training_results_from_file():
+    data = np.load(training_output_filename)
+
+    original_weights = []
+    print(data['weights'])
+    print("These are shapes")
+    print(data['weight_shapes'])
+
+    for s in data['weight_shapes']:
+
+    for matrix, shape in (data['weights'], data['weight_shapes']):
+        print(matrix)
+        print("This is a shape")
+        print(shape)
+        original_weights.append(matrix.reshape(tuple(shape)))
+
+    return (original_weights, data['biases'])
+
+w = np.arange(9).reshape(3,3)
+w2 = np.arange(15).reshape(3,5)
+print(w)
+print(w2)
+
+weights = [w, w2]
+biases = [np.arange(20), np.arange(5)]
+
+print(weights)
+print(biases)
+save_training_results_to_file(weights, biases)
+orig_weights, orig_biases = load_training_results_from_file()
+print(orig_weights, orig_biases)
+"""
+print(data.files)
+print(data['weights'])
+print(data['weight_shapes'])
+print(data['biases'])
+"""
