@@ -1,5 +1,6 @@
 import pygame
 import time
+import loader
 # from pong import Pong
 # from Agents.human import Human
 
@@ -20,13 +21,20 @@ radius = 10
 def pong_gui():
 	global gameDisplay
 	gui_init()
+	dataset = loader.parser("Data/expert_policy.txt")[0]
 	# game loop
-	while True:
+	for i in range(dataset.shape[0]):
+		update_display(dataset[i,:])
+		# wait() so it is visible to human eye
+		time.sleep(.03)
+	#while True:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.display.quit()
 				pygame.quit()
 				quit()
+		
+			# update_display
 
 
 def gui_init():
@@ -47,6 +55,20 @@ def gui_init():
 	old_x_ball = 260
 	old_y_ball = 260
 	move_ball(260, 260)
+
+def update_display(pong_state):
+	# map the pong_state location to screen_location (multiply by 500 then add 10?)
+	ball_x = int(pong_state[0]*500 + 10)
+	ball_y = int(pong_state[1]*500 + 10)
+	paddle_y = int(pong_state[4]*500 + 10)
+	# move_ball
+	move_ball(ball_x, ball_y)
+	# move_paddle
+	move_paddle(paddle_y)
+	pygame.draw.rect(gameDisplay, black, [0, 0, 10, 520])	# left wall
+	pygame.draw.rect(gameDisplay, black, [0, 0, 520, 10])	# top wall
+	pygame.draw.rect(gameDisplay, black, [0, 510, 520, 10]) # bottom wall
+	pygame.display.update()
 
 def move_paddle(y_coord):
 	global gameDisplay, old_y_paddle
