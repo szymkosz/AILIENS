@@ -10,12 +10,20 @@ class sarsa(Agent):
 		self.name = NAME
 		# self.playerColor = ?
 		self.rewards = np.zeros((12,12,2,3,12))
+
+		for i in range(12):
+			self.rewards[11][i][1][:][i] = 1.0
+		
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3))
 
 		self.terminal_reward = -1
 		self.terminal_count = 0
 		self.terminal_q_value = 0
+
+		self.cur_state = (self.game.ball_x, self.game.ball_y, self.game.velocity_x,
+		                  self.game.velocity_y, self.game.paddle_y)
+		self.cur_action = 1
 
 
 	"""
@@ -26,4 +34,16 @@ class sarsa(Agent):
     """
 	def getAction(self):
 		# TODO: Implement SARSA algorithm
+		"""
+		1. If this is the first time step of the game, identify the current state
+		   and pick an action at random.  Otherwise, reuse the computed next state s'
+		   and next action a' from the last time step as s and a respectively.
+		2. Observe the reward R(s) and the next state s' that follows from s and a
+		3. Select the action a' to take in state s' as
+		   a' = argmax{over actions a' from s'}(f(Q(s',a'), N(s',a')) )
+		4. Perform the TD update (See lecture slides)
+		5. Store s' and a' as s and a respectively for the next time step:
+		   s <- s'
+		   a <- a'
+		"""
 		pass

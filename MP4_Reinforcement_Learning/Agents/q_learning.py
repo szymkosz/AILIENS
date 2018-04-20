@@ -10,12 +10,20 @@ class q_learning(Agent):
 		self.name = NAME
 		# self.playerColor = ?
 		self.rewards = np.zeros((12,12,2,3,12))
+
+		for i in range(12):
+			self.rewards[11][i][1][:][i] = 1.0
+
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3))
 
 		self.terminal_reward = -1
 		self.terminal_count = 0
 		self.terminal_q_value = 0
+
+		self.cur_state = (self.game.ball_x, self.game.ball_y, self.game.velocity_x,
+		                  self.game.velocity_y, self.game.paddle_y)
+		self.cur_action = 1
 
 
 	"""
@@ -26,4 +34,4 @@ class q_learning(Agent):
     """
 	def getAction(self):
 		# TODO: Implement Q-Learning algorithm
-        pass
+		pass
