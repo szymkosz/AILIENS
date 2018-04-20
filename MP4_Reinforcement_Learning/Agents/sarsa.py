@@ -4,7 +4,7 @@ from Agents.agent import Agent
 NAME = "SARSA"
 
 class sarsa(Agent):
-	def __init__(self, game=Pong(), playerNum=1):
+	def __init__(self, game=Pong(), playerNum=1, learning_rate_constant=1.0, discount_factor=.70):
 		# super(self).__init__(game, playerNum)
 		super().__init__(game, playerNum)
 		self.name = NAME
@@ -13,7 +13,7 @@ class sarsa(Agent):
 
 		for i in range(12):
 			self.rewards[11][i][1][:][i] = 1.0
-		
+
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3))
 
@@ -24,6 +24,9 @@ class sarsa(Agent):
 		self.cur_state = (self.game.ball_x, self.game.ball_y, self.game.velocity_x,
 		                  self.game.velocity_y, self.game.paddle_y)
 		self.cur_action = 1
+
+		self.learning_rate_constant = learning_rate_constant
+		self.discount_factor = discount_factor
 
 
 	"""
