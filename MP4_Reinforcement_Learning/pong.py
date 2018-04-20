@@ -23,7 +23,7 @@ class Pong(object):
     """
     def __init__(self, agent, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y):
         # Check that velocity_x is valid
-        if abs(velocity_x) < 0.03:
+        if abs(velocity_x) < 0.03 or abs(velocity_x) > 1 or abs(velocity_y) > 1:
             raise ValueError("Absolute value of velocity_x must be greater than or equal to 0.03!")
 
         # Initialize the agent
@@ -85,7 +85,26 @@ class Pong(object):
             self.velocity_x *= -1
 
         # TODO: Implement bouncing off of paddle
-        pass
+        if self.ball_x > 1 and (self.ball_y >= self.paddle_y and self.ball_y <= (self.paddle_y + PADDLE_HEIGHT)):
+            self.ball_x = 2 - self.ball_x
+
+            """
+            candidate_velocity_x = -1*self.velocity_x + np.random.uniform(low=-0.015, high=0.015)
+            if(abs(candidate_velocity_x) > 0.03):
+                self.velocity_x = candidate_velocity_x
+            else:
+                self.velocity_x = -0.03
+            """
+
+            candidate_velocity_x = self.velocity_x - np.random.uniform(low=-0.015, high=0.015)
+            self.velocity_x = -1*np.min(np.max(candidate_velocity_x, 0.03), 1)
+
+            candidate_velocity_y = self.velocity_y + np.random.uniform(low=-0.03, high=0.03)
+            sign = 1
+            if candidate_velocity_y < 0:
+                sign = -1
+
+            self.velocity_y = sign*np.min(abs(candidate_velocity_y), 1)
 
 
     ## Prints the state of the game to standard out
@@ -132,7 +151,7 @@ class Pong(object):
     """
     def reset_game(self, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y)):
         # Check that velocity_x is valid
-        if abs(velocity_x) < 0.03:
+        if abs(velocity_x) < 0.03 or abs(velocity_x) > 1 or abs(velocity_y) > 1:
             raise ValueError("Absolute value of velocity_x must be greater than or equal to 0.03!")
 
         # Reset the game state

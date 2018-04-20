@@ -9,6 +9,13 @@ class sarsa(Agent):
 		super().__init__(game, playerNum)
 		self.name = NAME
 		# self.playerColor = ?
+		self.rewards = np.zeros((12,12,2,3,12))
+		self.q_values = np.zeros((12,12,2,3,12,3))
+		self.counts_Nsa = np.zeros((12,12,2,3,12,3))
+
+		self.terminal_reward = -1
+		self.terminal_count = 0
+		self.terminal_q_value = 0
 
 
 	"""
