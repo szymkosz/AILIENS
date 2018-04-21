@@ -4,16 +4,23 @@ This is the driver file for parts 1 and 2
 
 To run part 1, run the following command:
 
-python main.py <part1> <human> <agent>
+python main.py <part1> <human> <agent> <learning_rate_constant> <discount_factor> <exploration_threshold> <num_training_games>
 
 where:
-<part1>     = "part1" (ignoring case)
-<human>     = "human" (ignoring case) if a human agent should be able to play
-            : against the AI.  Omit this argument if there should be no human
-            : agent.
-<agent>     = "q_learning" or "q-learning" (ignoring case) if the AI should be
-            : a Q-learning agent or "sarsa" (ignoring case) if the AI should be
-            : a SARSA agent.
+<part1>                     = "part1" (ignoring case)
+<human>                     = "human" (ignoring case) if a human agent should be
+                            : able to play against the AI.  Omit this argument if
+                            : there should be no human agent.
+<agent>                     = "q_learning" or "q-learning" (ignoring case) if the
+                            : AI should be a Q-learning agent or "sarsa"
+                            : (ignoring case) if the AI should be a SARSA agent
+<learning_rate_constant>    = The constant C to be used in the calculation of the
+                            : learning rate alpha as alpha = C/(C+N(s,a))
+<discount_factor>           = The discount factor gamma to be used during training
+<exploration_threshold>     = The upper bound in the exploration function.  If the
+                            : first input to the exploration function is below this
+                            : threshold, positive infinity is returned.
+<num_training_games>        = The number of games for training the agent
 
 
 To run part 2, run the following command:
@@ -30,10 +37,33 @@ where:
 import sys
 from loader import parser
 
-fileName = "Data/expert_policy.txt"
+from pong import Pong
+from Agents.q_learning import q_learning
+from Agents.sarsa import sarsa
 
-parser(fileName)
+EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
+#parser(EXPERT_POLICTY_DATASET_FILENAME)
 
+NUM_TEST_GAMES = 200
+
+if __name__ == "__main__":
+    if sys.argv[1].lower() == "part1":
+        if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
+            game = Pong(q_learning(sys.argv[3], sys.argv[4], sys.argv[5]))
+            game.run_multiple_games(sys.argv[6], True)
+            game.run_multiple_games(NUM_TEST_GAMES, False)
+        elif sys.argv[2].lower() == "sarsa":
+            game = Pong(sarsa(sys.argv[3], sys.argv[4], sys.argv[5]))
+            game.run_multiple_games(sys.argv[6], True)
+            game.run_multiple_games(NUM_TEST_GAMES, False)
+        elif sys.argv[2].lower() == "human":
+            pass
+        else:
+            pass
+    elif sys.argv[1].lower() == "part2":
+        pass
+    else:
+        sys.exit("INVALID ARGUMENT ERROR: The first argument must be \"part1\" or \"part2\" (ignoring case)!")
 # if __name__ == "__main__":
 #     """
 #     incorrectUsageError = "Incorrect Usage: Expected " \
