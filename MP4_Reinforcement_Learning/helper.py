@@ -75,16 +75,21 @@ def get_discrete_state(state_tuple):
 
 """
 This is the exploration function used by the q-learning and SARSA agents.  For a
-particular state s and action a, it takes in Q(s,a), N(s,a), and an exploration
-threshold N_e.
+particular state s, it takes in a vector of Q(s,a') values and a vector of N(s,a')
+values over all actions a'.  It also takes in an exploration threshold N_e.
 
-If N(s,a) < N_e, positive infinity is returned.  Otherwise, Q(s,a) is returned.
+Returns a vector such that the ith entry is positive infinity if N(s,a'_i) < N_e
+for the ith action a'_i, and Q(s,a'_i) otherwise.
 """
-def exploration_function(q_value, count_Nsa, exploration_threshold):
-    if count_Nsa < exploration_threshold:
-        return float("inf")
-    else:
-        return q_value
+def exploration_function(q_values, counts_Nsa, exploration_threshold):
+    indices_with_infinity = counts_Nsa < exploration_threshold
+    indices_with_q_values = counts_Nsa >= exploration_threshold
+
+    results = np.zeros((len(q_values),))
+    results[indices_with_infinity] = float("inf")
+    results[indices_with_q_values] = q_values[indices_with_q_values]
+
+    return results
 
 
 """
