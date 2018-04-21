@@ -74,6 +74,45 @@ def get_discrete_state(state_tuple):
 
 
 """
+This is the exploration function used by the q-learning and SARSA agents.  For a
+particular state s and action a, it takes in Q(s,a), N(s,a), and an exploration
+threshold N_e.
+
+If N(s,a) < N_e, positive infinity is returned.  Otherwise, Q(s,a) is returned.
+"""
+def exploration_function(q_value, count_Nsa, exploration_threshold):
+    if count_Nsa < exploration_threshold:
+        return float("inf")
+    else:
+        return q_value
+
+
+"""
+This function creates the Mean Episodes Rewards Vs. Episodes plot.  It takes in
+a numpy vector of the rewards for each episode and the number of episodes between each
+computed data point.  The plotted data points are computed as:
+
+[(num_episodes_between_points * (i+1), average over rewards[0:(num_episodes_between_points * (i+1))])
+ for i in range(len(rewards)/num_episodes_between_points)]
+
+For example, suppose rewards = [2,3,4,5,6,7].  If
+num_episodes_between_points = 2, then the plotted data points are
+(2, average over rewards[0:2]), (4, average over rewards[0:4]), and
+(6, average over rewards[0:6]).
+
+num_episodes_between_points is assumed to evenly divide len(rewards).
+"""
+def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points):
+    num_points = len(rewards)/num_episodes_between_points
+
+    x_coordinates = [num_episodes_between_points * (i+1) for i in range(num_points)]
+    y_coordinates = [np.sum(rewards[0:(num_episodes_between_points * (i+1))])/(num_episodes_between_points * (i+1))
+                     for i in range(num_points)]
+
+    #TODO: Plot the points
+
+
+"""
 Computes the confusion matrix given the true labels of the test images and
 their assigned labels.
 """
