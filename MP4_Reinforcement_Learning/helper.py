@@ -1,5 +1,6 @@
 # Import the necessary libraries
 import numpy as np
+import matplotlib.pyplot as plt
 
 """
 -------------------------------------------------------------------------------
@@ -115,6 +116,12 @@ def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points):
                      for i in range(num_points)]
 
     #TODO: Plot the points
+    fig, ax = plt.subplots(figsize = (10, 10))
+    ax.title.set_text('Mean Episode Rewards vs Episodes')
+    ax.set_xlabel('Episodes')
+    ax.set_ylabel('Mean Episode Rewards')
+    plt.plot(x_coordinates, y_coordinates)
+    plt.show()
 
 
 """
