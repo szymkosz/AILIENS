@@ -4,8 +4,6 @@ import loader
 # from pong import Pong
 # from Agents.human import Human
 
-# call loadFile from loader.py
-
 # colors
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -27,15 +25,11 @@ def pong_gui():
 		update_display(dataset[i,:])
 		# wait() so it is visible to human eye
 		time.sleep(.03)
-	#while True:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.display.quit()
 				pygame.quit()
 				quit()
-		
-			# update_display
-
 
 def gui_init():
 	global gameDisplay
@@ -86,95 +80,3 @@ def move_ball(x_coord, y_coord):
 	pygame.display.update()
 
 pong_gui()
-
-# -----------------------------------------------------------------------------------
-# boardInitialized = False
-# gameDisplay = None
-# keepPlaying = True
-# gameExit = False
-# win = False
-
-# # check if the board has been initalized
-# if boardInitialized == False:
-# 	pygame.init()
-# 	pygame.display.init()
-# 	gameDisplay = pygame.display.set_mode((870, 940))
-# 	pygame.display.set_caption('Gomoku')
-# 	# draw board
-# 	gameDisplay.fill(white)
-# 	for x in range(0, 8):
-# 		pygame.draw.rect(gameDisplay, black, [110*x + 50, 50, 10, 780])
-# 	for y in range(0, 8):
-# 		pygame.draw.rect(gameDisplay, black, [50, 110*y + 50, 780, 10])
-# 	pygame.display.update()
-# 	bigFont = pygame.font.SysFont(None, 100)
-# 	littleFont = pygame.font.SysFont(None, 35)
-# 	boardInitialized = True
-# 	gameDisplay = pygame.transform.scale(gameDisplay, (556, 600))
-
-
-# def refreshBoard():
-# 	# parse the board to get coordinates
-# 	board = game.board
-# 	for x in range(0, 7):
-# 		for y in range(0, 7):
-# 			pos = board[x][y]
-# 			if not pos.char == '.':
-# 				# print the piece with the corresponding colors
-# 				screenX, screenY = boardToScreen(x, y)
-# 				if pos.color == "RED":
-# 					pygame.draw.circle(gameDisplay, red, (screenX+5, screenY+5), 40)
-# 				if pos.color == "BLUE":
-# 					pygame.draw.circle(gameDisplay, blue, (screenX+5, screenY+5), 40)
-# 				# print the corresponding character on the piece
-# 				char = pos.char
-# 				pieceChar = littleFont.render(char, True, white)
-# 				gameDisplay.blit(pieceChar, [screenX-2, screenY-5])
-
-# 	# refresh the board display
-# 	pygame.display.update()
-
-# while not gameExit:
-# 	if keepPlaying == True:
-# 		if game.reds_turn:
-# 			win = Jon.makeMove()
-# 		else:
-# 			win = Jess.makeMove()
-
-# 		refreshBoard()
-
-# 	# check for draws
-# 	if game.boardIsFull():
-# 		text = bigFont.render("DRAW!", True, black)
-
-# 		text_X = 430 - (text.get_width()/2)
-# 		gameDisplay.blit(text, [text_X, 860])
-# 		pygame.display.update()
-# 		keepPlaying = False
-
-# 	# if there is a winner, print winner to screen
-# 	if win == True:
-# 		if game.reds_turn:
-# 			text = bigFont.render("BLUE WINS!", True, blue)
-# 		else:
-# 			text = bigFont.render("RED WINS!", True, red)
-
-# 		text_X = 430 - (text.get_width()/2)
-# 		gameDisplay.blit(text, [text_X, 860])
-# 		pygame.display.update()
-# 		keepPlaying = False
-
-# 	for event in pygame.event.get():
-# 		if event.type == pygame.QUIT:
-# 			gameExit = True
-
-# if gameExit == True:
-# 	pygame.display.quit()
-# 	pygame.quit()
-# 	quit()
-
-# # refreshBoard
-
-# # boardToScreen
-
-# # screenToBoard
