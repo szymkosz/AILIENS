@@ -52,14 +52,14 @@ class Pong(object):
         action = self.agent.getAction(is_training, cur_state_tuple)
 
         # Update the paddle's position based on the agent's action
-        if action == 1:
+        if action == 2:
             self.paddle_y += 0.04
 
             # Reset the paddle position if the paddle
             # tries to move off the top of the screen
             if self.paddle_y < 0:
                 self.paddle_y = 0
-        elif action == -1:
+        elif action == 0:
             self.paddle_y -= 0.04
 
             # Reset the paddle position if the paddle tries

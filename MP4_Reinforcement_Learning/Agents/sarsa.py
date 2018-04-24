@@ -25,7 +25,7 @@ class sarsa(Agent):
 		self.terminal_count = 0
 		self.terminal_q_value = 0
 
-		self.cur_action = 1
+		self.cur_action = 2
 
 		self.learning_rate_constant = learning_rate_constant
 		self.discount_factor = discount_factor
@@ -50,7 +50,7 @@ class sarsa(Agent):
 			# This is how actions are determined outside of training.  The action
 			# is computed as argmax(Q(s,a')) over all actions a'.
 			q_values = self.q_values[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][:]
-			action = np.argmax(q_values) - 1
+			action = np.argmax(q_values)
 
 		return action
 

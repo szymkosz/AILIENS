@@ -45,11 +45,11 @@ class q_learning(Agent):
 			# If the Q-learning agent is being trained, then its next action
 			# a = argmax{over all actions a'}( f(Q(s,a'), N(s,a')) ).
 			counts_Nsa = self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][:]
-			action = np.argmax(helper.exploration_function(q_values, counts_Nsa, self.exploration_threshold)) - 1
+			action = np.argmax(helper.exploration_function(q_values, counts_Nsa, self.exploration_threshold))
 		else:
 			# This is how actions are determined outside of training.  The action
 			# is computed as argmax(Q(s,a')) over all actions a'.
-			action = np.argmax(q_values) - 1
+			action = np.argmax(q_values)
 
 		return action
 
