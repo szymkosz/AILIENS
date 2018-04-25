@@ -133,7 +133,7 @@ class Pong(object):
 
             self.reset_game()
 
-        return num_bounces
+        return num_bounces - np.ones(num_games)
 
     """
     The game_is_over function checks if the ball has left the screen and therefore,

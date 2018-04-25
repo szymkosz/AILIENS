@@ -45,17 +45,27 @@ EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
 #parser(EXPERT_POLICTY_DATASET_FILENAME)
 
 NUM_TEST_GAMES = 200
+NUM_EPISODES_BETWEEN_POINTS = 1000
+
 
 if __name__ == "__main__":
     if sys.argv[1].lower() == "part1":
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
             game = Pong(q_learning(sys.argv[3], sys.argv[4], sys.argv[5]))
-            num_training_bounces = game.run_multiple_games(sys.argv[6], True)
-            num_test_bounces = game.run_multiple_games(NUM_TEST_GAMES, False)
+            training_game_rewards = game.run_multiple_games(sys.argv[6], True)
+            plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
+
+            test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
+            num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
+            print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
         elif sys.argv[2].lower() == "sarsa":
             game = Pong(sarsa(sys.argv[3], sys.argv[4], sys.argv[5]))
-            game.run_multiple_games(sys.argv[6], True)
-            game.run_multiple_games(NUM_TEST_GAMES, False)
+            training_game_rewards = game.run_multiple_games(sys.argv[6], True)
+            plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
+
+            test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
+            num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
+            print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
         elif sys.argv[2].lower() == "human":
             pass
         else:
