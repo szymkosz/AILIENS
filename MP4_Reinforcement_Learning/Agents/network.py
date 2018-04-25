@@ -16,18 +16,20 @@ MISCELLANEOUS:
 """
 
 
-#### Libraries
-# Standard library
-import random
-
-# Third-party libraries
+# Import the necessary libraries
+from Agents.agent import Agent
 import numpy as np
 
+import sys
+sys.path.append('..')
+import helper
+
+# CONSTANTS
 NUM_STATE_ATTRIBUTES = 5
 NUM_UNITS_IN_LAST_LAYER = 3
 
 
-class Network(object):
+class network(Agent):
     def __init__(self, num_layers=4, num_units_per_layer=256, learning_rate=0.1, weight_scale_parameter=1.0):
         np.random.seed(7383)
 
@@ -115,6 +117,8 @@ class Network(object):
 
 
     def MinibatchGD(self, data, epochs=300, mini_batch_size=128):
+        np.random.seed(3489)
+
         training_dataset = data[0]
         training_labels = data[1]
         n = training_dataset.shape[0]
@@ -189,6 +193,9 @@ def ReLU_Backward(dA, cache):
 def Cross_Entropy(F, y):
     pass
 
+
+def gradient_checking():
+    pass
 
 def scale_dataset(data):
     pass

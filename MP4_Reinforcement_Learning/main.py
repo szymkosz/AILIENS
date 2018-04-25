@@ -25,27 +25,36 @@ where:
 
 To run part 2, run the following command:
 
-python main.py <part2> ?
+python main.py <part2> <num_layers> <num_units_per_layer> <learning_rate> <weight_scale_parameter> <epochs> <mini_batch_size>
 
 where:
-<part2>     = "part2" (ignoring case)
-?
+<part2>                     = "part2" (ignoring case)
+<num_layers>                = The number of layers the neural network should have.
+<num_units_per_layer>       = The number of neurons/output features in each layer
+                              (except the last layer, which is always 3 outputs)
+<learning_rate>             = The learning rate to be used during gradient descent
+<weight_scale_parameter>    = The scaling factor by which to scale the randomly
+                              initialized weights of the neural network.  This makes
+                              the weights be randomly initialized on the range
+                              [0,weight_scale_parameter).
+<epochs>                    = The number of epochs to run during the training phase
+<mini_batch_size>           = The number of training vectors to use in each mini-batch
 -------------------------------------------------------------------------------
 """
 
-#import numpy as np
+
 import sys
 from loader import parser
 
 from pong import Pong
 from Agents.q_learning import q_learning
 from Agents.sarsa import sarsa
+from Agents.network import network
 
-EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
-#parser(EXPERT_POLICTY_DATASET_FILENAME)
-
+# CONSTANTS
 NUM_TEST_GAMES = 200
 NUM_EPISODES_BETWEEN_POINTS = 1000
+EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
 
 
 if __name__ == "__main__":
@@ -69,9 +78,19 @@ if __name__ == "__main__":
         elif sys.argv[2].lower() == "human":
             pass
         else:
-            pass
+            sys.exit("INVALID ARGUMENT ERROR: The second argument must be \"q_learning\", \"q-learning\", \"sarsa\", or \"human\" (ignoring case)!")
     elif sys.argv[1].lower() == "part2":
-        pass
+        assert len(sys.argv) == 8
+
+        agent = network(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+
+        dataset_tuple = parser(EXPERT_POLICTY_DATASET_FILENAME)
+        agent.MinibatchGD(dataset_tuple, sys.argv[6], sys.argv[7])
+
+        game = Pong(agent)
+        test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
+        num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
+        print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
     else:
         sys.exit("INVALID ARGUMENT ERROR: The first argument must be \"part1\" or \"part2\" (ignoring case)!")
 # if __name__ == "__main__":
