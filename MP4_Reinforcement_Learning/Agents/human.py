@@ -4,7 +4,7 @@
 import pygame
 import time
 from pong import Pong
-from agent import Agent
+from Agents.agent import Agent
 
 import sys
 sys.path.append('..')

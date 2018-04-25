@@ -1,4 +1,4 @@
-from agent import Agent
+from Agents.agent import Agent
 import numpy as np
 
 import sys
