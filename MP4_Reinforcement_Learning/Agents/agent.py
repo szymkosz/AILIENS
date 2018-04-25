@@ -23,10 +23,11 @@ class Agent(object):
     """
     The updateAction function is largely responsible for the agent's learning.
     It updates the agent's parameters given the state s, the action a taken in
-    state s, and the resulting state s_prime (s').  It computes the reward r,
+    state s, the resulting state s_prime (s'), whether or not s is the terminal state,
+    and whether or not s' is the terminal state.  It computes the reward r,
     the action a' to take from state s', and performs the TD update as appropriate.
 
     Nothing is returned.
     """
-    def updateAction(self, s, a, s_prime):
+    def updateAction(self, s, a, s_prime, s_isTerminal, s_prime_isTerminal):
         raise NotImplementedError()

@@ -131,6 +131,14 @@ class Pong(object):
 
             num_bounces[i] = self.bounce_count
 
+            # Get the action of the agent
+            cur_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
+
+            # Update the agent's parameters if it's being trained
+            if is_training:
+                new_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
+                self.agent.updateAction(cur_state_tuple, action, new_state_tuple)
+
             self.reset_game()
 
         return num_bounces - np.ones(num_games)
