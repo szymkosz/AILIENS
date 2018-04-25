@@ -1,126 +1,20 @@
-#### Libraries
-# Standard library
-import random
-
-# Third-party libraries
-import numpy as np
-
-class Network(object):
-
-    def __init__(self, sizes):
-        """The list ``sizes`` contains the number of neurons in the
-        respective layers of the network.  For example, if the list
-        was [2, 3, 1] then it would be a three-layer network, with the
-        first layer containing 2 neurons, the second layer 3 neurons,
-        and the third layer 1 neuron.  The biases and weights for the
-        network are initialized randomly, using a Gaussian
-        distribution with mean 0, and variance 1.  Note that the first
-        layer is assumed to be an input layer, and by convention we
-        won't set any biases for those neurons, since biases are only
-        ever used in computing the outputs from later layers."""
-        self.num_layers = len(sizes)
-        self.sizes = sizes
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-        self.weights = [np.random.randn(y, x)
-                        for x, y in zip(sizes[:-1], sizes[1:])]
-
-    def feedforward(self, a):
-        """Return the output of the network if ``a`` is input."""
-        for b, w in zip(self.biases, self.weights):
-            a = sigmoid(np.dot(w, a)+b)
-        return a
-
-    def SGD(self, training_data, epochs, mini_batch_size, eta,
-            test_data=None):
-        """Train the neural network using mini-batch stochastic
-        gradient descent.  The ``training_data`` is a list of tuples
-        ``(x, y)`` representing the training inputs and the desired
-        outputs.  The other non-optional parameters are
-        self-explanatory.  If ``test_data`` is provided then the
-        network will be evaluated against the test data after each
-        epoch, and partial progress printed out.  This is useful for
-        tracking progress, but slows things down substantially."""
-        if test_data: n_test = len(test_data)
-        n = len(training_data)
-        for j in xrange(epochs):
-            random.shuffle(training_data)
-            mini_batches = [
-                training_data[k:k+mini_batch_size]
-                for k in xrange(0, n, mini_batch_size)]
-            for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta)
-            if test_data:
-                print "Epoch {0}: {1} / {2}".format(
-                    j, self.evaluate(test_data), n_test)
-            else:
-                print "Epoch {0} complete".format(j)
-
-    def Affine-Forward(A, W, b):
-        pass
-
-    def Affine-Backward(dZ, cache):
-        pass
-
-    def ReLU-Forward(Z):
-        pass
-
-    def ReLU-Backward(dA, cache):
-        pass
-
-    def Cross-Entropy(F, y):
-        pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 """
-network.py
-~~~~~~~~~~
+PARAMETERS TO VARY:
 
-A module to implement the stochastic gradient descent learning
-algorithm for a feedforward neural network.  Gradients are calculated
-using backpropagation.  Note that I have focused on making the code
-simple, easily readable, and easily modifiable.  It is not optimized,
-and omits many desirable features.
+1. Number of layers
+2. Number of units per layer
+3. Learning rate
+4. Weight scale parameter (for initializing weights randomly)
+5. Number of epochs
+6. Minibatch size
+
+
+MISCELLANEOUS:
+
+1. Numpy random seed
+2. Random seed
 """
+
 
 #### Libraries
 # Standard library
@@ -129,126 +23,125 @@ import random
 # Third-party libraries
 import numpy as np
 
+NUM_STATE_ATTRIBUTES = 5
+NUM_UNITS_IN_LAST_LAYER = 3
+
+
 class Network(object):
+    def __init__(self, num_layers=4, num_units_per_layer=256, learning_rate=0.1, weight_scale_parameter=1.0):
+        np.random.seed(7383)
 
-    def __init__(self, sizes):
-        """The list ``sizes`` contains the number of neurons in the
-        respective layers of the network.  For example, if the list
-        was [2, 3, 1] then it would be a three-layer network, with the
-        first layer containing 2 neurons, the second layer 3 neurons,
-        and the third layer 1 neuron.  The biases and weights for the
-        network are initialized randomly, using a Gaussian
-        distribution with mean 0, and variance 1.  Note that the first
-        layer is assumed to be an input layer, and by convention we
-        won't set any biases for those neurons, since biases are only
-        ever used in computing the outputs from later layers."""
-        self.num_layers = len(sizes)
-        self.sizes = sizes
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-        self.weights = [np.random.randn(y, x)
-                        for x, y in zip(sizes[:-1], sizes[1:])]
+        # Save the number of layers, number of units per layer (except the last layer, which is 3 units)
+        self.num_layers = num_layers
+        self.num_units_per_layer = num_units_per_layer
+        self.learning_rate = learning_rate
 
-    def feedforward(self, a):
-        """Return the output of the network if ``a`` is input."""
-        for b, w in zip(self.biases, self.weights):
-            a = sigmoid(np.dot(w, a)+b)
-        return a
+        # Randomly initialize weight matrices with a uniform distribution multiplied by a scaling factor
+        self.weights = [weight_scale_parameter * np.random.rand((NUM_STATE_ATTRIBUTES, num_units_per_layer))]
+        self.weights += [(weight_scale_parameter * np.random.rand((num_units_per_layer, num_units_per_layer)) for i in range(num_layers-2)]
+        self.weights.append( (weight_scale_parameter * np.random.rand((num_units_per_layer, NUM_UNITS_IN_LAST_LAYER))) )
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta,
-            test_data=None):
-        """Train the neural network using mini-batch stochastic
-        gradient descent.  The ``training_data`` is a list of tuples
-        ``(x, y)`` representing the training inputs and the desired
-        outputs.  The other non-optional parameters are
-        self-explanatory.  If ``test_data`` is provided then the
-        network will be evaluated against the test data after each
-        epoch, and partial progress printed out.  This is useful for
-        tracking progress, but slows things down substantially."""
-        if test_data: n_test = len(test_data)
-        n = len(training_data)
-        for j in xrange(epochs):
-            random.shuffle(training_data)
-            mini_batches = [
-                training_data[k:k+mini_batch_size]
-                for k in xrange(0, n, mini_batch_size)]
-            for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta)
-            if test_data:
-                print "Epoch {0}: {1} / {2}".format(
-                    j, self.evaluate(test_data), n_test)
+        # Initialize bias vectors to zero
+        self.biases = [np.zeros(num_units_per_layer) for i in range(num_layers-1)]
+        self.biases.append(np.zeros(NUM_UNITS_IN_LAST_LAYER))
+
+        # Of the form (A_i, W_i, b_i) for the ith layer
+        self.affine_caches = [(None, None, None) for i in range(num_layers)] # Of the form (A_i, W_i, b_i) for the ith layer
+        self.relu_caches = [None for i in range(num_layers-1)]
+
+
+    # Handle feedforward
+    def feedforward(self, X):
+        # Handle feedforward
+        A = mini_batch
+        F = None
+        for i in range(self.num_layers):
+            W = self.weights[i]
+            b = self.biases[i]
+
+            if i < (self.num_layers - 1):
+                Z, self.affine_caches[i] = Affine_Forward(A, W, b)
+                A, self.relu_caches[i] = ReLU_Forward(Z)
             else:
-                print "Epoch {0} complete".format(j)
+                F, self.affine_caches[i] = Affine_Forward(A,W,b)
 
-    def update_mini_batch(self, mini_batch, eta):
-        """Update the network's weights and biases by applying
-        gradient descent using backpropagation to a single mini batch.
-        The ``mini_batch`` is a list of tuples ``(x, y)``, and ``eta``
-        is the learning rate."""
-        nabla_b = [np.zeros(b.shape) for b in self.biases]
-        nabla_w = [np.zeros(w.shape) for w in self.weights]
-        for x, y in mini_batch:
-            delta_nabla_b, delta_nabla_w = self.backprop(x, y)
-            nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
-            nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        self.weights = [w-(eta/len(mini_batch))*nw
-                        for w, nw in zip(self.weights, nabla_w)]
-        self.biases = [b-(eta/len(mini_batch))*nb
-                       for b, nb in zip(self.biases, nabla_b)]
+        return F
 
-    def backprop(self, x, y):
-        """Return a tuple ``(nabla_b, nabla_w)`` representing the
-        gradient for the cost function C_x.  ``nabla_b`` and
-        ``nabla_w`` are layer-by-layer lists of numpy arrays, similar
-        to ``self.biases`` and ``self.weights``."""
-        nabla_b = [np.zeros(b.shape) for b in self.biases]
-        nabla_w = [np.zeros(w.shape) for w in self.weights]
-        # feedforward
-        activation = x
-        activations = [x] # list to store all the activations, layer by layer
-        zs = [] # list to store all the z vectors, layer by layer
-        for b, w in zip(self.biases, self.weights):
-            z = np.dot(w, activation)+b
-            zs.append(z)
-            activation = sigmoid(z)
-            activations.append(activation)
-        # backward pass
-        delta = self.cost_derivative(activations[-1], y) * \
-            sigmoid_prime(zs[-1])
-        nabla_b[-1] = delta
-        nabla_w[-1] = np.dot(delta, activations[-2].transpose())
-        # Note that the variable l in the loop below is used a little
-        # differently to the notation in Chapter 2 of the book.  Here,
-        # l = 1 means the last layer of neurons, l = 2 is the
-        # second-last layer, and so on.  It's a renumbering of the
-        # scheme in the book, used here to take advantage of the fact
-        # that Python can use negative indices in lists.
-        for l in xrange(2, self.num_layers):
-            z = zs[-l]
-            sp = sigmoid_prime(z)
-            delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
-            nabla_b[-l] = delta
-            nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
-        return (nabla_b, nabla_w)
 
-    def evaluate(self, test_data):
-        """Return the number of test inputs for which the neural
-        network outputs the correct result. Note that the neural
-        network's output is assumed to be the index of whichever
-        neuron in the final layer has the highest activation."""
-        test_results = [(np.argmax(self.feedforward(x)), y)
-                        for (x, y) in test_data]
-        return sum(int(x == y) for (x, y) in test_results)
+    # Handle backpropagation
+    def backpropagation(self, F, y):
+        loss, dF = Cross_Entropy(F, y)
+        dZ = dF
+        for i in range(self.num_layers - 1, -1, -1):
+            acache = self.affine_caches[i]
 
-    def cost_derivative(self, output_activations, y):
-        """Return the vector of partial derivatives \partial C_x /
-        \partial a for the output activations."""
-        return (output_activations-y)
+            dA, dW, db = Affine_Backward(dZ, acache)
 
-#### Miscellaneous functions
-def sigmoid(z):
-    """The sigmoid function."""
-    return 1.0/(1.0+np.exp(-z))
+            # Do gradient descent
+            self.weights[i] -= self.learning_rate * dW
+            self.biases[i] -= self.learning_rate * db
 
-def sigmoid_prime(z):
-    """Derivative of the sigmoid function."""
-    return sigmoid(z)*(1-sigmoid(z))
+            if i > 0:
+                rcache = self.relu_caches[i-1]
+                dZ = ReLU_Backward(dA, rcache)
+
+        return loss
+
+
+    def classify_or_train(self, X, y, test):
+        F = self.feedforward(X)
+
+        # If this is the test phase, assign actions to the states and return them
+        if test:
+            classifications = np.argmax(F, axis=1)
+            return classifications
+        else:
+            return backpropagation
+
+        loss = self.backpropagation(F, y)
+        return loss
+
+
+    def MinibatchGD(self, data, epochs=300, mini_batch_size=128):
+        training_dataset = data[0]
+        training_labels = data[1]
+        n = training_dataset.shape[0]
+
+        for i in range(epochs):
+            row_indices = np.arange(n)
+            np.random.shuffle(row_indices)
+
+            for j in range(n/mini_batch_size):
+                mini_batch_row_indices = row_indices[(j*mini_batch_size):((j+1)*mini_batch_size)]
+
+                X = training_dataset[mini_batch_row_indices, :]
+                y = training_labels[mini_batch_row_indices]
+                self.classify_or_train(X, y, False)
+
+
+def Affine_Forward(A, W, b):
+    Z = np.dot(A, W) + b.T
+    acache = (A, W, b)
+    return (Z, acache)
+
+def Affine_Backward(dZ, cache):
+    A = cache[0]
+    W = cache[1]
+    b = cahce[2]
+
+    dA =
+    dW =
+    db =
+    return (dA, dW, db)
+
+def ReLU_Forward(Z):
+    A = np.maximum(Z, 0, Z)
+    rcache = Z
+    return (A, rcache)
+
+def ReLU_Backward(dA, cache):
+    dZ = np.where(cache < 0, np.zeros(cache.size), dA)
+    return dZ
+
+def Cross_Entropy(F, y):
+    pass
