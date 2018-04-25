@@ -1,5 +1,8 @@
 from agent import Agent
 import numpy as np
+
+import sys
+sys.path.append('..')
 import helper
 
 NAME = "SARSA"
