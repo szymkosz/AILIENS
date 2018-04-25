@@ -40,6 +40,8 @@ class Pong(object):
         self.velocity_y = velocity_y
         self.paddle_y = paddle_y
 
+        self.bounce_count = 0
+
 
     """
     The update_time_step function is responsible for updating the state of the game
@@ -109,6 +111,8 @@ class Pong(object):
 
             self.velocity_y = sign*np.min(abs(candidate_velocity_y), 1)
 
+            self.bounce_count += 1
+
 
     """
     The run_multiple_games function is responsible for running multiple games
@@ -118,12 +122,17 @@ class Pong(object):
     or False if these games are for testing the agent.
     """
     def run_multiple_games(self, num_games, is_training):
+        num_bounces = np.zeros(num_games)
+
         for i in range(num_games):
             while not self.game_is_over():
                 self.update_time_step(is_training)
 
+            num_bounces[i] = self.bounce_count
+
             self.reset_game()
 
+        return num_bounces
 
     """
     The game_is_over function checks if the ball has left the screen and therefore,
@@ -159,6 +168,8 @@ class Pong(object):
         self.velocity_x = velocity_x
         self.velocity_y = velocity_y
         self.paddle_y = paddle_y
+
+        self.bounce_count = 0
 
 
     """

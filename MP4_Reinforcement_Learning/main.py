@@ -50,8 +50,8 @@ if __name__ == "__main__":
     if sys.argv[1].lower() == "part1":
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
             game = Pong(q_learning(sys.argv[3], sys.argv[4], sys.argv[5]))
-            game.run_multiple_games(sys.argv[6], True)
-            game.run_multiple_games(NUM_TEST_GAMES, False)
+            num_training_bounces = game.run_multiple_games(sys.argv[6], True)
+            num_test_bounces = game.run_multiple_games(NUM_TEST_GAMES, False)
         elif sys.argv[2].lower() == "sarsa":
             game = Pong(sarsa(sys.argv[3], sys.argv[4], sys.argv[5]))
             game.run_multiple_games(sys.argv[6], True)
