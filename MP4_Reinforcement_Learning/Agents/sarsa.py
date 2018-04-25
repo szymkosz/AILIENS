@@ -17,7 +17,7 @@ class sarsa(Agent):
 		# Initialize the rewards, q-values, and N(s,a) counts
 		self.rewards = np.zeros((12,12,2,3,12))
 		for i in range(12):
-			self.rewards[11][i][1][:][i] = 1.0
+			self.rewards[11,i,1,:,i] = 1.0
 
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3), dtype=np.int32)

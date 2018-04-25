@@ -1,6 +1,7 @@
 import sys
 import helper
 from Agents import *
+import numpy as np
 
 # CONSTANTS
 LEFT_WALL_X = 0.0
