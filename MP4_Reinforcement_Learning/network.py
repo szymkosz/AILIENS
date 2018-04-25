@@ -52,7 +52,7 @@ class Network(object):
 
     # Handle feedforward
     def feedforward(self, X):
-        # Handle feedforward
+        # TODO: Check if this function would break if X was a 1D 5-dimensional vector
         A = mini_batch
         F = None
         for i in range(self.num_layers):
@@ -88,6 +88,20 @@ class Network(object):
         return loss
 
 
+    """
+    The classify_or_train function does one of two things:
+
+    If test == True, the classify_or_train function takes in a mini-batch of training
+    data X along with a corresponding vector of true labels y, feeds the mini-batch
+    forward through the neural network, backpropagates the gradients, and updates
+    the weights and biases of the neural network.
+
+    If test == False, the classify_or_train function takes in either a single vector
+    with the 5 attributes of the current state (if the agent is playing the game) or
+    the entire training dataset (if the overall classification accuracy across the
+    training dataset is being computed during the training phase).  The y argument
+    is ignored in this case, so it can be set to a Nonetype.
+    """
     def classify_or_train(self, X, y, test):
         F = self.feedforward(X)
 
@@ -95,8 +109,6 @@ class Network(object):
         if test:
             classifications = np.argmax(F, axis=1)
             return classifications
-        else:
-            return backpropagation
 
         loss = self.backpropagation(F, y)
         return loss
@@ -107,16 +119,47 @@ class Network(object):
         training_labels = data[1]
         n = training_dataset.shape[0]
 
+        losses = np.zeros(epochs)
+        accuracies = np.zeros(epochs)
+        final_assigned_labels = None
+
         for i in range(epochs):
             row_indices = np.arange(n)
             np.random.shuffle(row_indices)
+
+            total_loss = 0
 
             for j in range(n/mini_batch_size):
                 mini_batch_row_indices = row_indices[(j*mini_batch_size):((j+1)*mini_batch_size)]
 
                 X = training_dataset[mini_batch_row_indices, :]
                 y = training_labels[mini_batch_row_indices]
-                self.classify_or_train(X, y, False)
+                total_loss += self.classify_or_train(X, y, False)
+
+            # TODO: Verify the loss and accuracy computations for the plots
+            losses[i] = total_loss
+
+            assigned_labels = self.classify_or_train(training_dataset, None, True)
+
+            if i == (epochs - 1):
+                final_assigned_labels = assigned_labels
+
+            accuracies[i] = helper.compute_overall_accuracy(training_labels, assigned_labels)
+
+        confusion_matrix = helper.compute_confusion_matrix(training_labels, final_assigned_labels, numClasses=3)
+        print("Confusion Matrix:\n\n" + str(confusion_matrix) + "\n")
+        print("Final Overall Accuracy on Training Dataset: " + str(accuracies[epochs-1]))
+
+        # TODO: Make the plots of loss and accuracy Vs. training epoch
+        loss_xCoordinates = np.arange(len(losses))
+        loss_yCoordinates = losses
+
+        # TODO: MAKE LOSS PLOT HERE!
+
+        accuracy_xCoordinates = np.arange(len(accuracies))
+        accuracy_yCoordinates = accuracies
+
+        # TODO: MAKE ACCURACY PLOT HERE!
 
 
 def Affine_Forward(A, W, b):
@@ -144,4 +187,8 @@ def ReLU_Backward(dA, cache):
     return dZ
 
 def Cross_Entropy(F, y):
+    pass
+
+
+def scale_dataset(data):
     pass

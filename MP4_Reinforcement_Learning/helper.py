@@ -115,7 +115,7 @@ def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points):
     y_coordinates = [np.sum(rewards[0:(num_episodes_between_points * (i+1))])/(num_episodes_between_points * (i+1))
                      for i in range(num_points)]
 
-    #TODO: Plot the points
+    # Make the plots
     fig, ax = plt.subplots(figsize = (10, 10))
     ax.title.set_text('Mean Episode Rewards vs Episodes')
     ax.set_xlabel('Episodes')
