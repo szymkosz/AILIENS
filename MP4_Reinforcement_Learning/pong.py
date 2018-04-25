@@ -1,5 +1,6 @@
 import sys
 import helper
+from Agents import *
 
 # CONSTANTS
 LEFT_WALL_X = 0.0
@@ -143,8 +144,7 @@ class Pong(object):
     def game_is_over(self):
         if self.ball_x > RIGHT_WALL_X and (self.ball_y < self.paddle_y or self.ball_y > (self.paddle_y + PADDLE_HEIGHT)):
             return True
-        else:
-            return False
+        return False
 
 
     """
@@ -153,7 +153,7 @@ class Pong(object):
     possible to reset these variables differently, but they will be set to the
     initial state defined in the assignment by default.
     """
-    def reset_game(self, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y)):
+    def reset_game(self, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y):
         # Check that velocity_x and velocity_y are valid
         if abs(velocity_x) < 0.03:
             raise ValueError("Absolute value of velocity_x must be greater than or equal to 0.03!")

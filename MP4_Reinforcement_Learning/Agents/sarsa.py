@@ -1,5 +1,8 @@
-from Agents.agent import Agent
+from agent import Agent
 import numpy as np
+
+import sys
+sys.path.append('..')
 import helper
 
 NAME = "SARSA"
@@ -67,7 +70,7 @@ class sarsa(Agent):
 		# TODO: Implement SARSA algorithm
 		"""
 		1. s, a, and s' are already given as parameters.  s and s' are 5-tuples
-		   containing all 5 attributes of the game state, and a is a number (-1,0, or 1).
+		   containing all 5 attributes of the game state, and a is a number (0, 1, or 2).
 		2. Acquire the reward R(s)
 		3. Select the action a' to take in state s' as
 		   a' = argmax{over actions a' from s'}(f(Q(s',a'), N(s',a')) )
@@ -75,4 +78,23 @@ class sarsa(Agent):
 		5. Store a' as a for the next time step:
 		   a <- a'
 		"""
-		pass
+
+		# Convert the state tuples from continuous to discrete
+		d_s = helper.get_discrete_state(s)
+		d_s_prime = helper.get_discrete_state(s_prime)
+
+		# Acquire the reward R(s)
+		Rs = self.rewards[list(s)]
+
+		# Select the next action to take in state s'
+		q_vals = self.q_values[list(d_s_prime)]
+		counts = self.counts_Nsa[list(d_s_prime)]
+		a_prime = np.argmax(helper.exploration_function(q_vals, counts, self.exploration_threshold))
+
+		# Perform the TD update
+		alpha = self.learning_rate_constant/(self.learning_rate_constant + self.counts_Nsa[list(d_s)][a])
+		Qsa = self.q_values[list(d_s)][a]
+		self.q_values[list(d_s)][a] = Qsa + alpha * (Rs + self.discount_factor*self.q_values[list(d_s_prime)][a_prime] - Qsa)
+
+		# Store a' as a
+		self.cur_action = a_prime

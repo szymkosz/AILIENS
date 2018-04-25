@@ -1,5 +1,3 @@
-from pong import Pong
-
 NAME = "AGENT"
 
 class Agent(object):

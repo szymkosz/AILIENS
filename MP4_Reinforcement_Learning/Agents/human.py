@@ -3,9 +3,13 @@
 
 import pygame
 import time
-import loader
 from pong import Pong
-from Agents.agent import Agent
+from agent import Agent
+
+import sys
+sys.path.append('..')
+import loader
+
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -37,7 +41,7 @@ class Human(Agent):
 			for event in pygame.event.get():
 				if event.type == pygame.MOUSEBUTTONUP:
 					garbage, y_human_paddle = pygame.mouse.get_pos()
-				
+
 				if event.type == pygame.QUIT:
 					pygame.display.quit()
 					pygame.quit()
@@ -45,7 +49,7 @@ class Human(Agent):
 
 			time.sleep(.03)
 			update_display(dataset[i,:])
-		
+
 
 
 	"""
