@@ -19,6 +19,7 @@ MISCELLANEOUS:
 # Import the necessary libraries
 from Agents.agent import Agent
 import numpy as np
+import matplotlib.pyplot as plt
 
 import sys
 sys.path.append('..')
@@ -159,12 +160,23 @@ class network(Agent):
         loss_yCoordinates = losses
 
         # TODO: MAKE LOSS PLOT HERE!
+        fig, ax = plt.subplots(figsize = (10, 10))
+        ax.title.set_text('Loss Plot')
+        ax.set_xlabel('Loss')
+        ax.set_ylabel('Traning Epoch')
+        plt.plot(loss_xCoordinates, loss_yCoordinates)
+        plt.show()
 
         accuracy_xCoordinates = np.arange(len(accuracies))
         accuracy_yCoordinates = accuracies
 
         # TODO: MAKE ACCURACY PLOT HERE!
-
+        fig, ax = plt.subplots(figsize = (10, 10))
+        ax.title.set_text('Accuracy Plot')
+        ax.set_xlabel('Accuracy')
+        ax.set_ylabel('Traning Epoch')
+        plt.plot(accuracy_xCoordinates, accuracy_yCoordinates)
+        plt.show()
 
 def Affine_Forward(A, W, b):
     Z = np.dot(A, W) + b.T
