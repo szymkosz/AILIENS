@@ -49,6 +49,7 @@ class q_learning(Agent):
     """
 	def getAction(self, is_training, cur_state_tuple):
 		discrete_state = helper.get_discrete_state(cur_state_tuple)
+		assert discrete_state is not -1, "ERROR: discrete_state should not be a terminal state!"
 
 		action = None
 		q_values = self.q_values[list(discrete_state)]
