@@ -8,12 +8,9 @@ import helper
 NAME = "Q-LEARNING"
 
 class q_learning(Agent):
-	#def __init__(self, game=Pong(), playerNum=1, learning_rate_constant=1.0, discount_factor=.70):
 	def __init__(self, learning_rate_constant=1.0, discount_factor=.70, exploration_threshold=3, playerNum=1):
 		# super(self).__init__(game, playerNum)
 		super().__init__(NAME, playerNum)
-		# self.name = NAME
-		# self.playerColor = ?
 
 		"""
 		# Initialize the rewards, q-values, and N(s,a) counts
@@ -38,6 +35,7 @@ class q_learning(Agent):
 		# because the paddle misses it).  It is fixed at -1 to help the training converge.
 		self.terminal_q_value = -1
 
+		# These are the 3 training parameters that are varied for experimentation purposes.
 		self.learning_rate_constant = learning_rate_constant
 		self.discount_factor = discount_factor
 		self.exploration_threshold = exploration_threshold
@@ -45,19 +43,19 @@ class q_learning(Agent):
 
 	"""
     The getAction function should decide the action this agent should take
-    given the state of self.game.  It should return 1 if the paddle should
-    move up, -1 if the paddle should move down, or 0 if the paddle should do
-    nothing.
+    given the current state s of the game.  It should return 2 if the paddle
+    should move up, 0 if the paddle should move down, or 1 if the paddle should
+    do nothing.
     """
 	def getAction(self, is_training, cur_state_tuple):
 		discrete_state = helper.get_discrete_state(cur_state_tuple)
 
 		action = None
-		q_values = self.q_values[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][:]
+		q_values = self.q_values[list(discrete_state)]
 		if is_training:
 			# If the Q-learning agent is being trained, then its next action
 			# a = argmax{over all actions a'}( f(Q(s,a'), N(s,a')) ).
-			counts_Nsa = self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][:]
+			counts_Nsa = self.counts_Nsa[list(discrete_state)]
 			action = np.argmax(helper.exploration_function(q_values, counts_Nsa, self.exploration_threshold))
 		else:
 			# This is how actions are determined outside of training.  The action
@@ -70,18 +68,21 @@ class q_learning(Agent):
 	"""
     The updateAction function is largely responsible for the agent's learning.
     It updates the agent's parameters given the state s, the action a taken in
-    state s, the resulting state s_prime (s'), whether or not s is the terminal state,
-    and whether or not s' is the terminal state.  It computes the reward r,
-    the action a' to take from state s', and performs the TD update as appropriate.
+    state s, the reward of taking action a in state s, and the resulting state
+    s_prime (s').  It computes the action a' to take from state s' and performs
+    the TD update as appropriate.
 
     Nothing is returned.
     """
 	def updateAction(self, s, a, reward, s_prime):
 		# TODO: Implement Q-Learning algorithm
 		"""
-		1. s, a, and s' are already given as parameters.  s and s' are 5-tuples
-		   containing all 5 attributes of the game state, and a is a number (-1,0, or 1).
-		2. Acquire the reward R(s)
+		1. s, a, reward (r), and s' are already given as parameters.  s and s' are 5-tuples
+		   containing all 5 attributes of the game state, a is a number (0, 1, or 2),
+		   and reward is the reward of taking action a in state s (-1, 0, or 1).
+		2. If s' is the terminal state, max(Q(s',a')) for any action a' = self.terminal_q_value = -1.
+
+		   Otherwise, compute max(Q(s',a')) over all actions a'.
 		3. Perform the TD update (See lecture slides)
 		"""
 		# Convert the state tuples from continuous to discrete

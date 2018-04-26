@@ -8,13 +8,10 @@ import helper
 NAME = "SARSA"
 
 class sarsa(Agent):
-	#def __init__(self, game=Pong(), playerNum=1, learning_rate_constant=1.0, discount_factor=.70):
 	def __init__(self, learning_rate_constant=1.0, discount_factor=.70, exploration_threshold=3, playerNum=1):
 		np.random.seed(6386)
 		# super(self).__init__(game, playerNum)
 		super().__init__(NAME, playerNum)
-		# self.name = NAME
-		# self.playerColor = ?
 
 		"""
 		# Initialize the rewards, q-values, and N(s,a) counts
@@ -40,18 +37,20 @@ class sarsa(Agent):
 		# because the paddle misses it).  It is fixed at -1 to help the training converge.
 		self.terminal_q_value = -1
 
+		# This is the predetermined action a to use at each time step during training.
 		self.cur_action = np.random.randint(3)
 
+		# These are the 3 training parameters that are varied for experimentation purposes.
 		self.learning_rate_constant = learning_rate_constant
 		self.discount_factor = discount_factor
 		self.exploration_threshold = exploration_threshold
 
 
 	"""
-    The updateAction function should decide the action this agent should take
-    given the state of self.game.  It should return 1 if the paddle should
-    move up, -1 if the paddle should move down, or 0 if the paddle should do
-    nothing.
+    The getAction function should decide the action this agent should take
+    given the current state s of the game.  It should return 2 if the paddle
+    should move up, 0 if the paddle should move down, or 1 if the paddle should
+    do nothing.
     """
 	def getAction(self, is_training, cur_state_tuple):
 		discrete_state = helper.get_discrete_state(cur_state_tuple)
@@ -74,22 +73,27 @@ class sarsa(Agent):
 	"""
     The updateAction function is largely responsible for the agent's learning.
     It updates the agent's parameters given the state s, the action a taken in
-    state s, the resulting state s_prime (s'), whether or not s is the terminal state,
-    and whether or not s' is the terminal state.  It computes the reward r,
-    the action a' to take from state s', and performs the TD update as appropriate.
+    state s, the reward of taking action a in state s, and the resulting state
+    s_prime (s').  It computes the action a' to take from state s' and performs
+    the TD update as appropriate.
 
     Nothing is returned.
     """
 	def updateAction(self, s, a, reward, s_prime):
 		# TODO: Implement SARSA algorithm
 		"""
-		1. s, a, and s' are already given as parameters.  s and s' are 5-tuples
-		   containing all 5 attributes of the game state, and a is a number (0, 1, or 2).
-		2. Acquire the reward R(s)
-		3. Select the action a' to take in state s' as
+		1. s, a, reward (r), and s' are already given as parameters.  s and s' are 5-tuples
+		   containing all 5 attributes of the game state, a is a number (0, 1, or 2),
+		   and reward is the reward of taking action a in state s (-1, 0, or 1).
+		2. If s' is the terminal state, Q(s',a') = self.terminal_q_value = -1.
+
+		   Otherwise, select the action a' to take in state s' as
 		   a' = argmax{over actions a' from s'}(f(Q(s',a'), N(s',a')) )
-		4. Perform the TD update (See lecture slides)
-		5. Store a' as a for the next time step:
+		   then lookup Q(s',a') in the self.q_values table.
+		3. Perform the TD update (See lecture slides)
+		4. If s' is the terminal state, randomly set self.cur_action on the interval [0,2].
+
+		   Otherwise, store a' as a for the next time step:
 		   a <- a'
 		"""
 

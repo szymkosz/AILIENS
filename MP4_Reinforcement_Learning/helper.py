@@ -56,7 +56,7 @@ def get_discrete_state(state_tuple):
     continuous_velocity_y = state_tuple[3]
     continuous_paddle_y = state_tuple[4]
 
-    # Convert to ball_x and ball_y to discrete values
+    # Convert ball_x and ball_y to discrete values
     discrete_ball_x = int(np.min(np.max(12 * continuous_ball_x, 0), 11))
     discrete_ball_y = int(np.min(np.max(12 * continuous_ball_y, 0), 11))
 
@@ -147,7 +147,7 @@ def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points):
 Computes the confusion matrix given the true labels of the test images and
 their assigned labels.
 """
-def compute_confusion_matrix(true_labels, assigned_labels, numClasses=10):
+def compute_confusion_matrix(true_labels, assigned_labels, numClasses=3):
     assert len(true_labels) == len(assigned_labels), "LENGTH NOT SAME ERROR: true labels " + \
                                                      "and assigned labels don't have same length!"
 
