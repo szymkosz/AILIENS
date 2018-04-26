@@ -66,7 +66,7 @@ class q_learning(Agent):
 
     Nothing is returned.
     """
-	def updateAction(self, s, a, s_prime, s_isTerminal, s_prime_isTerminal):
+	def updateAction(self, s, a, reward, s_prime):
 		# TODO: Implement Q-Learning algorithm
 		"""
 		1. s, a, and s' are already given as parameters.  s and s' are 5-tuples
@@ -74,4 +74,23 @@ class q_learning(Agent):
 		2. Acquire the reward R(s)
 		3. Perform the TD update (See lecture slides)
 		"""
-		pass
+		# Convert the state tuples from continuous to discrete
+		d_s = helper.get_discrete_state(s)
+		assert d_s is not -1, "ERROR: d_s should not be a terminal state!"
+		d_s_prime = helper.get_discrete_state(s_prime)
+
+		# Determine max(Q(s',a')) over all actions a' for the TD update
+		maxQ_s_prime_a_prime = None
+		if d_s_prime == -1:
+			# If s' is the terminal state, then max(Q(s',a')) for any action a' = self.terminal_q_value = -1
+			maxQ_s_prime_a_prime = self.terminal_q_value
+		else:
+			# Since s' isn't the terminal state, compute max(Q(s',a')) over all actions a'
+			q_values = self.q_values[list(d_s_prime)]
+			maxQ_s_prime_a_prime = np.amax(q_values)
+
+		# Perform the TD update
+		alpha = self.learning_rate_constant/(self.learning_rate_constant + self.counts_Nsa[list(d_s)][a])
+		Q_sa = self.q_values[list(d_s)][a]
+		self.q_values[list(d_s)][a] = Q_sa + alpha * (reward + self.discount_factor*maxQ_s_prime_a_prime - Q_sa)
+
