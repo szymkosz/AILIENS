@@ -45,6 +45,8 @@ where:
 
 import sys
 from loader import parser
+import numpy as np
+import helper
 
 from pong import Pong
 from Agents.q_learning import q_learning
@@ -60,17 +62,19 @@ EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
 if __name__ == "__main__":
     if sys.argv[1].lower() == "part1":
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
-            game = Pong(q_learning(sys.argv[3], sys.argv[4], sys.argv[5]))
+            game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])))
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
-            plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
+            """
+            helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
 
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+            """
         elif sys.argv[2].lower() == "sarsa":
-            game = Pong(sarsa(sys.argv[3], sys.argv[4], sys.argv[5]))
+            game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])))
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
-            plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
+            helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
 
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
@@ -82,10 +86,10 @@ if __name__ == "__main__":
     elif sys.argv[1].lower() == "part2":
         assert len(sys.argv) == 8
 
-        agent = network(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+        agent = network(int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]))
 
         dataset_tuple = parser(EXPERT_POLICTY_DATASET_FILENAME)
-        agent.MinibatchGD(dataset_tuple, sys.argv[6], sys.argv[7])
+        agent.MinibatchGD(dataset_tuple, int(sys.argv[6]), int(sys.argv[7]))
 
         game = Pong(agent)
         test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)

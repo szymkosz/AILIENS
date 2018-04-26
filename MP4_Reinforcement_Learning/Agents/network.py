@@ -41,7 +41,7 @@ class network(Agent):
 
         # Randomly initialize weight matrices with a uniform distribution multiplied by a scaling factor
         self.weights = [weight_scale_parameter * np.random.rand((NUM_STATE_ATTRIBUTES, num_units_per_layer))]
-        self.weights += [(weight_scale_parameter * np.random.rand((num_units_per_layer, num_units_per_layer)) for i in range(num_layers-2)]
+        self.weights += [(weight_scale_parameter * np.random.rand((num_units_per_layer, num_units_per_layer))) for i in range(num_layers-2)]
         self.weights.append( (weight_scale_parameter * np.random.rand((num_units_per_layer, NUM_UNITS_IN_LAST_LAYER))) )
 
         # Initialize bias vectors to zero
@@ -219,4 +219,3 @@ def scale_dataset(states):
         scaled_states[:, col_index] = (states[:, col_index] - col_mean)/col_stdev
 
     return scaled_states
-    

@@ -9,8 +9,8 @@ class Agent(object):
 
     """
     The getAction function should decide the action this agent should take
-    given the current state s of the game.  It should return 2 if the paddle
-    should move up, 0 if the paddle should move down, or 1 if the paddle should
+    given the current state s of the game.  It should return 0 if the paddle
+    should move up, 2 if the paddle should move down, or 1 if the paddle should
     do nothing.
     """
     def getAction(self, is_training, cur_state_tuple):

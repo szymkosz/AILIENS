@@ -43,21 +43,26 @@ class q_learning(Agent):
 
 	"""
     The getAction function should decide the action this agent should take
-    given the current state s of the game.  It should return 2 if the paddle
-    should move up, 0 if the paddle should move down, or 1 if the paddle should
+    given the current state s of the game.  It should return 0 if the paddle
+    should move up, 2 if the paddle should move down, or 1 if the paddle should
     do nothing.
     """
 	def getAction(self, is_training, cur_state_tuple):
+		print(cur_state_tuple)
 		discrete_state = helper.get_discrete_state(cur_state_tuple)
 		assert discrete_state is not -1, "ERROR: discrete_state should not be a terminal state!"
 
 		action = None
-		q_values = self.q_values[list(discrete_state)]
+		q_values = self.q_values[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]]
 		if is_training:
 			# If the Q-learning agent is being trained, then its next action
 			# a = argmax{over all actions a'}( f(Q(s,a'), N(s,a')) ).
-			counts_Nsa = self.counts_Nsa[list(discrete_state)]
+			counts_Nsa = self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]]
+
+			print(discrete_state)
+			print(self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]])
 			action = np.argmax(helper.exploration_function(q_values, counts_Nsa, self.exploration_threshold))
+			self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][action]
 		else:
 			# This is how actions are determined outside of training.  The action
 			# is computed as argmax(Q(s,a')) over all actions a'.
@@ -98,10 +103,10 @@ class q_learning(Agent):
 			maxQ_s_prime_a_prime = self.terminal_q_value
 		else:
 			# Since s' isn't the terminal state, compute max(Q(s',a')) over all actions a'
-			q_values = self.q_values[list(d_s_prime)]
+			q_values = self.q_values[d_s_prime[0]][d_s_prime[1]][d_s_prime[2]][d_s_prime[3]][d_s_prime[4]]
 			maxQ_s_prime_a_prime = np.amax(q_values)
 
 		# Perform the TD update
-		alpha = self.learning_rate_constant/(self.learning_rate_constant + self.counts_Nsa[list(d_s)][a])
-		Q_sa = self.q_values[list(d_s)][a]
-		self.q_values[list(d_s)][a] = Q_sa + alpha * (reward + self.discount_factor*maxQ_s_prime_a_prime - Q_sa)
+		alpha = self.learning_rate_constant/(self.learning_rate_constant + self.counts_Nsa[d_s[0]][d_s[1]][d_s[2]][d_s[3]][d_s[4]][a])
+		Q_sa = self.q_values[d_s[0]][d_s[1]][d_s[2]][d_s[3]][d_s[4]][a]
+		self.q_values[d_s[0]][d_s[1]][d_s[2]][d_s[3]][d_s[4]][a] = Q_sa + alpha * (reward + self.discount_factor*maxQ_s_prime_a_prime - Q_sa)

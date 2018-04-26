@@ -57,8 +57,8 @@ def get_discrete_state(state_tuple):
     continuous_paddle_y = state_tuple[4]
 
     # Convert ball_x and ball_y to discrete values
-    discrete_ball_x = int(np.min(np.max(12 * continuous_ball_x, 0), 11))
-    discrete_ball_y = int(np.min(np.max(12 * continuous_ball_y, 0), 11))
+    discrete_ball_x = int(min(max(12 * continuous_ball_x, 0), 11))
+    discrete_ball_y = int(min(max(12 * continuous_ball_y, 0), 11))
 
     # Convert velocity_x to the proper discrete value
     discrete_velocity_x = None
@@ -88,7 +88,8 @@ def get_discrete_state(state_tuple):
     """
 
     # Convert paddle_y to the proper discrete value
-    discrete_paddle_y = int(np.min(12 * continuous_paddle_y / (1 - paddle_height), 11))
+    PADDLE_HEIGHT = 0.2
+    discrete_paddle_y = int(min(12 * continuous_paddle_y / (1 - PADDLE_HEIGHT), 11))
 
     return (discrete_ball_x, discrete_ball_y, discrete_velocity_x, discrete_velocity_y, discrete_paddle_y)
 
@@ -128,7 +129,7 @@ num_episodes_between_points = 2, then the plotted data points are
 num_episodes_between_points is assumed to evenly divide len(rewards).
 """
 def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points):
-    num_points = len(rewards)/num_episodes_between_points
+    num_points = int(len(rewards)/num_episodes_between_points)
 
     x_coordinates = [num_episodes_between_points * (i+1) for i in range(num_points)]
     y_coordinates = [np.sum(rewards[0:(num_episodes_between_points * (i+1))])/(num_episodes_between_points * (i+1))

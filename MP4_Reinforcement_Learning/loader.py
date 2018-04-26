@@ -16,9 +16,9 @@ states (0th entry): Let T be the total number of game states in the file represe
 actions:            Let T be the total number of game states in the file represented
 (1th entry)         by "fileName".  Then this entry is a T-dimensional numpy vector
                     such that the ith entry contains the expert's action in the ith
-                    game state.  This entry is 0 if the expert moves the paddle down,
+                    game state.  This entry is 0 if the expert moves the paddle up,
                     1 if the expert doesn't move the paddle, and 2 if the expert moves
-                    the paddle up.
+                    the paddle down.
 """
 def parser(fileName):
     return loadFile(fileName)

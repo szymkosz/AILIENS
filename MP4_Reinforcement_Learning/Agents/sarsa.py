@@ -48,8 +48,8 @@ class sarsa(Agent):
 
 	"""
     The getAction function should decide the action this agent should take
-    given the current state s of the game.  It should return 2 if the paddle
-    should move up, 0 if the paddle should move down, or 1 if the paddle should
+    given the current state s of the game.  It should return 0 if the paddle
+    should move up, 2 if the paddle should move down, or 1 if the paddle should
     do nothing.
     """
 	def getAction(self, is_training, cur_state_tuple):
@@ -61,10 +61,11 @@ class sarsa(Agent):
 			# If the SARSA agent is being trained, then its next action
 			# a = self.cur_action.
 			action = self.cur_action
+			self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][action]
 		else:
 			# This is how actions are determined outside of training.  The action
 			# is computed as argmax(Q(s,a')) over all actions a'.
-			q_values = self.q_values[list(discrete_state)]
+			q_values = self.q_values[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]]
 			action = np.argmax(q_values)
 
 		return action
@@ -111,16 +112,16 @@ class sarsa(Agent):
 		else:
 			# Since s' isn't the terminal state, determine the next action a' to take in state
 			# s' as argmax{over a'}( helper.exploration_function(Q(s',a'), N(s',a')) )
-			q_vals = self.q_values[list(d_s_prime)]
-			counts = self.counts_Nsa[list(d_s_prime)]
+			q_vals = self.q_values[d_s_prime[0]][d_s_prime[1]][d_s_prime[2]][d_s_prime[3]][d_s_prime[4]]
+			counts = self.counts_Nsa[d_s_prime[0]][d_s_prime[1]][d_s_prime[2]][d_s_prime[3]][d_s_prime[4]]
 
 			a_prime = np.argmax(helper.exploration_function(q_vals, counts, self.exploration_threshold))
-			Q_s_prime_a_prime = self.q_values[list(d_s_prime)][a_prime]
+			Q_s_prime_a_prime = self.q_values[d_s_prime[0]][d_s_prime[1]][d_s_prime[2]][d_s_prime[3]][d_s_prime[4]][a_prime]
 
 		# Perform the TD update
-		alpha = self.learning_rate_constant/(self.learning_rate_constant + self.counts_Nsa[list(d_s)][a])
-		Q_sa = self.q_values[list(d_s)][a]
-		self.q_values[list(d_s)][a] = Q_sa + alpha * (reward + self.discount_factor*Q_s_prime_a_prime - Q_sa)
+		alpha = self.learning_rate_constant/(self.learning_rate_constant + self.counts_Nsa[d_s[0]][d_s[1]][d_s[2]][d_s[3]][d_s[4]][a])
+		Q_sa = self.q_values[d_s[0]][d_s[1]][d_s[2]][d_s[3]][d_s[4]][a]
+		self.q_values[d_s[0]][d_s[1]][d_s[2]][d_s[3]][d_s[4]][a] = Q_sa + alpha * (reward + self.discount_factor*Q_s_prime_a_prime - Q_sa)
 
 		# If s' is the terminal state, pick a random action to start off the next game.
 		# Otherwise, store the computed a' as a for the next time step.
