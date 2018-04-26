@@ -160,23 +160,23 @@ class network(Agent):
         loss_yCoordinates = losses
 
         # TODO: MAKE LOSS PLOT HERE!
-        fig, ax = plt.subplots(figsize = (10, 10))
-        ax.title.set_text('Loss Plot')
-        ax.set_xlabel('Loss')
-        ax.set_ylabel('Traning Epoch')
-        plt.plot(loss_xCoordinates, loss_yCoordinates)
-        plt.show()
+        fig_loss, ax_loss = plt.subplots(figsize = (10, 10))
+        ax_loss.title.set_text('Loss Plot')
+        ax_loss.set_xlabel('Loss')
+        ax_loss.set_ylabel('Traning Epoch')
+        plt_loss.plot(loss_xCoordinates, loss_yCoordinates)
+        plt_loss.show()
 
         accuracy_xCoordinates = np.arange(len(accuracies))
         accuracy_yCoordinates = accuracies
 
         # TODO: MAKE ACCURACY PLOT HERE!
-        fig, ax = plt.subplots(figsize = (10, 10))
-        ax.title.set_text('Accuracy Plot')
-        ax.set_xlabel('Accuracy')
-        ax.set_ylabel('Traning Epoch')
-        plt.plot(accuracy_xCoordinates, accuracy_yCoordinates)
-        plt.show()
+        fig_accuracy, ax_accuracy = plt.subplots(figsize = (10, 10))
+        ax_accuracy.title.set_text('Accuracy Plot')
+        ax_accuracy.set_xlabel('Accuracy')
+        ax_accuracy.set_ylabel('Traning Epoch')
+        plt_accuracy.plot(accuracy_xCoordinates, accuracy_yCoordinates)
+        plt_accuracy.show()
 
 def Affine_Forward(A, W, b):
     Z = np.dot(A, W) + b.T
@@ -211,3 +211,4 @@ def gradient_checking():
 
 def scale_dataset(states):
     pass
+    
