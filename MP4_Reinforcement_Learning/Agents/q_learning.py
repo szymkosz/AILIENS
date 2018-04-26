@@ -14,19 +14,29 @@ class q_learning(Agent):
 		super().__init__(NAME, playerNum)
 		# self.name = NAME
 		# self.playerColor = ?
+
+		"""
 		# Initialize the rewards, q-values, and N(s,a) counts
 		self.rewards = np.zeros((12,12,2,3,12))
 		for i in range(12):
 			self.rewards[11][i][1][:][i] = 1.0
+		"""
+		# Initialize the q-values and N(s,a) counts
 
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3), dtype=np.int32)
 
+		"""
 		# These three variables describe the characteristics of the terminal state,
 		# where the ball has left the screen because the paddle missed it.
 		self.terminal_reward = -1
 		self.terminal_count = 0
 		self.terminal_q_value = 0
+		"""
+
+		# This is the q-value of the terminal state (when the ball leaves the screen
+		# because the paddle misses it).  It is fixed at -1 to help the training converge.
+		self.terminal_q_value = -1
 
 		self.learning_rate_constant = learning_rate_constant
 		self.discount_factor = discount_factor
@@ -93,4 +103,3 @@ class q_learning(Agent):
 		alpha = self.learning_rate_constant/(self.learning_rate_constant + self.counts_Nsa[list(d_s)][a])
 		Q_sa = self.q_values[list(d_s)][a]
 		self.q_values[list(d_s)][a] = Q_sa + alpha * (reward + self.discount_factor*maxQ_s_prime_a_prime - Q_sa)
-
