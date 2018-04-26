@@ -163,7 +163,7 @@ class network(Agent):
         fig_loss, ax_loss = plt.subplots(figsize = (10, 10))
         ax_loss.title.set_text('Loss Plot')
         ax_loss.set_xlabel('Loss')
-        ax_loss.set_ylabel('Traning Epoch')
+        ax_loss.set_ylabel('Training Epoch')
         plt_loss.plot(loss_xCoordinates, loss_yCoordinates)
         plt_loss.show()
 
@@ -174,7 +174,7 @@ class network(Agent):
         fig_accuracy, ax_accuracy = plt.subplots(figsize = (10, 10))
         ax_accuracy.title.set_text('Accuracy Plot')
         ax_accuracy.set_xlabel('Accuracy')
-        ax_accuracy.set_ylabel('Traning Epoch')
+        ax_accuracy.set_ylabel('Training Epoch')
         plt_accuracy.plot(accuracy_xCoordinates, accuracy_yCoordinates)
         plt_accuracy.show()
 
@@ -210,5 +210,13 @@ def gradient_checking():
     pass
 
 def scale_dataset(states):
-    pass
+    (num_rows, num_columns) = states.shape
+    scaled_states = np.zeros(states.shape)
+
+    for col_index in range(0, num_columns):
+        col_mean = np.mean(states[:, col_index])
+        col_stdev = np.std(states[:, col_index])
+        scaled_states[:, col_index] = (states[:, col_index] - col_mean)/col_stdev
+
+    return scaled_states
     
