@@ -174,11 +174,11 @@ def Affine_Forward(A, W, b):
 def Affine_Backward(dZ, cache):
     A = cache[0]
     W = cache[1]
-    b = cahce[2]
+    b = cache[2]
 
-    dA =
-    dW =
-    db =
+    dA = np.dot(dZ, W.T)
+    dW = np.dot(A.T, dZ)
+    db = np.sum(dZ, axis=0)
     return (dA, dW, db)
 
 def ReLU_Forward(Z):
@@ -197,5 +197,5 @@ def Cross_Entropy(F, y):
 def gradient_checking():
     pass
 
-def scale_dataset(data):
+def scale_dataset(states):
     pass
