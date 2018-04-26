@@ -15,22 +15,29 @@ class sarsa(Agent):
 		super().__init__(NAME, playerNum)
 		# self.name = NAME
 		# self.playerColor = ?
-		# Initialize the rewards, q-values, and N(s,a) counts
+
 		"""
+		# Initialize the rewards, q-values, and N(s,a) counts
+
 		self.rewards = np.zeros((12,12,2,3,12))
 		for i in range(12):
 			self.rewards[11,i,1,:,i] = 1.0
 		"""
+		# Initialize the q-values and N(s,a) counts
 
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3), dtype=np.int32)
 
+		"""
 		# These three variables describe the characteristics of the terminal state,
 		# where the ball has left the screen because the paddle missed it.
-		"""
 		self.terminal_reward = -1
 		self.terminal_count = 0
+		self.terminal_q_value = 0
 		"""
+
+		# This is the q-value of the terminal state (when the ball leaves the screen
+		# because the paddle misses it).  It is fixed at -1 to help the training converge.
 		self.terminal_q_value = -1
 
 		self.cur_action = np.random.randint(3)
