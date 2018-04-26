@@ -17,6 +17,7 @@ INITIAL_VELOCITY_X = 0.03
 INITIAL_VELOCITY_Y = 0.01
 INITIAL_PADDLE_Y = 0.5 - (PADDLE_HEIGHT/2)
 
+
 class Pong(object):
     """
     This is the constructor for a Pong game.  By default, the setup of the game
@@ -42,13 +43,15 @@ class Pong(object):
         self.velocity_y = velocity_y
         self.paddle_y = paddle_y
 
-        self.bounce_count = 0
-
 
     """
     The update_time_step function is responsible for updating the state of the game
     with every time step.  It gets the agent's action, uses it to update the paddle's
     position, updates the ball's position, and then handles the bouncing of the ball.
+
+    Returns the reward associated with this time step.  This is 1 if the ball bounces
+    off of the paddle, -1 if the ball leaves the screen, or 0 if neither of the former
+    two scenariors occurs.
     """
     def update_time_step(self, is_training):
         # Get the action of the agent
@@ -75,17 +78,23 @@ class Pong(object):
         self.ball_x += self.velocity_x
         self.ball_y += self.velocity_y
 
-        # Handle the bouncing of the ball
-        self.handle_bounce()
+        # Handle the bouncing of the ball and determine the agent's reward
+        reward = self.handle_bounce()
 
         # Update the agent's parameters if it's being trained
         if is_training:
             new_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
-            self.agent.updateAction(cur_state_tuple, action, new_state_tuple)
+            self.agent.updateAction(cur_state_tuple, action, reward, new_state_tuple)
+
+        return reward
 
 
     """
     The handle_bounce function handles the bouncing of the ball off of the walls and paddle.
+
+    Returns the reward associated with this time step.  This is 1 if the ball bounces
+    off of the paddle, -1 if the ball leaves the screen, or 0 if neither of the former
+    two scenariors occurs.
     """
     def handle_bounce(self):
         # Handles bouncing off the walls
@@ -100,20 +109,25 @@ class Pong(object):
             self.velocity_x *= -1
 
         # Handles bouncing off the paddle
-        if self.ball_x > RIGHT_WALL_X and (self.ball_y >= self.paddle_y and self.ball_y <= (self.paddle_y + PADDLE_HEIGHT)):
-            self.ball_x = 2 - self.ball_x
+        if self.ball_x > RIGHT_WALL_X:
+            if (self.ball_y >= self.paddle_y and self.ball_y <= (self.paddle_y + PADDLE_HEIGHT)):
+                self.ball_x = 2 - self.ball_x
 
-            candidate_velocity_x = self.velocity_x - np.random.uniform(low=-0.015, high=0.015)
-            self.velocity_x = -1*np.min(np.max(candidate_velocity_x, 0.03), 1)
+                candidate_velocity_x = self.velocity_x - np.random.uniform(low=-0.015, high=0.015)
+                self.velocity_x = -1*np.min(np.max(candidate_velocity_x, 0.03), 1)
 
-            candidate_velocity_y = self.velocity_y + np.random.uniform(low=-0.03, high=0.03)
-            sign = 1
-            if candidate_velocity_y < 0:
-                sign = -1
+                candidate_velocity_y = self.velocity_y + np.random.uniform(low=-0.03, high=0.03)
+                sign = 1
+                if candidate_velocity_y < 0:
+                    sign = -1
 
-            self.velocity_y = sign*np.min(abs(candidate_velocity_y), 1)
+                self.velocity_y = sign*np.min(abs(candidate_velocity_y), 1)
 
-            self.bounce_count += 1
+                return 1
+            else:
+                return -1
+        else:
+            return 0
 
 
     """
@@ -124,25 +138,15 @@ class Pong(object):
     or False if these games are for testing the agent.
     """
     def run_multiple_games(self, num_games, is_training):
-        num_bounces = np.zeros(num_games)
+        total_game_rewards = np.zeros(num_games)
 
         for i in range(num_games):
             while not self.game_is_over():
-                self.update_time_step(is_training)
-
-            num_bounces[i] = self.bounce_count
-
-            # Get the action of the agent
-            cur_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
-
-            # Update the agent's parameters if it's being trained
-            if is_training:
-                new_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
-                self.agent.updateAction(cur_state_tuple, action, new_state_tuple)
+                total_game_rewards[i] += self.update_time_step(is_training)
 
             self.reset_game()
 
-        return num_bounces - np.ones(num_games)
+        return total_game_rewards
 
     """
     The game_is_over function checks if the ball has left the screen and therefore,
@@ -177,8 +181,6 @@ class Pong(object):
         self.velocity_x = velocity_x
         self.velocity_y = velocity_y
         self.paddle_y = paddle_y
-
-        self.bounce_count = 0
 
 
     """
