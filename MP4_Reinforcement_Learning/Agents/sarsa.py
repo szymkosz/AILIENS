@@ -61,7 +61,7 @@ class sarsa(Agent):
 			# If the SARSA agent is being trained, then its next action
 			# a = self.cur_action.
 			action = self.cur_action
-			self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][action]
+			self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][action] += 1
 		else:
 			# This is how actions are determined outside of training.  The action
 			# is computed as argmax(Q(s,a')) over all actions a'.

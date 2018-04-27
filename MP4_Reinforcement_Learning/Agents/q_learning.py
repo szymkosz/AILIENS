@@ -62,7 +62,7 @@ class q_learning(Agent):
 			print(discrete_state)
 			print(self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]])
 			action = np.argmax(helper.exploration_function(q_values, counts_Nsa, self.exploration_threshold))
-			self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][action]
+			self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][action] += 1
 		else:
 			# This is how actions are determined outside of training.  The action
 			# is computed as argmax(Q(s,a')) over all actions a'.
