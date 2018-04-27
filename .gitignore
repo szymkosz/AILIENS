@@ -4,6 +4,10 @@ __pycache__/
 MP3_Pattern_Recognition/*.pdf
 MP3_Pattern_Recognition/neural-networks-and-deep-learning-master.zip
 *.html
+MP3_Pattern_Recognition/*.pyc
+MP3_Pattern_Recognition/.DS_Store
+MP3_Pattern_Recognition/Data/.DS_Store
+
 
 MP1_Search/koszarek_szymon_a1.pdf
 MP1_Search/koszarek_szymon_a1.zip
