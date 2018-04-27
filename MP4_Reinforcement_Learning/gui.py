@@ -8,18 +8,21 @@ import loader
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
+blue = (0, 0, 255)
 
 gameDisplay = None
 x_paddle = 510
+x_agent2_paddle = 10
 old_y_paddle = 210
+old_y_agent2_paddle = 210
 old_x_ball = 260
 old_y_ball = 260
 radius = 10
 
-def pong_gui():
+def pong_gui(agent1, agent2):
 	global gameDisplay
 	gui_init()
-	dataset = loader.parser("Data/expert_policy.txt")[0]
+	# dataset = loader.parser("Data/expert_policy.txt")[0]
 	# game loop
 	for i in range(dataset.shape[0]):
 		update_display(dataset[i,:])
@@ -38,13 +41,19 @@ def gui_init():
 	pygame.display.init()
 	gameDisplay = pygame.display.set_mode((520, 520))
 	pygame.display.set_caption('Pong')
-	# draw board
+
+	# draw walls and display
 	gameDisplay.fill(white)
-	pygame.draw.rect(gameDisplay, black, [0, 0, 10, 520])	# left wall
+	if(agent2 == None):
+		pygame.draw.rect(gameDisplay, black, [0, 0, 10, 520])	# left wall
 	pygame.draw.rect(gameDisplay, black, [0, 0, 520, 10])	# top wall
 	pygame.draw.rect(gameDisplay, black, [0, 510, 520, 10]) # bottom wall
+
 	# draw paddle
 	move_paddle(210)
+	if(agent2 != None)
+		move_agent2_paddle(210)
+
 	# draw ball
 	old_x_ball = 260
 	old_y_ball = 260
@@ -55,20 +64,33 @@ def update_display(pong_state):
 	ball_x = int(pong_state[0]*500 + 10)
 	ball_y = int(pong_state[1]*500 + 10)
 	paddle_y = int(pong_state[4]*500 + 10)
-	# move_ball
-	move_ball(ball_x, ball_y)
-	# move_paddle
-	move_paddle(paddle_y)
-	pygame.draw.rect(gameDisplay, black, [0, 0, 10, 520])	# left wall
+
+	# refresh walls
+	if(agent2 == None):
+		pygame.draw.rect(gameDisplay, black, [0, 0, 10, 520])	# left wall
 	pygame.draw.rect(gameDisplay, black, [0, 0, 520, 10])	# top wall
 	pygame.draw.rect(gameDisplay, black, [0, 510, 520, 10]) # bottom wall
+
+	# move_paddle
+	move_paddle(paddle_y)
+	if(agent2 != None):
+		move_agent2_paddle(agent2_paddle_y)
 	pygame.display.update()
 
+	# move_ball
+	move_ball(ball_x, ball_y)
+	
 def move_paddle(y_coord):
 	global gameDisplay, old_y_paddle
 	pygame.draw.rect(gameDisplay, white, [x_paddle, old_y_paddle, 10, 100]) # clear old paddle
 	pygame.draw.rect(gameDisplay, black, [x_paddle, y_coord, 10, 100]) # draw new paddle
 	old_y_paddle = y_coord
+	pygame.display.update()
+
+def move_agent2_paddle(y_coord):
+	pygame.draw.rect(gameDisplay, white, [x_agent2_paddle, old_y_agent2_paddle, 10, 100]) # clear old paddle
+	pygame.draw.rect(gameDisplay, blue, [x_agent2_paddle, y_coord, 10, 100]) # draw new paddle
+	old_y_agent2_paddle = y_coord
 	pygame.display.update()
 
 def move_ball(x_coord, y_coord):
@@ -79,4 +101,4 @@ def move_ball(x_coord, y_coord):
 	old_y_ball = y_coord
 	pygame.display.update()
 
-pong_gui()
+pong_gui(agent1, agent2)
