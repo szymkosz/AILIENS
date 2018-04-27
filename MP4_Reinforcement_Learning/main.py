@@ -117,6 +117,19 @@ INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 0)
 INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 2)
 """
 
+# Learning-rate-constant: 1.0
+# Discount factor: .80
+# exploration_threshold: 5
+# Training games: 100,000
+
+# MAXIMUM REWARD COUNT: 70.0
+# MAXIMUM REWARD COUNT: 31.0
+# Average number of bounces on test games: 8.47
+
+## Mean rewards increases to around 6.24189898989899 by the end of the 100,000
+##     games while standard deviation increases to around 5.800399675353187.
+
+
 # Learning-rate-constant: 10
 # Discount factor: .80
 # exploration_threshold: 10
