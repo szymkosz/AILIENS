@@ -73,3 +73,25 @@ dW = np.array([
 
 db = np.array(
 [1.95932039035, 1.23281649231, -0.987088190651, 3.23339351812])
+
+def Affine_Forward(A, W, b):
+    Z = np.dot(A, W) + b.T
+    acache = (A, W, b)
+    return (Z, acache)
+
+print(np.allclose(Affine_Forward(A,W,b)[0], Z))
+
+def Affine_Backward(dZ, cache):
+    A = cache[0]
+    W = cache[1]
+    b = cache[2]
+
+    dA = np.dot(dZ, W.T)
+    dW = np.dot(A.T, dZ)
+    db = np.sum(dZ, axis=0)
+    return (dA, dW, db)
+
+ret = Affine_Backward(dZ, (A, W, b))
+print(np.allclose(ret[0], dA))
+print(np.allclose(ret[1], dW))
+print(np.allclose(ret[2], db))
