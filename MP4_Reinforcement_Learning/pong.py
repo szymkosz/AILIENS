@@ -193,6 +193,15 @@ class Pong(object):
 
 
     """
+    The get_state function returns a 5-tuple of the attributes of the game's state.
+
+    This function is used to update the GUI in each time step.
+    """
+    def get_state():
+        return (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
+
+
+    """
     This returns a string representation of the game in the form
     "Agent: <self.agent.name>  State: <(self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)>".
     """
