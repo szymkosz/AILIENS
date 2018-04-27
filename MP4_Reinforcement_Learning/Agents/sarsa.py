@@ -9,7 +9,7 @@ NAME = "SARSA"
 
 class sarsa(Agent):
 	def __init__(self, learning_rate_constant=1.0, discount_factor=.70, exploration_threshold=3, playerNum=1):
-		np.random.seed(6386)
+		#np.random.seed(6386)
 		# super(self).__init__(game, playerNum)
 		super().__init__(NAME, playerNum)
 
@@ -38,7 +38,7 @@ class sarsa(Agent):
 		self.terminal_q_value = -1
 
 		# This is the predetermined action a to use at each time step during training.
-		self.cur_action = np.random.randint(3)
+		self.cur_action = 2 # np.random.randint(3)
 
 		# These are the 3 training parameters that are varied for experimentation purposes.
 		self.learning_rate_constant = learning_rate_constant
@@ -92,7 +92,9 @@ class sarsa(Agent):
 		   a' = argmax{over actions a' from s'}(f(Q(s',a'), N(s',a')) )
 		   then lookup Q(s',a') in the self.q_values table.
 		3. Perform the TD update (See lecture slides)
-		4. If s' is the terminal state, randomly set self.cur_action on the interval [0,2].
+		4. If s' is the terminal state, set self.cur_action = 2 to always move down initially
+		   at the beginning of every game.
+		   ##If s' is the terminal state, randomly set self.cur_action on the interval [0,2].
 
 		   Otherwise, store a' as a for the next time step:
 		   a <- a'
@@ -123,10 +125,12 @@ class sarsa(Agent):
 		Q_sa = self.q_values[d_s[0]][d_s[1]][d_s[2]][d_s[3]][d_s[4]][a]
 		self.q_values[d_s[0]][d_s[1]][d_s[2]][d_s[3]][d_s[4]][a] = Q_sa + alpha * (reward + self.discount_factor*Q_s_prime_a_prime - Q_sa)
 
-		# If s' is the terminal state, pick a random action to start off the next game.
+		# If s' is the terminal state, set self.cur_action = 2 to always move down initially
+		# at the beginning of every game.
+		### If s' is the terminal state, pick a random action to start off the next game.
 		# Otherwise, store the computed a' as a for the next time step.
-		if a_prime is None:
-			self.cur_action = np.random.randint(3)
+		if d_s_prime == -1:
+			self.cur_action = 2 # np.random.randint(3)
 		else:
 			self.cur_action = a_prime
 

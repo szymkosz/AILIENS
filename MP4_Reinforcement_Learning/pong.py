@@ -114,14 +114,14 @@ class Pong(object):
                 self.ball_x = 2 - self.ball_x
 
                 candidate_velocity_x = self.velocity_x - np.random.uniform(low=-0.015, high=0.015)
-                self.velocity_x = -1*np.min(np.max(candidate_velocity_x, 0.03), 1)
+                self.velocity_x = -1*min(max(candidate_velocity_x, 0.03), 1)
 
                 candidate_velocity_y = self.velocity_y + np.random.uniform(low=-0.03, high=0.03)
                 sign = 1
                 if candidate_velocity_y < 0:
                     sign = -1
 
-                self.velocity_y = sign*np.min(abs(candidate_velocity_y), 1)
+                self.velocity_y = sign*min(abs(candidate_velocity_y), 1)
 
                 return 1
             else:
@@ -144,7 +144,16 @@ class Pong(object):
             while not self.game_is_over():
                 total_game_rewards[i] += self.update_time_step(is_training)
 
+            if i is not 0 and i % 1000 == 0:
+                print("END OF GAME " + str(i))
+                print("Rewards: " + str(total_game_rewards[i]))
+                print("Mean rewards so far: " + str(np.mean(total_game_rewards[0:i])))
+                print("Standard deviation so far: " + str(np.std(total_game_rewards[0:i])))
+                print("")
+
             self.reset_game()
+
+        print("MAXIMUM REWARD COUNT: " + str(np.amax(total_game_rewards)))
 
         return total_game_rewards
 

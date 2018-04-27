@@ -48,7 +48,7 @@ class q_learning(Agent):
     do nothing.
     """
 	def getAction(self, is_training, cur_state_tuple):
-		print(cur_state_tuple)
+		#print(cur_state_tuple)
 		discrete_state = helper.get_discrete_state(cur_state_tuple)
 		assert discrete_state is not -1, "ERROR: discrete_state should not be a terminal state!"
 
@@ -59,8 +59,6 @@ class q_learning(Agent):
 			# a = argmax{over all actions a'}( f(Q(s,a'), N(s,a')) ).
 			counts_Nsa = self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]]
 
-			print(discrete_state)
-			print(self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]])
 			action = np.argmax(helper.exploration_function(q_values, counts_Nsa, self.exploration_threshold))
 			self.counts_Nsa[discrete_state[0]][discrete_state[1]][discrete_state[2]][discrete_state[3]][discrete_state[4]][action] += 1
 		else:

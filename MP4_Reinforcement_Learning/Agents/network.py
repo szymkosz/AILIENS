@@ -31,7 +31,7 @@ NUM_UNITS_IN_LAST_LAYER = 3
 
 
 class network(Agent):
-    def __init__(self, num_layers=4, num_units_per_layer=256, learning_rate=0.1, weight_scale_parameter=1.0):
+    def __init__(self, num_layers=4, num_units_per_layer=256, learning_rate=0.1, weight_scale_parameter=(1.0/256)):
         np.random.seed(7383)
 
         # Save the number of layers, number of units per layer (except the last layer, which is 3 units)
@@ -120,46 +120,63 @@ class network(Agent):
     def MinibatchGD(self, data, epochs=300, mini_batch_size=128):
         np.random.seed(3489)
 
+        # Extract the training dataset and labels and scale the dataset
         training_dataset = data[0]
+        scaled_dataset = scale_dataset(training_dataset)
         training_labels = data[1]
-        n = training_dataset.shape[0]
 
+        # Identify the number of training vectors and compute the nubmer of mini-batches
+        n = training_dataset.shape[0]
+        num_mini_batches = ceil(n/mini_batch_size)
+
+        # Initialize the vectors of average loss and accuracy
+        # over training dataset within each epoch
         losses = np.zeros(epochs)
         accuracies = np.zeros(epochs)
         final_assigned_labels = None
 
+        # Train the neural network over multiple epochs
         for i in range(epochs):
+            # Shuffle the training data by making a vector of
+            # row indices of training vectors and shuffling it
             row_indices = np.arange(n)
             np.random.shuffle(row_indices)
 
             total_loss = 0
 
-            for j in range(n/mini_batch_size):
-                mini_batch_row_indices = row_indices[(j*mini_batch_size):((j+1)*mini_batch_size)]
+            for j in range(num_mini_batches):
+                # Extract the indices of the training vectors of this mini-batch
+                beginning_index = (j*mini_batch_size)
+                ending_index = min((j+1)*mini_batch_size, n)
+                mini_batch_row_indices = row_indices[beginning_index:ending_index]
 
-                X = training_dataset[mini_batch_row_indices, :]
+                # Extract the training vectors of this mini-batch and their
+                # labels and propagate them through the network for training
+                X = scaled_dataset[mini_batch_row_indices, :]
                 y = training_labels[mini_batch_row_indices]
                 total_loss += self.classify_or_train(X, y, False)
 
-            # TODO: Verify the loss and accuracy computations for the plots
-            losses[i] = total_loss
+            # Compute and store the average loss for this epoch
+            losses[i] = total_loss/num_mini_batches
 
+            # Compute and store the accuracy over the training dataset for this epoch
             assigned_labels = self.classify_or_train(training_dataset, None, True)
+            accuracies[i] = helper.compute_overall_accuracy(training_labels, assigned_labels)
 
+            # If this is the last epoch, store assigned_labels in
+            # final_assigned_labels to compute the confusion matrix
             if i == (epochs - 1):
                 final_assigned_labels = assigned_labels
 
-            accuracies[i] = helper.compute_overall_accuracy(training_labels, assigned_labels)
-
+        # Compute and print out the confusion matrix
         confusion_matrix = helper.compute_confusion_matrix(training_labels, final_assigned_labels, numClasses=3)
         print("Confusion Matrix:\n\n" + str(confusion_matrix) + "\n")
         print("Final Overall Accuracy on Training Dataset: " + str(accuracies[epochs-1]))
 
-        # TODO: Make the plots of loss and accuracy Vs. training epoch
+        # Make the plot of losses over each epoch
         loss_xCoordinates = np.arange(len(losses))
         loss_yCoordinates = losses
 
-        # TODO: MAKE LOSS PLOT HERE!
         fig_loss, ax_loss = plt.subplots(figsize = (10, 10))
         ax_loss.title.set_text('Loss Plot')
         ax_loss.set_xlabel('Loss')
@@ -167,10 +184,10 @@ class network(Agent):
         plt_loss.plot(loss_xCoordinates, loss_yCoordinates)
         plt_loss.show()
 
+        # Make the plot of accuracies over each epoch
         accuracy_xCoordinates = np.arange(len(accuracies))
         accuracy_yCoordinates = accuracies
 
-        # TODO: MAKE ACCURACY PLOT HERE!
         fig_accuracy, ax_accuracy = plt.subplots(figsize = (10, 10))
         ax_accuracy.title.set_text('Accuracy Plot')
         ax_accuracy.set_xlabel('Accuracy')
@@ -178,10 +195,12 @@ class network(Agent):
         plt_accuracy.plot(accuracy_xCoordinates, accuracy_yCoordinates)
         plt_accuracy.show()
 
+
 def Affine_Forward(A, W, b):
     Z = np.dot(A, W) + b.T
     acache = (A, W, b)
     return (Z, acache)
+
 
 def Affine_Backward(dZ, cache):
     A = cache[0]
@@ -193,22 +212,47 @@ def Affine_Backward(dZ, cache):
     db = np.sum(dZ, axis=0)
     return (dA, dW, db)
 
+
 def ReLU_Forward(Z):
     A = np.maximum(Z, 0, Z)
     rcache = Z
     return (A, rcache)
 
+
 def ReLU_Backward(dA, cache):
     dZ = np.where(cache < 0, np.zeros(cache.size), dA)
     return dZ
 
+
 def Cross_Entropy(F, y):
-    pass
+    n = F.shape[0]
+
+    # Compute the loss one operation at a time
+    F_by_true_action_per_row = F[:,y]
+    exp_F = np.exp(F)
+    row_sum_exp_F = np.sum(exp_F, axis=1)
+    log_row_sum_exp_F = np.log(row_sum_exp_F)
+
+    loss = -1*(np.sum(F_by_true_action_per_row - log_row_sum_exp_F))/n
+
+    # Set up the indicator matrix for computing dF
+    indicator_matrix = np.zeros(F.shape)
+    indicator_matrix[:,y] = 1.0
+
+    dF = -1*(indicator_matrix - (exp_F/row_sum_exp_F))/n
+    return (loss, dF)
 
 
 def gradient_checking():
     pass
 
+
+"""
+The scale_dataset function scales the training dataset.  It takes in the
+n x 5 state matrix where n is the number of states in the training dataset
+and each row represents a state.  It takes each column, subtracts its mean,
+then divides by the standard deviation.
+"""
 def scale_dataset(states):
     (num_rows, num_columns) = states.shape
     scaled_states = np.zeros(states.shape)

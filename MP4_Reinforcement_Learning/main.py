@@ -55,8 +55,51 @@ from Agents.network import network
 
 # CONSTANTS
 NUM_TEST_GAMES = 200
-NUM_EPISODES_BETWEEN_POINTS = 1000
+NUM_EPISODES_BETWEEN_POINTS = 1
 EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
+
+"""
+Q-LEARNING
+"""
+
+# Learning-rate-constant: 1.0
+# Discount factor: .80
+# exploration_threshold: 3
+# Training games: 100,000
+
+# Average number of bounces on test games: 5.25
+
+
+# Learning-rate-constant: 1.0
+# Discount factor: .80
+# exploration_threshold: 5
+# Training games: 100,000
+
+# Average number of bounces on test games: 5.505
+
+
+# Learning-rate-constant: 10
+# Discount factor: .80
+# exploration_threshold: 10
+# Training games: 100,000
+
+# Average number of bounces on test games: 12.98
+## Mean rewards increases to around 9.008483870967742 after approximately 31,000 games
+##     while standard deviation increases to around 9.263404879385186.
+## At the end of the 100,000 games, the mean rewards is around 11.193050505050506
+##     and the standard deviation is around 9.70943954875793
+
+
+"""
+SARSA
+
+NOTE: The initial action is hard-coded to always move down.
+"""
+
+# Learning-rate-constant: 10
+# Discount factor: .80
+# exploration_threshold: 10
+# Training games: 100,000
 
 
 if __name__ == "__main__":
@@ -64,13 +107,11 @@ if __name__ == "__main__":
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
             game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])))
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
-            """
             helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
 
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
-            """
         elif sys.argv[2].lower() == "sarsa":
             game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])))
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
