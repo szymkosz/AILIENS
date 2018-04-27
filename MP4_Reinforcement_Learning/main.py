@@ -93,7 +93,11 @@ Q-LEARNING
 """
 SARSA
 
-NOTE: The initial action is hard-coded to always move down.
+NOTE: The initial action is hard-coded to always move down. (action = 2)
+"""
+
+"""
+INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 0)
 """
 
 # Learning-rate-constant: 10
@@ -101,6 +105,29 @@ NOTE: The initial action is hard-coded to always move down.
 # exploration_threshold: 10
 # Training games: 100,000
 
+# MAXIMUM REWARD COUNT OVER TRAINING GAMES: 57.0
+# MAXIMUM REWARD COUNT OVER TEST GAMES: 28.0
+# Average number of bounces on test games: 8.24
+
+## Mean rewards increases to around 6.102525252525252 by the end of the 100,000
+##     games while standard deviation increases to around 5.454864725972152.
+
+
+"""
+INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 2)
+"""
+
+# Learning-rate-constant: 10
+# Discount factor: .80
+# exploration_threshold: 10
+# Training games: 100,000
+
+# MAXIMUM REWARD COUNT OVER TRAINING GAMES: 77.0
+# MAXIMUM REWARD COUNT OVER TEST GAMES: 51.0
+# Average number of bounces on test games: 9.875
+
+## Mean rewards increases to around 7.524818181818182 by the end of the 100,000
+##     games while standard deviation increases to around 6.492778445060258.
 
 if __name__ == "__main__":
     if sys.argv[1].lower() == "part1":
