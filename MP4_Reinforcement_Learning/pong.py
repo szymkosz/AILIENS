@@ -62,17 +62,17 @@ class Pong(object):
         if action == 2:
             self.paddle_y += 0.04
 
-            # Reset the paddle position if the paddle
-            # tries to move off the top of the screen
-            if self.paddle_y < 0:
-                self.paddle_y = 0
-        elif action == 0:
-            self.paddle_y -= 0.04
-
             # Reset the paddle position if the paddle tries
             # to move off the bottom of the screen
             if (self.paddle_y + PADDLE_HEIGHT) > 1:
                 self.paddle_y = (1 - PADDLE_HEIGHT)
+        elif action == 0:
+            self.paddle_y -= 0.04
+
+            # Reset the paddle position if the paddle
+            # tries to move off the top of the screen
+            if self.paddle_y < 0:
+                self.paddle_y = 0
 
         # Update the ball's position
         self.ball_x += self.velocity_x
