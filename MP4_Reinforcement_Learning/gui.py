@@ -19,10 +19,26 @@ old_x_ball = 260
 old_y_ball = 260
 radius = 10
 
-def pong_gui(agent1, agent2):
+def pong_gui(game, agent1, agent2 = None):
+	global gameDisplay
+	gui_init(agent2)
+	# game loop
+	while not game.game_is_over():
+		game.update_time_step(False)
+		update_display(game.get_state())
+		# wait() so it is visible to human eye
+		time.sleep(.03)
+		
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			pygame.display.quit()
+			pygame.quit()
+			quit()
+
+def pong_expert_gui():
 	global gameDisplay
 	gui_init()
-	# dataset = loader.parser("Data/expert_policy.txt")[0]
+	dataset = loader.parser("Data/expert_policy.txt")[0]
 	# game loop
 	for i in range(dataset.shape[0]):
 		update_display(dataset[i,:])
@@ -34,9 +50,8 @@ def pong_gui(agent1, agent2):
 				pygame.quit()
 				quit()
 
-def gui_init():
+def gui_init(agent2 = None):
 	global gameDisplay
-	# game = Pong()
 	pygame.init()
 	pygame.display.init()
 	gameDisplay = pygame.display.set_mode((520, 520))
@@ -51,7 +66,7 @@ def gui_init():
 
 	# draw paddle
 	move_paddle(210)
-	if(agent2 != None)
+	if(agent2 != None):
 		move_agent2_paddle(210)
 
 	# draw ball
@@ -59,11 +74,13 @@ def gui_init():
 	old_y_ball = 260
 	move_ball(260, 260)
 
-def update_display(pong_state):
+def update_display(pong_state, agent2 = None):
 	# map the pong_state location to screen_location (multiply by 500 then add 10?)
 	ball_x = int(pong_state[0]*500 + 10)
 	ball_y = int(pong_state[1]*500 + 10)
 	paddle_y = int(pong_state[4]*500 + 10)
+	if(agent2 != None):
+		agent2_paddle_y = int(pong_state[5]*500 + 10)
 
 	# refresh walls
 	if(agent2 == None):
@@ -101,4 +118,4 @@ def move_ball(x_coord, y_coord):
 	old_y_ball = y_coord
 	pygame.display.update()
 
-pong_gui(agent1, agent2)
+pong_gui(game, agent1, agent2)
