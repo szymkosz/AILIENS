@@ -39,6 +39,17 @@ where:
                               [0,weight_scale_parameter).
 <epochs>                    = The number of epochs to run during the training phase
 <mini_batch_size>           = The number of training vectors to use in each mini-batch
+
+
+
+
+
+python main.py <gui> <agent1> <agent2>
+
+1. Create Pong game object
+2. Set up both agents
+3. Create GUI
+4. Start game
 -------------------------------------------------------------------------------
 """
 
@@ -57,6 +68,8 @@ from Agents.network import network
 NUM_TEST_GAMES = 200
 NUM_EPISODES_BETWEEN_POINTS = 1
 EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
+
+# .003906
 
 """
 Q-LEARNING
@@ -92,8 +105,6 @@ Q-LEARNING
 
 """
 SARSA
-
-NOTE: The initial action is hard-coded to always move down. (action = 2)
 """
 
 """
@@ -116,19 +127,6 @@ INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 0)
 """
 INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 2)
 """
-
-# Learning-rate-constant: 1.0
-# Discount factor: .80
-# exploration_threshold: 5
-# Training games: 100,000
-
-# MAXIMUM REWARD COUNT: 70.0
-# MAXIMUM REWARD COUNT: 31.0
-# Average number of bounces on test games: 8.47
-
-## Mean rewards increases to around 6.24189898989899 by the end of the 100,000
-##     games while standard deviation increases to around 5.800399675353187.
-
 
 # Learning-rate-constant: 10
 # Discount factor: .80
@@ -176,6 +174,8 @@ if __name__ == "__main__":
         test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
         num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
         print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+    elif sys.argv[1].lower() == "gui":
+        pass
     else:
         sys.exit("INVALID ARGUMENT ERROR: The first argument must be \"part1\" or \"part2\" (ignoring case)!")
 # if __name__ == "__main__":

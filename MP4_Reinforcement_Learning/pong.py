@@ -59,21 +59,21 @@ class Pong(object):
         # Get player 1's action and update player 1's paddle
         if self.agent.name.lower() == "human":
             action = self.agent.getAction()
-            self.paddle_y = move_paddle(True, self.paddle_y, action)
+            self.paddle_y = self.move_paddle(True, self.paddle_y, action)
         else:
             cur_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
             action = self.agent.getAction(is_training, cur_state_tuple)
-            self.paddle_y = move_paddle(False, self.paddle_y, action)
+            self.paddle_y = self.move_paddle(False, self.paddle_y, action)
 
         # If there is a second player, get player 2's action and update player 2's paddle
         if agent2 is not None:
             if self.agent2.name.lower() == "human":
                 action = self.agent2.getAction()
-                self.paddle2_y = move_paddle(True, self.paddle2_y, action)
+                self.paddle2_y = self.move_paddle(True, self.paddle2_y, action)
             else:
                 cur_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle2_y)
                 action = self.agent2.getAction(is_training, cur_state_tuple)
-                self.paddle2_y = move_paddle(False, self.paddle2_y, action)
+                self.paddle2_y = self.move_paddle(False, self.paddle2_y, action)
 
         # Update the ball's position
         self.ball_x += self.velocity_x
@@ -90,7 +90,7 @@ class Pong(object):
         return reward
 
 
-    def move_paddle(isHuman, initial_paddle_y, action):
+    def move_paddle(self, isHuman, initial_paddle_y, action):
         # Determine the paddle's new y-coordinate
         paddle_y = initial_paddle_y
         if isHuman:

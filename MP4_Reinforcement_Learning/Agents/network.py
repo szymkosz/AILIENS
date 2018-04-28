@@ -17,6 +17,7 @@ MISCELLANEOUS:
 
 
 # Import the necessary libraries
+#from agent import Agent
 from Agents.agent import Agent
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,6 +25,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('..')
 import helper
+#sys.path.append('../Data')
 
 # CONSTANTS
 NUM_STATE_ATTRIBUTES = 5
@@ -40,9 +42,9 @@ class network(Agent):
         self.learning_rate = learning_rate
 
         # Randomly initialize weight matrices with a uniform distribution multiplied by a scaling factor
-        self.weights = [weight_scale_parameter * np.random.rand((NUM_STATE_ATTRIBUTES, num_units_per_layer))]
-        self.weights += [(weight_scale_parameter * np.random.rand((num_units_per_layer, num_units_per_layer))) for i in range(num_layers-2)]
-        self.weights.append( (weight_scale_parameter * np.random.rand((num_units_per_layer, NUM_UNITS_IN_LAST_LAYER))) )
+        self.weights = [weight_scale_parameter * np.random.rand(NUM_STATE_ATTRIBUTES, num_units_per_layer)]
+        self.weights += [(weight_scale_parameter * np.random.rand(num_units_per_layer, num_units_per_layer)) for i in range(num_layers-2)]
+        self.weights.append( (weight_scale_parameter * np.random.rand(num_units_per_layer, NUM_UNITS_IN_LAST_LAYER)) )
 
         # Initialize bias vectors to zero
         self.biases = [np.zeros(num_units_per_layer) for i in range(num_layers-1)]
@@ -56,7 +58,7 @@ class network(Agent):
     # Handle feedforward
     def feedforward(self, X):
         # TODO: Check if this function would break if X was a 1D 5-dimensional vector
-        A = mini_batch
+        A = X
         F = None
         for i in range(self.num_layers):
             W = self.weights[i]
@@ -127,7 +129,7 @@ class network(Agent):
 
         # Identify the number of training vectors and compute the nubmer of mini-batches
         n = training_dataset.shape[0]
-        num_mini_batches = ceil(n/mini_batch_size)
+        num_mini_batches = int(np.ceil(n/mini_batch_size))
 
         # Initialize the vectors of average loss and accuracy
         # over training dataset within each epoch
@@ -214,13 +216,13 @@ def Affine_Backward(dZ, cache):
 
 
 def ReLU_Forward(Z):
-    A = np.maximum(Z, 0, Z)
+    A = np.maximum(Z, 0)
     rcache = Z
     return (A, rcache)
 
 
 def ReLU_Backward(dA, cache):
-    dZ = np.where(cache < 0, np.zeros(cache.size), dA)
+    dZ = np.where(cache < 0, np.zeros(cache.shape), dA)
     return dZ
 
 
@@ -228,7 +230,7 @@ def Cross_Entropy(F, y):
     n = F.shape[0]
 
     # Compute the loss one operation at a time
-    F_by_true_action_per_row = F[:,y]
+    F_by_true_action_per_row = F[np.arange(F.shape[0]), y]
     exp_F = np.exp(F)
     row_sum_exp_F = np.sum(exp_F, axis=1)
     log_row_sum_exp_F = np.log(row_sum_exp_F)
@@ -237,14 +239,10 @@ def Cross_Entropy(F, y):
 
     # Set up the indicator matrix for computing dF
     indicator_matrix = np.zeros(F.shape)
-    indicator_matrix[:,y] = 1.0
+    indicator_matrix[np.arange(indicator_matrix.shape[0]), y] = 1.0
 
-    dF = -1*(indicator_matrix - (exp_F/row_sum_exp_F))/n
+    dF = -1*(indicator_matrix - np.divide(exp_F.T, row_sum_exp_F).T)/n
     return (loss, dF)
-
-
-def gradient_checking():
-    pass
 
 
 """
@@ -263,3 +261,35 @@ def scale_dataset(states):
         scaled_states[:, col_index] = (states[:, col_index] - col_mean)/col_stdev
 
     return scaled_states
+
+
+
+
+"""
+from Data import affine
+from Data import relu
+from Data import entropy
+
+affine_Z_result, affine_acache = Affine_Forward(affine.A,affine.W,affine.b)
+print("Affine_Forward Z result:\n\n")
+print(np.allclose(affine_Z_result, affine.Z))
+
+relu_A_result, relu_rcache = ReLU_Forward(affine_Z_result)
+print("Relu_Forward A result:\n\n")
+print(np.allclose(relu_A_result, relu.A))
+
+loss_result, dF_result = Cross_Entropy(entropy.F, entropy.y)
+print("Entropy results:\n\n")
+print(np.allclose(loss_result, entropy.L))
+print(np.allclose(dF_result, entropy.dF))
+
+dZ_result = ReLU_Backward(relu.dA, relu_rcache)
+print("ReLU_Backward A result:\n\n")
+print(np.allclose(dZ_result, relu.dZ))
+
+dA_result, dW_result, db_result = Affine_Backward(affine.dZ, affine_acache)
+print("ReLU_Backward A result:\n\n")
+print(np.allclose(dA_result, affine.dA))
+print(np.allclose(dW_result, affine.dW))
+print(np.allclose(db_result, affine.db))
+"""
