@@ -47,3 +47,18 @@ dZ = np.array([
 [0.0, 0.0, 0.0, 0.0],
 [0.460244059034, -0.376110009041, -0.203557875568, -0.0],
 [-0.627613988239, 0.0, 0.0, -0.0]])
+
+def ReLU_Forward(Z):
+    A = np.maximum(Z, 0)
+    rcache = Z
+    return (A, rcache)
+
+def ReLU_Backward(dA, cache):
+    dZ = np.where(cache < 0, np.zeros(cache.shape), dA)
+    return dZ
+
+forward_ret = ReLU_Forward(Z)
+print(np.allclose(forward_ret[0], A))
+
+backward_ret = ReLU_Backward(dA, Z)
+print(np.allclose(backward_ret, dZ))
