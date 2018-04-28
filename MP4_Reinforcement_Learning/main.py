@@ -144,10 +144,11 @@ INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 2)
 
 if __name__ == "__main__":
     if sys.argv[1].lower() == "part1":
+        params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
             game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])))
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
-            helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
+            helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
 
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
@@ -155,7 +156,7 @@ if __name__ == "__main__":
         elif sys.argv[2].lower() == "sarsa":
             game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])))
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
-            helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS)
+            helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
 
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))

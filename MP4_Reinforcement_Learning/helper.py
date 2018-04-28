@@ -128,7 +128,7 @@ num_episodes_between_points = 2, then the plotted data points are
 
 num_episodes_between_points is assumed to evenly divide len(rewards).
 """
-def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points):
+def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points, params):
     num_points = int(len(rewards)/num_episodes_between_points)
 
     x_coordinates = [num_episodes_between_points * (i+1) for i in range(num_points)]
@@ -141,7 +141,16 @@ def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points):
     ax.set_xlabel('Episodes')
     ax.set_ylabel('Mean Episode Rewards')
     plt.plot(x_coordinates, y_coordinates)
-    plt.show()
+    # plt.show()
+    file_name = formulate_file_name(params)
+
+    from matplotlib.backends.backend_pdf import PdfPages
+    with PdfPages(file_name) as pdf:
+        pdf.savefig()
+
+def formulate_file_name(params):
+    agent, lrc, discount_factor, exp_thresh = params
+    return "MeanEpisodeRvEp_" + agent.upper() + "__LRC_" + lrc + "__Discount_" + discount_factor + "__ExplrThr_" + exp_thresh + ".pdf"
 
 
 """
