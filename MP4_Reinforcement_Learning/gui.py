@@ -30,7 +30,7 @@ def pong_gui(game, agent1 = None, agent2 = None):
 			update_display(game.get_state())
 			# wait() so it is visible to human eye
 			time.sleep(.03)
-		
+
 		if event.type == pygame.QUIT:
 			pygame.display.quit()
 			pygame.quit()
