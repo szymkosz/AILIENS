@@ -132,9 +132,10 @@ class Pong(object):
         if self.ball_y > BOTTOM_WALL_Y:
             self.ball_y = 2 - self.ball_y
             self.velocity_y *= -1
-        if self.ball_x < LEFT_WALL_X:
-            self.ball_x *= -1
-            self.velocity_x *= -1
+        if agent2 is None:
+            if self.ball_x < LEFT_WALL_X:
+                self.ball_x *= -1
+                self.velocity_x *= -1
 
         # Handles bouncing off the right paddle
         if self.ball_x > RIGHT_WALL_X:
@@ -155,27 +156,31 @@ class Pong(object):
             else:
                 return -1
 
-        # Handles bouncing off the left paddle
-        if self.ball_x < LEFT_WALL_X:
-            if (self.ball_y >= self.paddle_y and self.ball_y <= (self.paddle_y + PADDLE_HEIGHT)):
-                self.ball_x = 2 + self.ball_x
-
-                candidate_velocity_x = self.velocity_x - np.random.uniform(low=-0.015, high=0.015)
-                self.velocity_x = min(max(candidate_velocity_x, 0.03), 1)
-
-                candidate_velocity_y = self.velocity_y + np.random.uniform(low=-0.03, high=0.03)
-                sign = 1
-                if candidate_velocity_y < 0:
-                    sign = -1
-
-                self.velocity_y = sign*min(abs(candidate_velocity_y), 1)
-
-                return 1
-            else:
-                return -1
-
         else:
             return 0
+
+        # Handles bouncing off the left paddle
+        if agent2 is not None:
+            if self.ball_x < LEFT_WALL_X:
+                if (self.ball_y >= self.paddle2_y and self.ball_y <= (self.paddle2_y + PADDLE_HEIGHT)):
+                    self.ball_x = 2 + self.ball_x
+
+                    candidate_velocity_x = self.velocity_x - np.random.uniform(low=-0.015, high=0.015)
+                    self.velocity_x = min(max(candidate_velocity_x, 0.03), 1)
+
+                    candidate_velocity_y = self.velocity_y + np.random.uniform(low=-0.03, high=0.03)
+                    sign = 1
+                    if candidate_velocity_y < 0:
+                        sign = -1
+
+                    self.velocity_y = sign*min(abs(candidate_velocity_y), 1)
+
+                    return 1
+                else:
+                    return -1
+
+            else:
+                return 0
 
 
     """
