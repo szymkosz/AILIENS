@@ -180,9 +180,6 @@ if __name__ == "__main__":
 
                 game.agent.save(fileName)
 
-            training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
-            helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
-
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
