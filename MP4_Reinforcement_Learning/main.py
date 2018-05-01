@@ -149,7 +149,7 @@ if __name__ == "__main__":
     """
     if sys.argv[1].lower() == "part1":
         params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
-        fileName = "Data/" + helper.formulate_file_name(params)
+        fileName = "Agents/Training_Data/" + helper.formulate_file_name(params)
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
             game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])))
             loaded = game.agent.load(fileName)
