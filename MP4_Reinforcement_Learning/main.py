@@ -58,11 +58,13 @@ import sys
 from loader import parser
 import numpy as np
 import helper
+import gui
 
 from pong import Pong
 from Agents.q_learning import q_learning
 from Agents.sarsa import sarsa
 from Agents.network import network
+from Agents.human import human
 
 # CONSTANTS
 NUM_TEST_GAMES = 200
@@ -142,8 +144,8 @@ INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 2)
 
 if __name__ == "__main__":
     if sys.argv[1].lower() == "part1":
-        params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
+            params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])))
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
             helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
@@ -152,6 +154,7 @@ if __name__ == "__main__":
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
         elif sys.argv[2].lower() == "sarsa":
+            params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])))
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
             helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
@@ -161,7 +164,7 @@ if __name__ == "__main__":
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
         elif sys.argv[2].lower() == "human":
             game = Pong(human())
-            pong_gui(game)
+            gui.pong_gui(game)
         else:
             sys.exit("INVALID ARGUMENT ERROR: The second argument must be \"q_learning\", \"q-learning\", \"sarsa\", or \"human\" (ignoring case)!")
     elif sys.argv[1].lower() == "part2":
@@ -177,20 +180,21 @@ if __name__ == "__main__":
         num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
         print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
     elif sys.argv[1].lower() == "gui":
-        if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
-            agent1 = q_learning();
-        elif sys.argv[2].lower() == "sarsa":
-            agent1 = sarsa();
+        pass
+        # if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
+        #     agent1 = q_learning();
+        # elif sys.argv[2].lower() == "sarsa":
+        #     agent1 = sarsa();
 
-        if sys.argv[3].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
-            agent2 = q_learning();
-        elif sys.argv[3].lower() == "sarsa":
-            agent2 = sarsa();
-        elif sys.argv[3].lower() == "human":
-            agent2 = human();
+        # if sys.argv[3].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
+        #     agent2 = q_learning();
+        # elif sys.argv[3].lower() == "sarsa":
+        #     agent2 = sarsa();
+        # elif sys.argv[3].lower() == "human":
+        #     agent2 = human();
 
-        game = Pong(agent1, agent2)
-        pong_gui(game, agent1, agent2)
+        # game = Pong(agent1, agent2)
+        # gui.pong_gui(game, agent1, agent2)
     else:
         sys.exit("INVALID ARGUMENT ERROR: The first argument must be \"part1\" or \"part2\" (ignoring case)!")
 # if __name__ == "__main__":
