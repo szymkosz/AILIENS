@@ -142,15 +142,21 @@ def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points, 
     ax.set_ylabel('Mean Episode Rewards')
     plt.plot(x_coordinates, y_coordinates)
     # plt.show()
-    file_name = formulate_file_name(params)
+    file_name = "MeanEpsiodeRvEp_" + formulate_file_name(params) + ".pdf"
 
     from matplotlib.backends.backend_pdf import PdfPages
     with PdfPages(file_name) as pdf:
         pdf.savefig()
 
+"""
+Puts together a file name for the agent and the parameters in the format:
+<agent> <LRC> <Discount_Factor> <Exploration_Threshold>
+i.e. "Q_LEARNINING__LRC_10__Discount_0.8__ExplrThr_20"
+"""
 def formulate_file_name(params):
-    agent, lrc, discount_factor, exp_thresh = params
-    return "MeanEpisodeRvEp_" + agent.upper() + "__LRC_" + lrc + "__Discount_" + discount_factor + "__ExplrThr_" + exp_thresh + ".pdf"
+    agent, lrc, discount_factor, exp_thresh, num_training_games = params
+    return str(agent.upper()) + "__LRC_" + str(int(lrc)) + "__Discount_" + str(float(discount_factor)) + \
+    "__ExplrThr_" + str(int(exp_thresh)) + "__" + str(int(num_training_games))
 
 
 """

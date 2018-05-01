@@ -148,28 +148,45 @@ if __name__ == "__main__":
     test.load_network()
     """
     if sys.argv[1].lower() == "part1":
-
+        params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+        fileName = "Data/" + helper.formulate_file_name(params)
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
-            params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])))
-            training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
-            helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
+            loaded = game.agent.load(fileName)
+            if loaded:
+                ans = input("\nTraining data has been found for this agent. Load it? (y/n)  ")
+                if ans.lower() == 'n':
+                    loaded = False
+            if not loaded:
+                training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
+                helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
+                game.agent.save(fileName)
 
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
-            gui.pong_gui(game, 'q_learning')
+            # gui.pong_gui(game, 'q_learning')
 
         elif sys.argv[2].lower() == "sarsa":
-            params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])))
+            loaded = game.agent.load(fileName)
+            if loaded:
+                ans = input("\nTraining data has been found for this agent. Load it? (y/n)  ")
+                if ans.lower() == 'n':
+                    loaded = False
+            if not loaded:
+                training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
+                helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
+
+                game.agent.save(fileName)
+
             training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
             helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
 
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
-            gui.pong_gui(game, 'sarsa')
+            # gui.pong_gui(game, 'sarsa')
 
         elif sys.argv[2].lower() == "human":
             game = Pong(human())
