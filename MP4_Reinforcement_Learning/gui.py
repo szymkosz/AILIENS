@@ -24,13 +24,13 @@ def pong_gui(game, agent1 = None, agent2 = None):
 	# old_y_agent2_paddle = 210
 	gui_init(agent2)
 	# game loop
-	while not game.game_is_over():
-		game.update_time_step(False)
-		update_display(game.get_state())
-		# wait() so it is visible to human eye
-		time.sleep(.03)
-		
 	for event in pygame.event.get():
+		while not game.game_is_over():
+			game.update_time_step(False)
+			update_display(game.get_state())
+			# wait() so it is visible to human eye
+			time.sleep(.03)
+		
 		if event.type == pygame.QUIT:
 			pygame.display.quit()
 			pygame.quit()

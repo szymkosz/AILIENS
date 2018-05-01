@@ -144,6 +144,7 @@ INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 2)
 
 if __name__ == "__main__":
     if sys.argv[1].lower() == "part1":
+        
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
             params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])))
@@ -153,6 +154,8 @@ if __name__ == "__main__":
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+            gui.pong_gui(game, 'q_learning')
+
         elif sys.argv[2].lower() == "sarsa":
             params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])))
@@ -162,11 +165,15 @@ if __name__ == "__main__":
             test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+            gui.pong_gui(game, 'sarsa')
+
         elif sys.argv[2].lower() == "human":
             game = Pong(human())
             gui.pong_gui(game)
+
         else:
             sys.exit("INVALID ARGUMENT ERROR: The second argument must be \"q_learning\", \"q-learning\", \"sarsa\", or \"human\" (ignoring case)!")
+
     elif sys.argv[1].lower() == "part2":
         assert len(sys.argv) == 8
 
