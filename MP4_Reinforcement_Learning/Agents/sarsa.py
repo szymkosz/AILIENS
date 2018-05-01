@@ -38,7 +38,7 @@ class sarsa(Agent):
 		self.terminal_q_value = -1
 
 		# This is the predetermined action a to use at each time step during training.
-		self.cur_action = 0 # np.random.randint(3)
+		self.cur_action = 2 # np.random.randint(3)
 
 		# These are the 3 training parameters that are varied for experimentation purposes.
 		self.learning_rate_constant = learning_rate_constant
@@ -130,7 +130,7 @@ class sarsa(Agent):
 		### If s' is the terminal state, pick a random action to start off the next game.
 		# Otherwise, store the computed a' as a for the next time step.
 		if d_s_prime == -1:
-			self.cur_action = 0 # np.random.randint(3)
+			self.cur_action = 2 # np.random.randint(3)
 		else:
 			self.cur_action = a_prime
 
