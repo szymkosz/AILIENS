@@ -1,6 +1,6 @@
 import numpy as np
 
-TRAINING_OUTPUT_FILENAME = "training_results.npz"
+TRAINING_OUTPUT_FILENAME = "network_training_results.npz"
 
 
 """
@@ -56,7 +56,8 @@ The save_training_results_to_file and load_training_results_from_file functions
 are used to efficiently store and retrieve the weights and biases of the neural
 network after they are obtained through training.
 """
-def save_training_results_to_file(weights, biases, fileName=TRAINING_OUTPUT_FILENAME):
+def save_training_results_to_file(num_layers, num_units_per_layer, learning_rate, weights, biases, training_dataset_means,
+                                  training_dataset_stdevs, fileName=TRAINING_OUTPUT_FILENAME):
     reshaped_weights = []
     weight_shapes = []
 
@@ -64,7 +65,9 @@ def save_training_results_to_file(weights, biases, fileName=TRAINING_OUTPUT_FILE
         reshaped_weights.append(matrix.flatten())
         weight_shapes.append(matrix.shape)
 
-    np.savez(fileName, weights=reshaped_weights, weight_shapes=weight_shapes, biases=biases)
+    np.savez(fileName, num_layers=num_layers, num_units_per_layer=num_units_per_layer, learning_rate=learning_rate,
+             weights=reshaped_weights, weight_shapes=weight_shapes, biases=biases, training_dataset_means=training_dataset_means,
+             training_dataset_stdevs=training_dataset_stdevs)
 
 
 """
@@ -84,4 +87,5 @@ def load_training_results_from_file(fileName=TRAINING_OUTPUT_FILENAME):
     for matrix, shape in zip(data['weights'], data['weight_shapes']):
         original_weights.append(matrix.reshape(tuple(shape)))
 
-    return (original_weights, data['biases'])
+    return (data['num_layers'], data['num_units_per_layer'], data['learning_rate'], original_weights,
+            data['biases'], data['training_dataset_means'], data['training_dataset_stdevs'])

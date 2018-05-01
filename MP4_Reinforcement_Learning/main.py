@@ -143,8 +143,12 @@ INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 2)
 ##     games while standard deviation increases to around 6.492778445060258.
 
 if __name__ == "__main__":
+    """
+    test = network()
+    test.load_network()
+    """
     if sys.argv[1].lower() == "part1":
-        
+
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
             params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
             game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])))
@@ -181,7 +185,8 @@ if __name__ == "__main__":
 
         dataset_tuple = parser(EXPERT_POLICTY_DATASET_FILENAME)
         agent.MinibatchGD(dataset_tuple, int(sys.argv[6]), int(sys.argv[7]))
-        
+        agent.save_network()
+
         game = Pong(agent)
         test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
         num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))

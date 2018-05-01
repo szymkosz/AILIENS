@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('..')
 import helper
+import loader
 
 # CONSTANTS
 NAME = "NETWORK"
@@ -265,6 +266,20 @@ class network(Agent):
         ax_accuracy.set_ylabel('Accuracy')
         plt.plot(accuracy_xCoordinates, accuracy_yCoordinates)
         plt.show()
+
+
+    def save_network(self):
+        loader.save_training_results_to_file(self.num_layers, self.num_units_per_layer, self.learning_rate,
+                                      self.weights, self.biases, self.training_dataset_means,
+                                      self.training_dataset_stdevs)
+
+
+    def load_network(self):
+        self.num_layers, self.num_units_per_layer, self.learning_rate, self.weights, self.biases, \
+        self.training_dataset_means, self.training_dataset_stdevs = loader.load_training_results_from_file()
+
+        self.affine_caches = [(None, None, None) for i in range(self.num_layers)]
+        self.relu_caches = [None for i in range(self.num_layers-1)]
 
 
 """
