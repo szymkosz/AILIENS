@@ -42,7 +42,7 @@ def loadFile(fileName):
             break
 
     states = data[:,:-1]
-    actions = data[:,-1]
+    actions = (data[:,-1]).astype(np.int32)
     return (states, actions)
 
 

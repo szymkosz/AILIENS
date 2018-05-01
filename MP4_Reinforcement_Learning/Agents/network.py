@@ -28,8 +28,8 @@ import helper
 #sys.path.append('../Data')
 
 # CONSTANTS
-NUM_STATE_ATTRIBUTES = 5
-NUM_UNITS_IN_LAST_LAYER = 3
+NUM_STATE_ATTRIBUTES = 5        # Number of attributes to represent game state
+NUM_UNITS_IN_LAST_LAYER = 3     # Number of actions that can be picked
 
 
 class network(Agent):
@@ -42,22 +42,64 @@ class network(Agent):
         self.learning_rate = learning_rate
 
         # Randomly initialize weight matrices with a uniform distribution multiplied by a scaling factor
-        self.weights = [weight_scale_parameter * np.random.rand(NUM_STATE_ATTRIBUTES, num_units_per_layer)]
-        self.weights += [(weight_scale_parameter * np.random.rand(num_units_per_layer, num_units_per_layer)) for i in range(num_layers-2)]
-        self.weights.append( (weight_scale_parameter * np.random.rand(num_units_per_layer, NUM_UNITS_IN_LAST_LAYER)) )
+        self.weights = None
+        if(num_layers == 1):
+            # If there is only one layer, there is a single NUM_STATE_ATTRIBUTES x NUM_UNITS_IN_LAST_LAYER weight matrix
+            self.weights = [(weight_scale_parameter * np.random.rand(NUM_STATE_ATTRIBUTES, NUM_UNITS_IN_LAST_LAYER))]
+        else:
+            # The first weight matrix is NUM_STATE_ATTRIBUTES x num_units_per_layer, the last weight matrix is
+            # num_units_per_layer x NUM_UNITS_IN_LAST_LAYER, and every weight matrix in between is
+            # num_units_per_layer x num_units_per_layer.
+            self.weights = [weight_scale_parameter * np.random.rand(NUM_STATE_ATTRIBUTES, num_units_per_layer)]
+            self.weights += [(weight_scale_parameter * np.random.rand(num_units_per_layer, num_units_per_layer)) for i in range(num_layers-2)]
+            self.weights.append( (weight_scale_parameter * np.random.rand(num_units_per_layer, NUM_UNITS_IN_LAST_LAYER)) )
 
         # Initialize bias vectors to zero
         self.biases = [np.zeros(num_units_per_layer) for i in range(num_layers-1)]
         self.biases.append(np.zeros(NUM_UNITS_IN_LAST_LAYER))
 
-        # Of the form (A_i, W_i, b_i) for the ith layer
+        # Set up lists for the affine and relu caches of each layer
         self.affine_caches = [(None, None, None) for i in range(num_layers)] # Of the form (A_i, W_i, b_i) for the ith layer
-        self.relu_caches = [None for i in range(num_layers-1)]
+        self.relu_caches = [None for i in range(num_layers-1)] # Last layer doesn't use relu, so only
+                                                               # first num_layers - 1 have relu caches
+
+        # Save the means and standard deviations of the columns of the training dataset
+        self.training_dataset_means = np.zeros(5)
+        self.training_dataset_stdevs = np.zeros(5)
+
+
+    """
+    The getAction function should decide the action this agent should take
+    given the current state s of the game.  It should return 0 if the paddle
+    should move up, 2 if the paddle should move down, or 1 if the paddle should
+    do nothing.
+    """
+    #def getAction(self, is_training, cur_state_tuple):
+    def getAction(self, is_training, cur_state_tuple):
+        # Scale the current state with the means and standard deviations of
+        # the training dataset before passing it in to the neural network
+        #print("Current state: " + str(cur_state_tuple))
+        scaled_input_state = np.zeros((1,5))
+        #print(self.training_dataset_means)
+        #print(self.training_dataset_stdevs)
+        for i in range(NUM_STATE_ATTRIBUTES):
+            col_mean = self.training_dataset_means[i]
+            col_stdev = self.training_dataset_stdevs[i]
+            scaled_input_state[0, i] = (cur_state_tuple[i] - col_mean)/col_stdev
+
+        #print("Scaled input state: " + str(scaled_input_state))
+        action = self.classify_or_train(scaled_input_state, None, True)[0]
+        #print("Action: " + str(action))
+        return action
+
+
+    #def updateAction(self, s, a, reward, s_prime):
+    def updateAction(self, s, a, reward, s_prime):
+        pass
 
 
     # Handle feedforward
     def feedforward(self, X):
-        # TODO: Check if this function would break if X was a 1D 5-dimensional vector
         A = X
         F = None
         for i in range(self.num_layers):
@@ -108,15 +150,44 @@ class network(Agent):
     is ignored in this case, so it can be set to a Nonetype.
     """
     def classify_or_train(self, X, y, test):
+        #print("X shape: " + str(X.shape))
         F = self.feedforward(X)
 
         # If this is the test phase, assign actions to the states and return them
         if test:
+            #print("F shape: " + str(F.shape))
+            #print("F[0:10]: " + str(F[0:10]))
             classifications = np.argmax(F, axis=1)
+            #print("Classifications shape: " + str(classifications.shape))
+            #print("Classifications: " + str(classifications))
             return classifications
 
         loss = self.backpropagation(F, y)
         return loss
+
+
+    """
+    The scale_dataset function scales the training dataset.  It takes in the
+    n x 5 state matrix where n is the number of states in the training dataset
+    and each row represents a state.  It takes each column, subtracts its mean,
+    then divides by the standard deviation.  It also stores each mean and standard
+    deviation so that during the test games, the game state can be scaled
+    properly before getting passed through the neural network.
+    """
+    def scale_dataset(self, states):
+        (num_rows, num_columns) = states.shape
+        scaled_states = np.zeros(states.shape)
+
+        for col_index in range(0, num_columns):
+            col_mean = np.mean(states[:, col_index])
+            col_stdev = np.std(states[:, col_index])
+            scaled_states[:, col_index] = (states[:, col_index] - col_mean)/col_stdev
+
+            self.training_dataset_means[col_index] = col_mean
+            self.training_dataset_stdevs[col_index] = col_stdev
+
+
+        return scaled_states
 
 
     def MinibatchGD(self, data, epochs=300, mini_batch_size=128):
@@ -124,7 +195,7 @@ class network(Agent):
 
         # Extract the training dataset and labels and scale the dataset
         training_dataset = data[0]
-        scaled_dataset = scale_dataset(training_dataset)
+        scaled_dataset = self.scale_dataset(training_dataset)
         training_labels = data[1]
 
         # Identify the number of training vectors and compute the nubmer of mini-batches
@@ -139,6 +210,7 @@ class network(Agent):
 
         # Train the neural network over multiple epochs
         for i in range(epochs):
+            print("Epoch: " + str(i))
             # Shuffle the training data by making a vector of
             # row indices of training vectors and shuffling it
             row_indices = np.arange(n)
@@ -162,7 +234,7 @@ class network(Agent):
             losses[i] = total_loss/num_mini_batches
 
             # Compute and store the accuracy over the training dataset for this epoch
-            assigned_labels = self.classify_or_train(training_dataset, None, True)
+            assigned_labels = self.classify_or_train(scaled_dataset, None, True)
             accuracies[i] = helper.compute_overall_accuracy(training_labels, assigned_labels)
 
             # If this is the last epoch, store assigned_labels in
@@ -176,26 +248,26 @@ class network(Agent):
         print("Final Overall Accuracy on Training Dataset: " + str(accuracies[epochs-1]))
 
         # Make the plot of losses over each epoch
-        loss_xCoordinates = np.arange(len(losses))
+        loss_xCoordinates = np.arange(len(losses)) + np.ones(len(losses))
         loss_yCoordinates = losses
 
         fig_loss, ax_loss = plt.subplots(figsize = (10, 10))
         ax_loss.title.set_text('Loss Plot')
-        ax_loss.set_xlabel('Loss')
-        ax_loss.set_ylabel('Training Epoch')
-        plt_loss.plot(loss_xCoordinates, loss_yCoordinates)
-        plt_loss.show()
+        ax_loss.set_xlabel('Training Epoch')
+        ax_loss.set_ylabel('Loss')
+        plt.plot(loss_xCoordinates, loss_yCoordinates)
+        plt.show()
 
         # Make the plot of accuracies over each epoch
-        accuracy_xCoordinates = np.arange(len(accuracies))
+        accuracy_xCoordinates = np.arange(len(accuracies)) + np.ones(len(accuracies))
         accuracy_yCoordinates = accuracies
 
         fig_accuracy, ax_accuracy = plt.subplots(figsize = (10, 10))
         ax_accuracy.title.set_text('Accuracy Plot')
-        ax_accuracy.set_xlabel('Accuracy')
-        ax_accuracy.set_ylabel('Training Epoch')
-        plt_accuracy.plot(accuracy_xCoordinates, accuracy_yCoordinates)
-        plt_accuracy.show()
+        ax_accuracy.set_xlabel('Training Epoch')
+        ax_accuracy.set_ylabel('Accuracy')
+        plt.plot(accuracy_xCoordinates, accuracy_yCoordinates)
+        plt.show()
 
 
 def Affine_Forward(A, W, b):
@@ -243,24 +315,6 @@ def Cross_Entropy(F, y):
 
     dF = -1*(indicator_matrix - np.divide(exp_F.T, row_sum_exp_F).T)/n
     return (loss, dF)
-
-
-"""
-The scale_dataset function scales the training dataset.  It takes in the
-n x 5 state matrix where n is the number of states in the training dataset
-and each row represents a state.  It takes each column, subtracts its mean,
-then divides by the standard deviation.
-"""
-def scale_dataset(states):
-    (num_rows, num_columns) = states.shape
-    scaled_states = np.zeros(states.shape)
-
-    for col_index in range(0, num_columns):
-        col_mean = np.mean(states[:, col_index])
-        col_stdev = np.std(states[:, col_index])
-        scaled_states[:, col_index] = (states[:, col_index] - col_mean)/col_stdev
-
-    return scaled_states
 
 
 
