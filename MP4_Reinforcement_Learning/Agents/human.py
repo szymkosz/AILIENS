@@ -6,9 +6,9 @@ from Agents.agent import Agent
 NAME = "HUMAN"
 
 class human(Agent):
-	def __init__(self, game=Pong(), playerNum=1):
+	def __init__(self, playerNum=1):
 		# super(self).__init__(game, playerNum)
-		super().__init__(game, playerNum)
+		super().__init__(NAME, playerNum)
 		self.name = NAME
 
 	"""
