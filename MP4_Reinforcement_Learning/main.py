@@ -160,7 +160,8 @@ if __name__ == "__main__":
             num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
             print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
         elif sys.argv[2].lower() == "human":
-            pass
+            game = Pong(human())
+            pong_gui(game)
         else:
             sys.exit("INVALID ARGUMENT ERROR: The second argument must be \"q_learning\", \"q-learning\", \"sarsa\", or \"human\" (ignoring case)!")
     elif sys.argv[1].lower() == "part2":
@@ -176,7 +177,20 @@ if __name__ == "__main__":
         num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
         print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
     elif sys.argv[1].lower() == "gui":
-        pass
+        if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
+            agent1 = q_learning();
+        elif sys.argv[2].lower() == "sarsa":
+            agent1 = sarsa();
+
+        if sys.argv[3].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
+            agent2 = q_learning();
+        elif sys.argv[3].lower() == "sarsa":
+            agent2 = sarsa();
+        elif sys.argv[3].lower() == "human":
+            agent2 = human();
+
+        game = Pong(agent1, agent2)
+        pong_gui(game, agent1, agent2)
     else:
         sys.exit("INVALID ARGUMENT ERROR: The first argument must be \"part1\" or \"part2\" (ignoring case)!")
 # if __name__ == "__main__":

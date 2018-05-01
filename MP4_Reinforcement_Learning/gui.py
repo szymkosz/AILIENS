@@ -19,7 +19,7 @@ old_x_ball = 260
 old_y_ball = 260
 radius = 10
 
-def pong_gui(game, agent1, agent2 = None):
+def pong_gui(game, agent1 = None, agent2 = None):
 	global gameDisplay
 	gui_init(agent2)
 	# game loop
