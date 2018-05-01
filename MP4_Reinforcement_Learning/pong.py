@@ -177,7 +177,9 @@ class Pong(object):
                 return 1
             else:
                 return -1
-
+        else:
+            return 0
+        """
         # Handles bouncing off the left paddle
         if self.ball_x < LEFT_WALL_X:
             if (self.ball_y >= self.paddle_y and self.ball_y <= (self.paddle_y + PADDLE_HEIGHT)):
@@ -196,9 +198,7 @@ class Pong(object):
                 return 1
             else:
                 return -1
-
-        else:
-            return 0
+        """
 
 
     """
