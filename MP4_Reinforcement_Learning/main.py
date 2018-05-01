@@ -191,6 +191,10 @@ if __name__ == "__main__":
         test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
         num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
         print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+
+        agent.load_network()
+        gui.pong_gui(game, 'neural_net')
+
     elif sys.argv[1].lower() == "gui":
         pass
         # if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
