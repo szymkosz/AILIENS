@@ -270,10 +270,8 @@ class Pong(object):
 
     This function is used to update the GUI in each time step.
     """
-    """
-    def get_state():
+    def get_state(self):
         return (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
-    """
 
 
     """
