@@ -217,7 +217,7 @@ class Pong(object):
             while not self.game_is_over():
                 total_game_rewards[i] += self.update_time_step(is_training)
 
-            if i is not 0 and i % 10 == 0:
+            if i is not 0 and i % 1000 == 0:
                 print("END OF GAME " + str(i))
                 print("Rewards: " + str(total_game_rewards[i]))
                 print("Mean rewards so far: " + str(np.mean(total_game_rewards[0:i])))
