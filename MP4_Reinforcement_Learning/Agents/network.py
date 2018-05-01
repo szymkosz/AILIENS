@@ -1,23 +1,4 @@
-"""
-PARAMETERS TO VARY:
-
-1. Number of layers
-2. Number of units per layer
-3. Learning rate
-4. Weight scale parameter (for initializing weights randomly)
-5. Number of epochs
-6. Minibatch size
-
-
-MISCELLANEOUS:
-
-1. Numpy random seed
-2. Random seed
-"""
-
-
 # Import the necessary libraries
-#from agent import Agent
 from Agents.agent import Agent
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,16 +6,18 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('..')
 import helper
-#sys.path.append('../Data')
 
 # CONSTANTS
+NAME = "NETWORK"
 NUM_STATE_ATTRIBUTES = 5        # Number of attributes to represent game state
 NUM_UNITS_IN_LAST_LAYER = 3     # Number of actions that can be picked
 
 
 class network(Agent):
-    def __init__(self, num_layers=4, num_units_per_layer=256, learning_rate=0.1, weight_scale_parameter=(1.0/256)):
+    def __init__(self, num_layers=4, num_units_per_layer=256, learning_rate=0.1, weight_scale_parameter=(1.0/256), playerNum=1):
+        # Initialize seed before random weight initialization for consistent results
         np.random.seed(7383)
+        super().__init__(NAME, playerNum)
 
         # Save the number of layers, number of units per layer (except the last layer, which is 3 units)
         self.num_layers = num_layers
@@ -58,10 +41,10 @@ class network(Agent):
         self.biases = [np.zeros(num_units_per_layer) for i in range(num_layers-1)]
         self.biases.append(np.zeros(NUM_UNITS_IN_LAST_LAYER))
 
-        # Set up lists for the affine and relu caches of each layer
+        # Set up lists for the affine and ReLU caches of each layer
         self.affine_caches = [(None, None, None) for i in range(num_layers)] # Of the form (A_i, W_i, b_i) for the ith layer
-        self.relu_caches = [None for i in range(num_layers-1)] # Last layer doesn't use relu, so only
-                                                               # first num_layers - 1 have relu caches
+        self.relu_caches = [None for i in range(num_layers-1)] # Last layer doesn't use ReLU, so only
+                                                               # first num_layers - 1 have ReLU caches
 
         # Save the means and standard deviations of the columns of the training dataset
         self.training_dataset_means = np.zeros(5)
@@ -73,43 +56,44 @@ class network(Agent):
     given the current state s of the game.  It should return 0 if the paddle
     should move up, 2 if the paddle should move down, or 1 if the paddle should
     do nothing.
+
+    The "is_training" parameter isn't used here.
     """
-    #def getAction(self, is_training, cur_state_tuple):
     def getAction(self, is_training, cur_state_tuple):
         # Scale the current state with the means and standard deviations of
         # the training dataset before passing it in to the neural network
-        #print("Current state: " + str(cur_state_tuple))
         scaled_input_state = np.zeros((1,5))
-        #print(self.training_dataset_means)
-        #print(self.training_dataset_stdevs)
         for i in range(NUM_STATE_ATTRIBUTES):
             col_mean = self.training_dataset_means[i]
             col_stdev = self.training_dataset_stdevs[i]
             scaled_input_state[0, i] = (cur_state_tuple[i] - col_mean)/col_stdev
 
-        #print("Scaled input state: " + str(scaled_input_state))
         action = self.classify_or_train(scaled_input_state, None, True)[0]
-        #print("Action: " + str(action))
         return action
-
-
-    #def updateAction(self, s, a, reward, s_prime):
-    def updateAction(self, s, a, reward, s_prime):
-        pass
 
 
     # Handle feedforward
     def feedforward(self, X):
+        # Set the layer input matrix A to X initially and initialize F
         A = X
         F = None
+
+        # Feed the minibatch forward through the neural network
         for i in range(self.num_layers):
+            # Get the weight matrix and bias vector for this layer
             W = self.weights[i]
             b = self.biases[i]
 
+            # Compute the input matrix to the next layer or the
+            # output of the network if this is the final layer
             if i < (self.num_layers - 1):
+                # Do an affine transformation followed by ReLU
+                # and pass the output onto the next layer
                 Z, self.affine_caches[i] = Affine_Forward(A, W, b)
                 A, self.relu_caches[i] = ReLU_Forward(Z)
             else:
+                # Compute the output of the network.  Note that the
+                # last layer doesn't have a ReLU function call.
                 F, self.affine_caches[i] = Affine_Forward(A,W,b)
 
         return F
@@ -117,17 +101,24 @@ class network(Agent):
 
     # Handle backpropagation
     def backpropagation(self, F, y):
+        # Compute cross-entropy loss and dF's
         loss, dF = Cross_Entropy(F, y)
         dZ = dF
-        for i in range(self.num_layers - 1, -1, -1):
-            acache = self.affine_caches[i]
 
+        # Compute dW's and db's and perform gradient descent starting at
+        # the end of the network and backpropagating to the beginning
+        for i in range(self.num_layers - 1, -1, -1):
+            # Get the affine cache that was generated by this layer
+            # and compute dA's, dW's, and db's for this layer
+            acache = self.affine_caches[i]
             dA, dW, db = Affine_Backward(dZ, acache)
 
-            # Do gradient descent
+            # Do gradient descent update for this layer
             self.weights[i] -= self.learning_rate * dW
             self.biases[i] -= self.learning_rate * db
 
+            # If this is not the final layer, backpropagate
+            # through ReLU to the next layer
             if i > 0:
                 rcache = self.relu_caches[i-1]
                 dZ = ReLU_Backward(dA, rcache)
@@ -150,18 +141,15 @@ class network(Agent):
     is ignored in this case, so it can be set to a Nonetype.
     """
     def classify_or_train(self, X, y, test):
-        #print("X shape: " + str(X.shape))
+        # Feed minibatch X forward through the network to compute F
         F = self.feedforward(X)
 
         # If this is the test phase, assign actions to the states and return them
         if test:
-            #print("F shape: " + str(F.shape))
-            #print("F[0:10]: " + str(F[0:10]))
             classifications = np.argmax(F, axis=1)
-            #print("Classifications shape: " + str(classifications.shape))
-            #print("Classifications: " + str(classifications))
             return classifications
 
+        # Compute loss over this minibatch and perform gradient descent updates
         loss = self.backpropagation(F, y)
         return loss
 
@@ -178,6 +166,7 @@ class network(Agent):
         (num_rows, num_columns) = states.shape
         scaled_states = np.zeros(states.shape)
 
+        # Scale each column and store each column's mean and standard deviation
         for col_index in range(0, num_columns):
             col_mean = np.mean(states[:, col_index])
             col_stdev = np.std(states[:, col_index])
@@ -186,11 +175,18 @@ class network(Agent):
             self.training_dataset_means[col_index] = col_mean
             self.training_dataset_stdevs[col_index] = col_stdev
 
-
         return scaled_states
 
 
+    """
+    The MinibatchGD function runs the minibatch gradient descent algorithm given
+    the expert policy dataset, number of epochs, and size of each minibatch.
+
+    The parameter "data" is the output of the parser function in loader.py.  See
+    the documentation for parser in loader.py for more information.
+    """
     def MinibatchGD(self, data, epochs=300, mini_batch_size=128):
+        # Initialize seed before shuffling training data for consistent results
         np.random.seed(3489)
 
         # Extract the training dataset and labels and scale the dataset
@@ -216,6 +212,7 @@ class network(Agent):
             row_indices = np.arange(n)
             np.random.shuffle(row_indices)
 
+            # Sums up the loss over every minibatch for making the loss plot
             total_loss = 0
 
             for j in range(num_mini_batches):
@@ -224,7 +221,7 @@ class network(Agent):
                 ending_index = min((j+1)*mini_batch_size, n)
                 mini_batch_row_indices = row_indices[beginning_index:ending_index]
 
-                # Extract the training vectors of this mini-batch and their
+                # Extract the training vectors of this minibatch and their
                 # labels and propagate them through the network for training
                 X = scaled_dataset[mini_batch_row_indices, :]
                 y = training_labels[mini_batch_row_indices]
@@ -233,7 +230,7 @@ class network(Agent):
             # Compute and store the average loss for this epoch
             losses[i] = total_loss/num_mini_batches
 
-            # Compute and store the accuracy over the training dataset for this epoch
+            # Compute and store the accuracy over the scaled training dataset for this epoch
             assigned_labels = self.classify_or_train(scaled_dataset, None, True)
             accuracies[i] = helper.compute_overall_accuracy(training_labels, assigned_labels)
 
@@ -270,6 +267,9 @@ class network(Agent):
         plt.show()
 
 
+"""
+THE FIVE NEURAL NETWORK FUNCTIONS DESCRIBED IN THE ASSIGNMENT FOLLOW!
+"""
 def Affine_Forward(A, W, b):
     Z = np.dot(A, W) + b.T
     acache = (A, W, b)
@@ -315,35 +315,3 @@ def Cross_Entropy(F, y):
 
     dF = -1*(indicator_matrix - np.divide(exp_F.T, row_sum_exp_F).T)/n
     return (loss, dF)
-
-
-
-
-"""
-from Data import affine
-from Data import relu
-from Data import entropy
-
-affine_Z_result, affine_acache = Affine_Forward(affine.A,affine.W,affine.b)
-print("Affine_Forward Z result:\n\n")
-print(np.allclose(affine_Z_result, affine.Z))
-
-relu_A_result, relu_rcache = ReLU_Forward(affine_Z_result)
-print("Relu_Forward A result:\n\n")
-print(np.allclose(relu_A_result, relu.A))
-
-loss_result, dF_result = Cross_Entropy(entropy.F, entropy.y)
-print("Entropy results:\n\n")
-print(np.allclose(loss_result, entropy.L))
-print(np.allclose(dF_result, entropy.dF))
-
-dZ_result = ReLU_Backward(relu.dA, relu_rcache)
-print("ReLU_Backward A result:\n\n")
-print(np.allclose(dZ_result, relu.dZ))
-
-dA_result, dW_result, db_result = Affine_Backward(affine.dZ, affine_acache)
-print("ReLU_Backward A result:\n\n")
-print(np.allclose(dA_result, affine.dA))
-print(np.allclose(dW_result, affine.dW))
-print(np.allclose(db_result, affine.db))
-"""
