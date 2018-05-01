@@ -171,7 +171,7 @@ if __name__ == "__main__":
 
         dataset_tuple = parser(EXPERT_POLICTY_DATASET_FILENAME)
         agent.MinibatchGD(dataset_tuple, int(sys.argv[6]), int(sys.argv[7]))
-
+        
         game = Pong(agent)
         test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
         num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))

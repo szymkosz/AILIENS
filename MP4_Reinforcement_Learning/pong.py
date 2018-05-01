@@ -24,7 +24,8 @@ class Pong(object):
     is identical to the initial state defined in the assignment.  The game's
     agent should always be passed in as the appropriate object.
     """
-    def __init__(self, agent, agent2=None, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y, paddle2_y=INITIAL_PADDLE_Y):
+    def __init__(self, agent, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y):
+    #def __init__(self, agent, agent2=None, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y, paddle2_y=INITIAL_PADDLE_Y):
         # Check that velocity_x and velocity_y are valid
         if abs(velocity_x) < 0.03:
             raise ValueError("Absolute value of velocity_x must be greater than or equal to 0.03!")
@@ -35,7 +36,7 @@ class Pong(object):
 
         # Initialize the agents
         self.agent = agent
-        self.agent2 = agent2
+        #self.agent2 = agent2
 
         # Initialize the game state
         self.ball_x = ball_x
@@ -43,7 +44,7 @@ class Pong(object):
         self.velocity_x = velocity_x
         self.velocity_y = velocity_y
         self.paddle_y = paddle_y
-        self.paddle2_y = paddle2_y
+        #self.paddle2_y = paddle2_y
 
 
     """
@@ -56,6 +57,26 @@ class Pong(object):
     two scenariors occurs.
     """
     def update_time_step(self, is_training):
+        # Get the action of the agent
+        cur_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
+        action = self.agent.getAction(is_training, cur_state_tuple)
+
+        # Update the paddle's position based on the agent's action
+        if action == 2:
+            self.paddle_y += 0.04
+
+            # Reset the paddle position if the paddle tries
+            # to move off the bottom of the screen
+            if (self.paddle_y + PADDLE_HEIGHT) > 1:
+                self.paddle_y = (1 - PADDLE_HEIGHT)
+        elif action == 0:
+            self.paddle_y -= 0.04
+
+            # Reset the paddle position if the paddle
+            # tries to move off the top of the screen
+            if self.paddle_y < 0:
+                self.paddle_y = 0
+        """
         # Get player 1's action and update player 1's paddle
         if self.agent.name.lower() == "human":
             action = self.agent.getAction()
@@ -74,6 +95,7 @@ class Pong(object):
                 cur_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle2_y)
                 action = self.agent2.getAction(is_training, cur_state_tuple)
                 self.paddle2_y = self.move_paddle(False, self.paddle2_y, action)
+        """
 
         # Update the ball's position
         self.ball_x += self.velocity_x
@@ -89,7 +111,7 @@ class Pong(object):
 
         return reward
 
-
+    """
     def move_paddle(self, isHuman, initial_paddle_y, action):
         # Determine the paddle's new y-coordinate
         paddle_y = initial_paddle_y
@@ -115,6 +137,7 @@ class Pong(object):
             return (1 - PADDLE_HEIGHT)
         else:
             return paddle_y
+    """
 
 
     """
@@ -197,7 +220,7 @@ class Pong(object):
             while not self.game_is_over():
                 total_game_rewards[i] += self.update_time_step(is_training)
 
-            if i is not 0 and i % 1000 == 0:
+            if i is not 0 and i % 10 == 0:
                 print("END OF GAME " + str(i))
                 print("Rewards: " + str(total_game_rewards[i]))
                 print("Mean rewards so far: " + str(np.mean(total_game_rewards[0:i])))
@@ -250,8 +273,10 @@ class Pong(object):
 
     This function is used to update the GUI in each time step.
     """
+    """
     def get_state():
         return (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
+    """
 
 
     """
