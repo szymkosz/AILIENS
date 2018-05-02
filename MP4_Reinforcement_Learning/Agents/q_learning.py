@@ -11,24 +11,8 @@ class q_learning(Agent):
 	def __init__(self, learning_rate_constant=10, discount_factor=.80, exploration_threshold=10, playerNum=1, num_training_games=100000):
 		super().__init__(NAME, playerNum)
 
-		"""
-		# Initialize the rewards, q-values, and N(s,a) counts
-		self.rewards = np.zeros((12,12,2,3,12))
-		for i in range(12):
-			self.rewards[11][i][1][:][i] = 1.0
-		"""
-		# Initialize the q-values and N(s,a) counts
-
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3), dtype=np.int32)
-
-		"""
-		# These three variables describe the characteristics of the terminal state,
-		# where the ball has left the screen because the paddle missed it.
-		self.terminal_reward = -1
-		self.terminal_count = 0
-		self.terminal_q_value = 0
-		"""
 
 		# This is the q-value of the terminal state (when the ball leaves the screen
 		# because the paddle misses it).  It is fixed at -1 to help the training converge.
@@ -48,7 +32,6 @@ class q_learning(Agent):
 	do nothing.
 	"""
 	def getAction(self, is_training, cur_state_tuple):
-		#print(cur_state_tuple)
 		discrete_state = helper.get_discrete_state(cur_state_tuple)
 		assert discrete_state is not -1, "ERROR: discrete_state should not be a terminal state!"
 
