@@ -25,7 +25,6 @@ class Pong(object):
     agent should always be passed in as the appropriate object.
     """
     def __init__(self, agent, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y):
-    #def __init__(self, agent, agent2=None, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y, paddle2_y=INITIAL_PADDLE_Y):
         # Check that velocity_x and velocity_y are valid
         if abs(velocity_x) < 0.03:
             raise ValueError("Absolute value of velocity_x must be greater than or equal to 0.03!")
@@ -36,7 +35,6 @@ class Pong(object):
 
         # Initialize the agents
         self.agent = agent
-        #self.agent2 = agent2
 
         # Initialize the game state
         self.ball_x = ball_x
@@ -44,7 +42,6 @@ class Pong(object):
         self.velocity_x = velocity_x
         self.velocity_y = velocity_y
         self.paddle_y = paddle_y
-        #self.paddle2_y = paddle2_y
 
 
     """
@@ -76,26 +73,6 @@ class Pong(object):
             # tries to move off the top of the screen
             if self.paddle_y < 0:
                 self.paddle_y = 0
-        """
-        # Get player 1's action and update player 1's paddle
-        if self.agent.name.lower() == "human":
-            action = self.agent.getAction()
-            self.paddle_y = self.move_paddle(True, self.paddle_y, action)
-        else:
-            cur_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
-            action = self.agent.getAction(is_training, cur_state_tuple)
-            self.paddle_y = self.move_paddle(False, self.paddle_y, action)
-
-        # If there is a second player, get player 2's action and update player 2's paddle
-        if agent2 is not None:
-            if self.agent2.name.lower() == "human":
-                action = self.agent2.getAction()
-                self.paddle2_y = self.move_paddle(True, self.paddle2_y, action)
-            else:
-                cur_state_tuple = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle2_y)
-                action = self.agent2.getAction(is_training, cur_state_tuple)
-                self.paddle2_y = self.move_paddle(False, self.paddle2_y, action)
-        """
 
         # Update the ball's position
         self.ball_x += self.velocity_x
@@ -110,34 +87,6 @@ class Pong(object):
             self.agent.updateAction(cur_state_tuple, action, reward, new_state_tuple)
 
         return reward
-
-    """
-    def move_paddle(self, isHuman, initial_paddle_y, action):
-        # Determine the paddle's new y-coordinate
-        paddle_y = initial_paddle_y
-        if isHuman:
-            # Since this is the paddle of a human agent, set the paddle's
-            # y-coordinate to the action (the y-coordinate of the mouse cursor)
-            paddle_y = action
-        else:
-            # Since this is not the paddle of a human agent, raise or
-            # lower the paddle's position based on the agent's action
-            if action == 2:
-                paddle_y += 0.04
-            elif action == 0:
-                paddle_y -= 0.04
-
-        # Reset the paddle position if the paddle
-        # tries to move off the top of the screen
-        if paddle_y < 0:
-            return 0
-        # Reset the paddle position if the paddle tries
-        # to move off the bottom of the screen
-        elif (paddle_y + PADDLE_HEIGHT) > 1:
-            return (1 - PADDLE_HEIGHT)
-        else:
-            return paddle_y
-    """
 
 
     """
@@ -180,27 +129,6 @@ class Pong(object):
                 return -1
         else:
             return 0
-        """
-        # Handles bouncing off the left paddle
-        if agent2 is not None:
-            if self.ball_x < LEFT_WALL_X:
-                if (self.ball_y >= self.paddle2_y and self.ball_y <= (self.paddle2_y + PADDLE_HEIGHT)):
-                    self.ball_x = 2 + self.ball_x
-
-                    candidate_velocity_x = self.velocity_x - np.random.uniform(low=-0.015, high=0.015)
-                    self.velocity_x = min(max(candidate_velocity_x, 0.03), 1)
-
-                    candidate_velocity_y = self.velocity_y + np.random.uniform(low=-0.03, high=0.03)
-                    sign = 1
-                    if candidate_velocity_y < 0:
-                        sign = -1
-
-                    self.velocity_y = sign*min(abs(candidate_velocity_y), 1)
-
-                return 1
-            else:
-                return -1
-        """
 
 
     """
@@ -226,7 +154,7 @@ class Pong(object):
 
             self.reset_game()
 
-        # print("MAXIMUM REWARD COUNT: " + str(np.amax(total_game_rewards)))
+        print("MAXIMUM REWARD COUNT: " + str(np.amax(total_game_rewards)))
 
         return total_game_rewards
 
@@ -279,6 +207,6 @@ class Pong(object):
     "Agent: <self.agent.name>  State: <(self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)>".
     """
     def __str__(self):
-        state = (self.ball_x, self.ball_y, self.velocity_x, self.velocity_y, self.paddle_y)
+        state = self.get_state()
         ret = "Agent: " + self.agent.name + "  State: " + str(state)
         return ret
