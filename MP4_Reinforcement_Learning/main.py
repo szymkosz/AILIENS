@@ -185,7 +185,7 @@ if __name__ == "__main__":
             # gui.pong_gui(game, 'q_learning')
 
         elif sys.argv[2].lower() == "sarsa":
-            game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])))
+            game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]), num_training_games=int(sys.argv[6])))
             loaded = game.agent.load()
             if not loaded:
                 training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
@@ -240,8 +240,8 @@ if __name__ == "__main__":
         gui.pong_gui(game, 'neural_net')
 
     elif sys.argv[1].lower() == "gui":
-        agent1 = None 
-        agent2 = None 
+        agent1 = None
+        agent2 = None
         game = None
 
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
