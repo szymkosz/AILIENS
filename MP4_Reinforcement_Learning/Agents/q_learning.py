@@ -8,7 +8,7 @@ import helper
 NAME = "Q-LEARNING"
 
 class q_learning(Agent):
-	def __init__(self, learning_rate_constant=1.0, discount_factor=.70, exploration_threshold=3, playerNum=1):
+	def __init__(self, learning_rate_constant=1.0, discount_factor=.70, exploration_threshold=3, playerNum=1, num_training_games=100000):
 		# super(self).__init__(game, playerNum)
 		super().__init__(NAME, playerNum)
 
@@ -40,39 +40,41 @@ class q_learning(Agent):
 		self.discount_factor = discount_factor
 		self.exploration_threshold = exploration_threshold
 
-	def save(self, fileName):
-		save = False
-		fileName += ".npz"
-		import os.path
-		if os.path.isfile(fileName):
-			print("\nTraining data for this agent and these parameters already exists.")
-			ans = input("Overwrite it? (y/n)  ")
-			if ans.lower() == 'n' or ans.lower() == "no":
-				print("Canceling save.")
-				return
-			else:
-				save = True
-		else:
-			save = True
-		if save:
-			print("\nSaving training data...")
-			np.savez(fileName, q_values=self.q_values.flatten(), counts_Nsa=self.counts_Nsa.flatten(), \
-					lrc=self.learning_rate_constant, discount_factor=self.discount_factor,\
-					exploration_threshold=self.exploration_threshold)
+		self.num_training_games = num_training_games
 
-	def load(self, fileName):
-		fileName += ".npz"
-		import os.path
-		if os.path.isfile(fileName):
-			data = np.load(fileName)
-			self.q_values = data['q_values'].reshape((12,12,2,3,12,3))
-			self.counts_Nsa = data['counts_Nsa'].reshape((12,12,2,3,12,3))
-			self.learning_rate_constant = data['lrc']
-			self.discount_factor = data['discount_factor']
-			self.exploration_threshold = data['exploration_threshold']
-			return True
-		print("\nCould not find existing training data for this agent.")
-		return False
+	# def save(self):
+	# 	save = False
+	# 	fileName += ".npz"
+	# 	import os.path
+	# 	if os.path.isfile(fileName):
+	# 		print("\nTraining data for this agent and these parameters already exists.")
+	# 		ans = input("Overwrite it? (y/n)  ")
+	# 		if ans.lower() == 'n' or ans.lower() == "no":
+	# 			print("Canceling save.")
+	# 			return
+	# 		else:
+	# 			save = True
+	# 	else:
+	# 		save = True
+	# 	if save:
+	# 		print("\nSaving training data...")
+	# 		np.savez(fileName, q_values=self.q_values.flatten(), counts_Nsa=self.counts_Nsa.flatten(), \
+	# 				lrc=self.learning_rate_constant, discount_factor=self.discount_factor,\
+	# 				exploration_threshold=self.exploration_threshold, num_training_games=self.num_training_games)
+	#
+	# def load(self, fileName):
+	# 	fileName += ".npz"
+	# 	import os.path
+	# 	if os.path.isfile(fileName):
+	# 		data = np.load(fileName)
+	# 		self.q_values = data['q_values'].reshape((12,12,2,3,12,3))
+	# 		self.counts_Nsa = data['counts_Nsa'].reshape((12,12,2,3,12,3))
+	# 		self.learning_rate_constant = data['lrc']
+	# 		self.discount_factor = data['discount_factor']
+	# 		self.exploration_threshold = data['exploration_threshold']
+	# 		return True
+	# 	print("\nCould not find existing training data for this agent.")
+	# 	return False
 
 	"""
 	The getAction function should decide the action this agent should take
