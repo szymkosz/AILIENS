@@ -4,20 +4,17 @@ This is the driver file for parts 1 and 2
 
 To run part 1, run the following command:
 
-python main.py <part1> <human> <agent> <learning_rate_constant> <discount_factor> <exploration_threshold> <num_training_games>
+python main.py <part1> <agent> <learning_rate_constant> <discount_factor> <exploration_threshold> <num_training_games>
 
 where:
-<part1>                  = "part1" (ignoring case)
-<human>                  = "human" (ignoring case) if a human agent should be
-                            : able to play against the AI.  Omit this argument if
-                            : there should be no human agent.
-<agent>                  = "q_learning" or "q-learning" (ignoring case) if the
+<part1>                     = "part1" (ignoring case)
+<agent>                     = "q_learning" or "q-learning" (ignoring case) if the
                             : AI should be a Q-learning agent or "sarsa"
                             : (ignoring case) if the AI should be a SARSA agent
 <learning_rate_constant>    = The constant C to be used in the calculation of the
                             : learning rate alpha as alpha = C/(C+N(s,a))
-<discount_factor>          = The discount factor gamma to be used during training
-<exploration_threshold>  = The upper bound in the exploration function.  If the
+<discount_factor>           = The discount factor gamma to be used during training
+<exploration_threshold>     = The upper bound in the exploration function.  If the
                             : first input to the exploration function is below this
                             : threshold, positive infinity is returned.
 <num_training_games>        = The number of games for training the agent
@@ -28,28 +25,34 @@ To run part 2, run the following command:
 python main.py <part2> <num_layers> <num_units_per_layer> <learning_rate> <weight_scale_parameter> <epochs> <mini_batch_size>
 
 where:
-<part2>                  = "part2" (ignoring case)
+<part2>                     = "part2" (ignoring case)
 <num_layers>                = The number of layers the neural network should have.
-<num_units_per_layer>      = The number of neurons/output features in each layer
-                              (except the last layer, which is always 3 outputs)
-<learning_rate>          = The learning rate to be used during gradient descent
+<num_units_per_layer>       = The number of neurons/output features in each layer
+                            : (except the last layer, which is always 3 outputs)
+<learning_rate>             = The learning rate to be used during gradient descent
 <weight_scale_parameter>    = The scaling factor by which to scale the randomly
-                              initialized weights of the neural network.  This makes
-                              the weights be randomly initialized on the range
-                              [0,weight_scale_parameter).
+                            : initialized weights of the neural network.  This makes
+                            : the weights be randomly initialized on the range
+                            : [0,weight_scale_parameter).
 <epochs>                    = The number of epochs to run during the training phase
-<mini_batch_size>          = The number of training vectors to use in each mini-batch
+<mini_batch_size>           = The number of training vectors to use in each mini-batch
 
 
-
-
+To run the GUI with 1 or 2 agents, run the following command:
 
 python main.py <gui> <agent1> <agent2>
 
-1. Create Pong game object
-2. Set up both agents
-3. Create GUI
-4. Start game
+where:
+<gui>       = "gui" (ignoring case)
+<agent1>    = The type of agent player 1 is
+<agent2>    = The type of agent player 2 is.  Omit this
+            : argument to run the GUI with only one agent
+
+<agent1> and <agent2> can be any of the following (ignoring case):
+"human"                         = Human agent
+"q_learning" or "q-learning"    = Q-learning agent
+"sarsa"                         = SARSA agent
+"network"                       = Neural network agent
 -------------------------------------------------------------------------------
 """
 
@@ -74,82 +77,7 @@ SEED = 17
 NUM_EPISODES_BETWEEN_POINTS = 1
 EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
 
-# .003906
-
-"""
-Q-LEARNING
-"""
-
-# Learning-rate-constant: 1.0
-# Discount factor: .80
-# exploration_threshold: 3
-# Training games: 100,000
-
-# Average number of bounces on test games: 5.25
-
-
-# Learning-rate-constant: 1.0
-# Discount factor: .80
-# exploration_threshold: 5
-# Training games: 100,000
-
-# Average number of bounces on test games: 5.505
-
-
-# Learning-rate-constant: 10
-# Discount factor: .80
-# exploration_threshold: 10
-# Training games: 100,000
-
-# Average number of bounces on test games: 12.98
-## Mean rewards increases to around 9.008483870967742 after approximately 31,000 games
-##   while standard deviation increases to around 9.263404879385186.
-## At the end of the 100,000 games, the mean rewards is around 11.193050505050506
-##   and the standard deviation is around 9.70943954875793
-
-
-"""
-SARSA
-"""
-
-"""
-INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 0)
-"""
-
-# Learning-rate-constant: 10
-# Discount factor: .80
-# exploration_threshold: 10
-# Training games: 100,000
-
-# MAXIMUM REWARD COUNT OVER TRAINING GAMES: 57.0
-# MAXIMUM REWARD COUNT OVER TEST GAMES: 28.0
-# Average number of bounces on test games: 8.24
-
-## Mean rewards increases to around 6.102525252525252 by the end of the 100,000
-##   games while standard deviation increases to around 5.454864725972152.
-
-
-"""
-INITIAL ACTION HARD-CODED TO ALWAYS MOVE DOWN (action = 2)
-"""
-
-# Learning-rate-constant: 10
-# Discount factor: .80
-# exploration_threshold: 10
-# Training games: 100,000
-
-# MAXIMUM REWARD COUNT OVER TRAINING GAMES: 77.0
-# MAXIMUM REWARD COUNT OVER TEST GAMES: 51.0
-# Average number of bounces on test games: 9.875
-
-## Mean rewards increases to around 7.524818181818182 by the end of the 100,000
-##   games while standard deviation increases to around 6.492778445060258.
-
 if __name__ == "__main__":
-    """
-    test = network()
-    test.load_network()
-    """
     if sys.argv[1].lower() == "part1":
         params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
