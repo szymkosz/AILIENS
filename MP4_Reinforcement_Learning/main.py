@@ -243,19 +243,21 @@ if __name__ == "__main__":
         agent2 = None 
 
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
-            agent1 = q_learning();
-            agent1.load();
+            agent1 = q_learning(10, 0.8, 10)
+            agent1.load()
         elif sys.argv[2].lower() == "sarsa":
-            agent1 = sarsa();
-            agent1.load();
+            agent1 = sarsa(10, 0.8, 10)
+            agent1.load()
         elif sys.argv[2].lower() == "network":
-            agent1 = network();
-            agent1.load_network();
+            agent1 = network()
+            agent1.load_network()
 
         # if sys.argv[3].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
-        #    agent2 = q_learning();
+        #    agent2 = q_learning(10, 0.8, 10);
+        #    agent2.load();
         # elif sys.argv[3].lower() == "sarsa":
-        #    agent2 = sarsa();
+        #    agent2 = sarsa(10, 0.8, 10);
+        #    agent2.load();
         # elif sys.argv[3].lower() == "human":
         #    agent2 = human();
 
