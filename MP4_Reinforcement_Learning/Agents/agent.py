@@ -1,4 +1,5 @@
 NAME = "AGENT"
+import numpy as np
 
 class Agent(object):
 	def __init__(self, name=NAME, playerNum=1):
@@ -49,6 +50,7 @@ class Agent(object):
 
 	def load(self):
 		fileName = "Agents/Training_Data/" + self.formulate_file_name() + ".npz"
+		print(fileName)
 		import os.path
 		load = os.path.isfile(fileName)
 		if load:

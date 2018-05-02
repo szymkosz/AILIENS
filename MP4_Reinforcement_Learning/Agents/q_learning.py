@@ -5,7 +5,7 @@ import sys
 sys.path.append('..')
 import helper
 
-NAME = "Q-LEARNING"
+NAME = "Q_LEARNING"
 
 class q_learning(Agent):
 	def __init__(self, learning_rate_constant=1.0, discount_factor=.70, exploration_threshold=3, playerNum=1, num_training_games=100000):

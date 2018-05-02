@@ -152,7 +152,8 @@ if __name__ == "__main__":
 	if sys.argv[1].lower() == "part1":
 		params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
 		if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
-		    game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6])))
+			game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5]), num_training_games=int(sys.argv[6])))
+			game.agent.formulate_file_name()
 			loaded = game.agent.load()
 			if not loaded:
 				training_game_rewards = game.run_multiple_games(int(sys.argv[6]), True)
