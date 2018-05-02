@@ -1,4 +1,5 @@
 NAME = "AGENT"
+import numpy as np
 
 class Agent(object):
 	def __init__(self, name=NAME, playerNum=1):
