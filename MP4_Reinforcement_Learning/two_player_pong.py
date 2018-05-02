@@ -31,8 +31,6 @@ class Two_Player_Pong(Pong):
         # Initialize the second agent and the player scores
         self.agent2 = agent2
         self.paddle2_y = paddle2_y
-        self.player1_score = 0
-        self.player2_score = 0
 
 
     """
@@ -155,6 +153,8 @@ class Two_Player_Pong(Pong):
     or False if these games are for testing the agent.
     """
     def run_multiple_games(self, num_games, is_training):
+        agent1_wins = 0
+        agent2_wins = 0
 
         for i in range(num_games):
             while not self.game_is_over():
@@ -164,11 +164,14 @@ class Two_Player_Pong(Pong):
                    "ERROR: Game ended and the ball hasn't left the game"
 
             if self.ball_x > RIGHT_WALL_X:
-                self.player1_score += 1
+                agent1_wins += 1
             else:
-                self.player2_score += 1
+                agent2_wins += 1
 
             self.reset_game()
+
+        print("Number of Player 1 Victories: " + str(agent1_wins))
+        print("Number of Player 2 Victories: " + str(agent2_wins))
 
         return None
 
