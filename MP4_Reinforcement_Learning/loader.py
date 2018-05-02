@@ -47,10 +47,8 @@ def loadFile(fileName):
 
 
 """
-This function takes in a list of weights and a list of biases and saves them to
-a .npz file.  The ith entry of both of these lists corresponds to the 2D numpy
-matrix of weights and numpy vector of biases respectively of the ith layer of
-the neural network.
+This function takes in all the stored data in a neural network
+(except the caches) and saves them to a .npz file.
 
 The save_training_results_to_file and load_training_results_from_file functions
 are used to efficiently store and retrieve the weights and biases of the neural
@@ -71,10 +69,8 @@ def save_training_results_to_file(num_layers, num_units_per_layer, learning_rate
 
 
 """
-This function loads a list of weights and a list of biases from a .npz file
-and returns them.  The ith entry of both of these lists corresponds to the 2D numpy
-matrix of weights and numpy vector of biases respectively of the ith layer of
-the neural network.
+This function loads all the stored data of a neural network (except the caches)
+from a .npz file and returns them.
 
 The save_training_results_to_file and load_training_results_from_file functions
 are used to efficiently store and retrieve the weights and biases of the neural

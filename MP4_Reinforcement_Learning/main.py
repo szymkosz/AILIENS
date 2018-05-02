@@ -78,8 +78,11 @@ NUM_EPISODES_BETWEEN_POINTS = 1
 EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
 
 if __name__ == "__main__":
+    # Run part 1 code
     if sys.argv[1].lower() == "part1":
         params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+
+        # Train and test Q-learning agent
         if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
             game = Pong(q_learning(float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5]), num_training_games=int(sys.argv[6])))
             game.agent.formulate_file_name()
@@ -105,6 +108,7 @@ if __name__ == "__main__":
             avg_test_bounces = np.sum(np.sum(avg_test_bounces,axis=1)/avg_test_bounces.shape[1])/avg_test_bounces.shape[0]
             print("Average number of bounces on test games: " + str(avg_test_bounces))
 
+        # Train and test SARSA agent
         elif sys.argv[2].lower() == "sarsa":
             game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]), num_training_games=int(sys.argv[6])))
             loaded = game.agent.load()
@@ -136,6 +140,7 @@ if __name__ == "__main__":
         else:
             sys.exit("INVALID ARGUMENT ERROR: The second argument must be \"q_learning\", \"q-learning\", \"sarsa\", or \"human\" (ignoring case)!")
 
+    # Train and test neural network agent
     elif sys.argv[1].lower() == "part2":
         assert len(sys.argv) == 8
 
@@ -150,9 +155,7 @@ if __name__ == "__main__":
         num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
         print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
 
-        agent.load_network()
-        gui.pong_gui(game, 'neural_net')
-
+    # Run the GUI
     elif sys.argv[1].lower() == "gui":
         agent1 = None
         agent2 = None
