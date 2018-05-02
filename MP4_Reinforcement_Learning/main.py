@@ -133,10 +133,6 @@ if __name__ == "__main__":
             avg_test_bounces = np.sum(np.sum(avg_test_bounces,axis=1)/avg_test_bounces.shape[1])/avg_test_bounces.shape[0]
             print("Average number of bounces on test games: " + str(avg_test_bounces))
 
-        elif sys.argv[2].lower() == "human":
-            game = Pong(human())
-            gui.pong_gui(game)
-
         else:
             sys.exit("INVALID ARGUMENT ERROR: The second argument must be \"q_learning\", \"q-learning\", \"sarsa\", or \"human\" (ignoring case)!")
 

@@ -7,7 +7,6 @@ NAME = "HUMAN"
 
 class human(Agent):
 	def __init__(self, playerNum=1):
-		# super(self).__init__(game, playerNum)
 		super().__init__(NAME, playerNum)
 		self.name = NAME
 
@@ -33,4 +32,3 @@ class human(Agent):
     """
 	def updateAction(self, s, a, reward, s_prime):
 		pass
-

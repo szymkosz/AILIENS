@@ -67,8 +67,6 @@ def get_discrete_state(state_tuple):
     else:
         discrete_velocity_x = 1
 
-    #discrete_velocity_x = int(np.sign(continuous_velocity_x))
-
     # Convert velocity_y to the proper discrete value
     discrete_velocity_y = None
     if abs(continuous_velocity_y) < 0.015:
@@ -77,15 +75,6 @@ def get_discrete_state(state_tuple):
         discrete_velocity_y = 0
     else:
         discrete_velocity_y = 2
-
-    """
-    # Convert velocity_y to the proper discrete value
-    discrete_velocity_y = None
-    if abs(continuous_velocity_y) < 0.015:
-        discrete_velocity_y = 0
-    else:
-        discrete_velocity_y = int(np.sign(continuous_velocity_y))
-    """
 
     # Convert paddle_y to the proper discrete value
     PADDLE_HEIGHT = 0.2
@@ -147,16 +136,6 @@ def plot_mean_episode_rewards_vs_episodes(rewards, num_episodes_between_points, 
     from matplotlib.backends.backend_pdf import PdfPages
     with PdfPages(file_name) as pdf:
         pdf.savefig()
-
-# """
-# Puts together a file name for the agent and the parameters in the format:
-# <agent> <LRC> <Discount_Factor> <Exploration_Threshold>
-# i.e. "Q_LEARNINING__LRC_10__Discount_0.8__ExplrThr_20"
-# """
-# def formulate_file_name(params):
-#     agent, lrc, discount_factor, exp_thresh, num_training_games = params
-#     return str(agent.upper()) + "__LRC_" + str(int(lrc)) + "__Discount_" + str(float(discount_factor)) + \
-#     "__ExplrThr_" + str(int(exp_thresh)) + "__" + str(int(num_training_games))
 
 
 """

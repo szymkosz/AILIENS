@@ -8,7 +8,7 @@ import helper
 NAME = "Q_LEARNING"
 
 class q_learning(Agent):
-	def __init__(self, learning_rate_constant=10, discount_factor=.80, exploration_threshold=10, playerNum=1, num_training_games=100000):
+	def __init__(self, learning_rate_constant=20, discount_factor=.90, exploration_threshold=10, playerNum=1, num_training_games=100000):
 		super().__init__(NAME, playerNum)
 
 		self.q_values = np.zeros((12,12,2,3,12,3))
