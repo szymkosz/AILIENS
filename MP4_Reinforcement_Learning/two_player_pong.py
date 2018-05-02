@@ -2,6 +2,7 @@ import sys
 import helper
 from Agents import *
 import numpy as np
+from pong import Pong
 
 # CONSTANTS
 LEFT_WALL_X = 0.0
