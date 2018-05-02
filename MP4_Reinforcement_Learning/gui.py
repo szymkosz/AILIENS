@@ -108,8 +108,8 @@ def move_paddle(y_coord):
 
 def move_agent2_paddle(y_coord):
 	global gameDisplay, old_y_agent2_paddle
-	pygame.draw.rect(gameDisplay, white, [x_agent2_paddle, old_y_agent2_paddle, 12, 100]) # clear old paddle
-	pygame.draw.rect(gameDisplay, blue, [x_agent2_paddle, y_coord, 12, 100]) # draw new paddle
+	pygame.draw.rect(gameDisplay, white, [x_agent2_paddle, old_y_agent2_paddle, 10, 100]) # clear old paddle
+	pygame.draw.rect(gameDisplay, blue, [x_agent2_paddle, y_coord, 10, 100]) # draw new paddle
 	old_y_agent2_paddle = y_coord
 	pygame.display.update()
 
