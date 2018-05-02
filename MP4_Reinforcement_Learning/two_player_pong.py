@@ -21,9 +21,9 @@ INITIAL_PADDLE_Y = 0.5 - (PADDLE_HEIGHT/2)
 
 class Two_Player_Pong(Pong):
     """
-    This is the constructor for a Pong game.  By default, the setup of the game
+    This is the constructor for a 2-player Pong game.  By default, the setup of the game
     is identical to the initial state defined in the assignment.  The game's
-    agent should always be passed in as the appropriate object.
+    agents should always be passed in as the appropriate object.
     """
     def __init__(self, agent, agent2, ball_x=INITIAL_BALL_X, ball_y=INITIAL_BALL_Y, velocity_x=INITIAL_VELOCITY_X, velocity_y=INITIAL_VELOCITY_Y, paddle_y=INITIAL_PADDLE_Y, paddle2_y=INITIAL_PADDLE_Y):
         # Initialize the first agent and game state
@@ -39,9 +39,7 @@ class Two_Player_Pong(Pong):
     with every time step.  It gets the agent's action, uses it to update the paddle's
     position, updates the ball's position, and then handles the bouncing of the ball.
 
-    Returns the reward associated with this time step.  This is 1 if the ball bounces
-    off of the paddle, -1 if the ball leaves the screen, or 0 if neither of the former
-    two scenariors occurs.
+    Nothing is returned here, and the is_training parameter isn't used.
     """
     def update_time_step(self, is_training):
         # Get player 1's action and update player 1's paddle
@@ -101,10 +99,6 @@ class Two_Player_Pong(Pong):
 
     """
     The handle_bounce function handles the bouncing of the ball off of the walls and paddle.
-
-    Returns the reward associated with this time step.  This is 1 if the ball bounces
-    off of the paddle, -1 if the ball leaves the screen, or 0 if neither of the former
-    two scenariors occurs.
     """
     def handle_bounce(self):
         # Handles bouncing off the walls
@@ -148,10 +142,9 @@ class Two_Player_Pong(Pong):
 
     """
     The run_multiple_games function is responsible for running multiple games
-    to either train the agent or test it.
+    to play the part1 and part2 agents against each other.
 
-    Set the is_training parameter to True if these games are for training the agent
-    or False if these games are for testing the agent.
+    The is_training parameter isn't used here.
     """
     def run_multiple_games(self, num_games, is_training):
         agent1_wins = 0
@@ -179,9 +172,7 @@ class Two_Player_Pong(Pong):
 
     """
     The game_is_over function checks if the ball has left the screen and therefore,
-    the Pong game has ended.  This is determined by checking if the ball's x-coordinate
-    is greater than 1 and the ball's y-coordinate is either less than the y-coordinate of
-    player 1's paddle or greater than the y-coordinate paddle's y-coordinate plus the height of the paddle.
+    the Pong game has ended.
     """
     def game_is_over(self):
         if self.ball_x > RIGHT_WALL_X and (self.ball_y < self.paddle_y or self.ball_y > (self.paddle_y + PADDLE_HEIGHT)):

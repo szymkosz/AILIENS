@@ -53,6 +53,15 @@ where:
 "q_learning" or "q-learning"    = Q-learning agent
 "sarsa"                         = SARSA agent
 "network"                       = Neural network agent
+
+
+To play the part 1 and part 2 agents against each other, run the following command:
+
+python main.py <versus> <agent1>
+
+where:
+<versus>       = "versus" (ignoring case)
+<agent1>       = The type of agent from part 1 (Q-learning and SARSA)
 -------------------------------------------------------------------------------
 """
 
@@ -185,5 +194,23 @@ if __name__ == "__main__":
             game = Two_Player_Pong(agent1, agent2)
 
         gui.pong_gui(game, agent1, agent2)
+    elif sys.argv[1].lower() == "versus":
+        agent1 = None
+
+        if sys.argv[2].lower() == "q_learning" or sys.argv[2].lower() == "q-learning":
+            agent1 = q_learning()
+            agent1.load()
+        elif sys.argv[2].lower() == "sarsa":
+            agent1 = sarsa()
+            agent1.load()
+        else:
+            sys.exit("INVALID ARGUMENT ERROR: The second argument must be \"q_learning\", \"q-learning\", or \"sarsa\" (ignoring case)!")
+
+        agent2 = network()
+        agent2.load_network()
+
+        game = Two_Player_Pong(agent1, agent2)
+        
+        game.run_multiple_games(200, False)
     else:
         sys.exit("INVALID ARGUMENT ERROR: The first argument must be \"part1\" or \"part2\" (ignoring case)!")
