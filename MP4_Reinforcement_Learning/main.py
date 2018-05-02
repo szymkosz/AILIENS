@@ -49,7 +49,7 @@ where:
             : argument to run the GUI with only one agent
 
 <agent1> and <agent2> can be any of the following (ignoring case):
-"human"                         = Human agent
+"human"                         = Human agent (only for agent2)
 "q_learning" or "q-learning"    = Q-learning agent
 "sarsa"                         = SARSA agent
 "network"                       = Neural network agent
