@@ -68,6 +68,8 @@ from Agents.human import human
 
 # CONSTANTS
 NUM_TEST_GAMES = 200
+NUM_TEST_RUNS = 100
+SEED = 17
 NUM_EPISODES_BETWEEN_POINTS = 1
 EXPERT_POLICTY_DATASET_FILENAME = "Data/expert_policy.txt"
 
@@ -162,9 +164,27 @@ if __name__ == "__main__":
                 helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, params)
                 game.agent.save(fileName)
 
-            test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
-            num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
-            print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+            # test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
+            # num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
+            # print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+
+            avg_test_bounces = np.zeros((NUM_TEST_RUNS, NUM_TEST_GAMES))
+            avg_test_rewards = np.zeros((NUM_TEST_RUNS, NUM_TEST_GAMES))
+            np.random.seed(SEED)
+            for i in range(NUM_TEST_RUNS):
+                print("Running {0} of {1} sets of {2} test games...".format(i+1, NUM_TEST_RUNS, NUM_TEST_GAMES))
+                test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
+                avg_test_rewards[i,:] += test_game_rewards
+
+                num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
+                avg_test_bounces[i,:] += num_test_bounces
+                # print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+
+            max_game_rewards = np.amax(avg_test_rewards,axis=1)
+            print("Maximum Rewards Count on test games: " + str(np.sum(max_game_rewards)/len(max_game_rewards)))
+            avg_test_bounces = np.sum(np.sum(avg_test_bounces,axis=1)/avg_test_bounces.shape[1])/avg_test_bounces.shape[0]
+            print("Average number of bounces on test games: " + str(avg_test_bounces))
+
             # gui.pong_gui(game, 'q_learning')
 
         elif sys.argv[2].lower() == "sarsa":
@@ -180,9 +200,27 @@ if __name__ == "__main__":
 
                 game.agent.save(fileName)
 
-            test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
-            num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
-            print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+            # test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
+            # num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
+            # print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+
+            avg_test_bounces = np.zeros((NUM_TEST_RUNS, NUM_TEST_GAMES))
+            avg_test_rewards = np.zeros((NUM_TEST_RUNS, NUM_TEST_GAMES))
+            np.random.seed(SEED)
+            for i in range(NUM_TEST_RUNS):
+                print("Running {0} of {1} sets of {2} test games...".format(i+1, NUM_TEST_RUNS, NUM_TEST_GAMES))
+                test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
+                avg_test_rewards[i,:] += test_game_rewards
+
+                num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
+                avg_test_bounces[i,:] += num_test_bounces
+                # print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
+
+            max_game_rewards = np.amax(avg_test_rewards,axis=1)
+            print("Maximum Rewards Count on test games: " + str(np.sum(max_game_rewards)/len(max_game_rewards)))
+            avg_test_bounces = np.sum(np.sum(avg_test_bounces,axis=1)/avg_test_bounces.shape[1])/avg_test_bounces.shape[0]
+            print("Average number of bounces on test games: " + str(avg_test_bounces))
+
             # gui.pong_gui(game, 'sarsa')
 
         elif sys.argv[2].lower() == "human":

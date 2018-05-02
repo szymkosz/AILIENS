@@ -226,7 +226,7 @@ class Pong(object):
 
             self.reset_game()
 
-        print("MAXIMUM REWARD COUNT: " + str(np.amax(total_game_rewards)))
+        # print("MAXIMUM REWARD COUNT: " + str(np.amax(total_game_rewards)))
 
         return total_game_rewards
 
