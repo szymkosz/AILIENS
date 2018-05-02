@@ -9,29 +9,10 @@ NAME = "SARSA"
 
 class sarsa(Agent):
 	def __init__(self, learning_rate_constant=10, discount_factor=.80, exploration_threshold=10, playerNum=1, num_training_games=100000):
-		#np.random.seed(6386)
-		# super(self).__init__(game, playerNum)
 		super().__init__(NAME, playerNum)
-
-		"""
-		# Initialize the rewards, q-values, and N(s,a) counts
-
-		self.rewards = np.zeros((12,12,2,3,12))
-		for i in range(12):
-			self.rewards[11,i,1,:,i] = 1.0
-		"""
-		# Initialize the q-values and N(s,a) counts
 
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3), dtype=np.int32)
-
-		"""
-		# These three variables describe the characteristics of the terminal state,
-		# where the ball has left the screen because the paddle missed it.
-		self.terminal_reward = -1
-		self.terminal_count = 0
-		self.terminal_q_value = 0
-		"""
 
 		# This is the q-value of the terminal state (when the ball leaves the screen
 		# because the paddle misses it).  It is fixed at -1 to help the training converge.
@@ -46,40 +27,6 @@ class sarsa(Agent):
 		self.exploration_threshold = exploration_threshold
 
 		self.num_training_games = num_training_games
-
-	# def save(self, fileName):
-	# 	save = False
-	# 	fileName += ".npz"
-	# 	import os.path
-	# 	if os.path.isfile(fileName):
-	# 		print("\nTraining data for this agent and these parameters already exists.")
-	# 		ans = input("Overwrite it? (y/n)  ")
-	# 		if ans.lower() == 'n' or ans.lower() == "no":
-	# 			print("Canceling save.")
-	# 			return
-	# 		else:
-	# 			save = True
-	# 	else:
-	# 		save = True
-	# 	if save:
-	# 		print("\nSaving training data...")
-	# 		np.savez(fileName, q_values=self.q_values.flatten(), counts_Nsa=self.counts_Nsa.flatten(), \
-	# 				lrc=self.learning_rate_constant, discount_factor=self.discount_factor,\
-	# 				exploration_threshold=self.exploration_threshold)
-	#
-	# def load(self, fileName):
-	# 	fileName += ".npz"
-	# 	import os.path
-	# 	if os.path.isfile(fileName):
-	# 		data = np.load(fileName)
-	# 		self.q_values = data['q_values'].reshape((12,12,2,3,12,3))
-	# 		self.counts_Nsa = data['counts_Nsa'].reshape((12,12,2,3,12,3))
-	# 		self.learning_rate_constant = data['lrc']
-	# 		self.discount_factor = data['discount_factor']
-	# 		self.exploration_threshold = data['exploration_threshold']
-	# 		return True
-	# 	print("\nCould not find existing training data for this agent.")
-	# 	return False
 
 
 	"""
@@ -169,22 +116,3 @@ class sarsa(Agent):
 			self.cur_action = 2 # np.random.randint(3)
 		else:
 			self.cur_action = a_prime
-
-		"""
-		# Acquire the reward R(s)
-		Rs = self.rewards[list(s)]
-		"""
-		"""
-		# Select the next action to take in state s'
-		q_vals = self.q_values[list(d_s_prime)]
-		counts = self.counts_Nsa[list(d_s_prime)]
-		a_prime = np.argmax(helper.exploration_function(q_vals, counts, self.exploration_threshold))
-
-		# Perform the TD update
-		alpha = self.learning_rate_constant/(self.learning_rate_constant + self.counts_Nsa[list(d_s)][a])
-		Qsa = self.q_values[list(d_s)][a]
-		self.q_values[list(d_s)][a] = Qsa + alpha * (Rs + self.discount_factor*self.q_values[list(d_s_prime)][a_prime] - Qsa)
-
-		# Store a' as a
-		self.cur_action = a_prime
-		"""
