@@ -89,10 +89,6 @@ if __name__ == "__main__":
                 helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, game.agent)
                 game.agent.save()
 
-            # test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
-            # num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
-            # print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
-
             avg_test_bounces = np.zeros((NUM_TEST_RUNS, NUM_TEST_GAMES))
             avg_test_rewards = np.zeros((NUM_TEST_RUNS, NUM_TEST_GAMES))
             np.random.seed(SEED)
@@ -103,14 +99,11 @@ if __name__ == "__main__":
 
                 num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
                 avg_test_bounces[i,:] += num_test_bounces
-                # print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
 
             max_game_rewards = np.amax(avg_test_rewards,axis=1)
             print("Maximum Rewards Count on test games: " + str(np.sum(max_game_rewards)/len(max_game_rewards)))
             avg_test_bounces = np.sum(np.sum(avg_test_bounces,axis=1)/avg_test_bounces.shape[1])/avg_test_bounces.shape[0]
             print("Average number of bounces on test games: " + str(avg_test_bounces))
-
-            # gui.pong_gui(game, 'q_learning')
 
         elif sys.argv[2].lower() == "sarsa":
             game = Pong(sarsa(float(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5]), num_training_games=int(sys.argv[6])))
@@ -120,10 +113,6 @@ if __name__ == "__main__":
                 helper.plot_mean_episode_rewards_vs_episodes(training_game_rewards, NUM_EPISODES_BETWEEN_POINTS, game.agent)
                 game.agent.save()
 
-            # test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
-            # num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
-            # print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
-
             avg_test_bounces = np.zeros((NUM_TEST_RUNS, NUM_TEST_GAMES))
             avg_test_rewards = np.zeros((NUM_TEST_RUNS, NUM_TEST_GAMES))
             np.random.seed(SEED)
@@ -134,14 +123,11 @@ if __name__ == "__main__":
 
                 num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
                 avg_test_bounces[i,:] += num_test_bounces
-                # print("Average number of bounces on test games: " + str(np.sum(num_test_bounces)/len(num_test_bounces)))
 
             max_game_rewards = np.amax(avg_test_rewards,axis=1)
             print("Maximum Rewards Count on test games: " + str(np.sum(max_game_rewards)/len(max_game_rewards)))
             avg_test_bounces = np.sum(np.sum(avg_test_bounces,axis=1)/avg_test_bounces.shape[1])/avg_test_bounces.shape[0]
             print("Average number of bounces on test games: " + str(avg_test_bounces))
-
-            # gui.pong_gui(game, 'sarsa')
 
         elif sys.argv[2].lower() == "human":
             game = Pong(human())
@@ -181,8 +167,6 @@ if __name__ == "__main__":
         elif sys.argv[2].lower() == "network":
             agent1 = network()
             agent1.load_network()
-        # elif sys.argv[2].lower() == "human":
-        #     agent1 = human()
 
         if sys.argv[3].lower() == "q_learning" or sys.argv[3].lower() == "q-learning":
            agent2 = q_learning()
@@ -204,38 +188,3 @@ if __name__ == "__main__":
         gui.pong_gui(game, agent1, agent2)
     else:
         sys.exit("INVALID ARGUMENT ERROR: The first argument must be \"part1\" or \"part2\" (ignoring case)!")
-
-# if __name__ == "__main__":
-#    """
-#    incorrectUsageError = "Incorrect Usage: Expected " \
-#                        + "\"python %s <bayes> <laplace>\" or " % sys.argv[0] \
-#                        + "\"python %s <perceptron> <hasBias> <weightsAreRandom> <hasRandomTrainingOrder> <epochs>\"" % sys.argv[0]
-#    """
-#    incorrectUsageError = "Incorrect Usage: Expected " \
-#                        + "\"python %s <bayes> <laplace>\" or " % sys.argv[0] \
-#                        + "\"python %s <perceptron> <learning_rate_power> <epochs>\"" % sys.argv[0]
-#
-#    assert len(sys.argv) >= 3, incorrectUsageError
-#
-#    if sys.argv[1].lower() == "part1":
-#        # Run part 1
-#
-#
-#        # Check the validity of the command-line arguments
-#        assert len(sys.argv) in [3,4], incorrectUsageError
-#
-#    elif sys.argv[1].lower() == "part2":
-#        # Run part 2
-#        if sys.argv[2].lower() == "best":
-#            # Run code for reproducing the best empirical results
-#            # discovered for the non-differentiable perceptron
-#            perceptron.reproduce_best_results(training_data_tuple, test_data_tuple, False)
-#        else:
-#            # Check that the number of command-line arguments is correct
-#            assert len(sys.argv) == 4, incorrectUsageError
-#
-#            # Run code for training and classifying with perceptron
-#            perceptron.run_perceptron(training_data_tuple, test_data_tuple, False, int(sys.argv[2]), int(sys.argv[3]))
-#
-#    else:
-#        sys.exit("INVALID ARGUMENT ERROR: The third argument must be \"bayes\", \"naivebayes\", \"perceptron\", or \"face\" (ignoring case)!")

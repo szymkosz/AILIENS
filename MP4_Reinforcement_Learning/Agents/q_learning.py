@@ -9,27 +9,10 @@ NAME = "Q_LEARNING"
 
 class q_learning(Agent):
 	def __init__(self, learning_rate_constant=10, discount_factor=.80, exploration_threshold=10, playerNum=1, num_training_games=100000):
-		# super(self).__init__(game, playerNum)
 		super().__init__(NAME, playerNum)
-
-		"""
-		# Initialize the rewards, q-values, and N(s,a) counts
-		self.rewards = np.zeros((12,12,2,3,12))
-		for i in range(12):
-			self.rewards[11][i][1][:][i] = 1.0
-		"""
-		# Initialize the q-values and N(s,a) counts
 
 		self.q_values = np.zeros((12,12,2,3,12,3))
 		self.counts_Nsa = np.zeros((12,12,2,3,12,3), dtype=np.int32)
-
-		"""
-		# These three variables describe the characteristics of the terminal state,
-		# where the ball has left the screen because the paddle missed it.
-		self.terminal_reward = -1
-		self.terminal_count = 0
-		self.terminal_q_value = 0
-		"""
 
 		# This is the q-value of the terminal state (when the ball leaves the screen
 		# because the paddle misses it).  It is fixed at -1 to help the training converge.
@@ -42,40 +25,6 @@ class q_learning(Agent):
 
 		self.num_training_games = num_training_games
 
-	# def save(self):
-	# 	save = False
-	# 	fileName += ".npz"
-	# 	import os.path
-	# 	if os.path.isfile(fileName):
-	# 		print("\nTraining data for this agent and these parameters already exists.")
-	# 		ans = input("Overwrite it? (y/n)  ")
-	# 		if ans.lower() == 'n' or ans.lower() == "no":
-	# 			print("Canceling save.")
-	# 			return
-	# 		else:
-	# 			save = True
-	# 	else:
-	# 		save = True
-	# 	if save:
-	# 		print("\nSaving training data...")
-	# 		np.savez(fileName, q_values=self.q_values.flatten(), counts_Nsa=self.counts_Nsa.flatten(), \
-	# 				lrc=self.learning_rate_constant, discount_factor=self.discount_factor,\
-	# 				exploration_threshold=self.exploration_threshold, num_training_games=self.num_training_games)
-	#
-	# def load(self, fileName):
-	# 	fileName += ".npz"
-	# 	import os.path
-	# 	if os.path.isfile(fileName):
-	# 		data = np.load(fileName)
-	# 		self.q_values = data['q_values'].reshape((12,12,2,3,12,3))
-	# 		self.counts_Nsa = data['counts_Nsa'].reshape((12,12,2,3,12,3))
-	# 		self.learning_rate_constant = data['lrc']
-	# 		self.discount_factor = data['discount_factor']
-	# 		self.exploration_threshold = data['exploration_threshold']
-	# 		return True
-	# 	print("\nCould not find existing training data for this agent.")
-	# 	return False
-
 	"""
 	The getAction function should decide the action this agent should take
 	given the current state s of the game.  It should return 0 if the paddle
@@ -83,7 +32,6 @@ class q_learning(Agent):
 	do nothing.
 	"""
 	def getAction(self, is_training, cur_state_tuple):
-		#print(cur_state_tuple)
 		discrete_state = helper.get_discrete_state(cur_state_tuple)
 		assert discrete_state is not -1, "ERROR: discrete_state should not be a terminal state!"
 
@@ -114,7 +62,6 @@ class q_learning(Agent):
 	Nothing is returned.
 	"""
 	def updateAction(self, s, a, reward, s_prime):
-		# TODO: Implement Q-Learning algorithm
 		"""
 		1. s, a, reward (r), and s' are already given as parameters.  s and s' are 5-tuples
 		   containing all 5 attributes of the game state, a is a number (0, 1, or 2),
