@@ -8,7 +8,7 @@ import helper
 NAME = "SARSA"
 
 class sarsa(Agent):
-	def __init__(self, learning_rate_constant=10, discount_factor=.80, exploration_threshold=10, playerNum=1):
+	def __init__(self, learning_rate_constant=10, discount_factor=.80, exploration_threshold=10, playerNum=1, num_training_games=100000):
 		#np.random.seed(6386)
 		# super(self).__init__(game, playerNum)
 		super().__init__(NAME, playerNum)
