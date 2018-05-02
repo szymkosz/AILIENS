@@ -48,12 +48,15 @@ class Agent(object):
 		 "__Discount_" + str(float(self.discount_factor)) + "__ExplrThr_" + \
 		 str(int(self.exploration_threshold)) + "__" + str(int(self.num_training_games))
 
+	"""
+	Used to load training data for the agent with the given parameters, if the data exist.
+	"""
 	def load(self):
 		fileName = "Agents/Training_Data/" + self.formulate_file_name() + ".npz"
 		import os.path
 		load = os.path.isfile(fileName)
 		if load:
-			ans = input("\nTraining data has been found for this agent. Load it? (y/n)  ")
+			ans = input("\nTraining data have been found for this agent. Load it? (y/n)  ")
 			if ans.lower() == 'n' or ans.lower() == "no":
 				load = False
 		else:
@@ -71,12 +74,15 @@ class Agent(object):
 				pass
 		return load
 
+	"""
+	Used to save the training data for an agent with the given parameters.
+	"""
 	def save(self):
 		save = False
 		fileName = "Agents/Training_Data/" + self.formulate_file_name() + ".npz"
 		import os.path
 		if os.path.isfile(fileName):
-			print("\nTraining data for this agent and these parameters already exists.")
+			print("\nTraining data for this agent and these parameters already exist.")
 			ans = input("Overwrite it? (y/n)  ")
 			if ans.lower() == 'n' or ans.lower() == "no":
 				print("Canceling save.")
