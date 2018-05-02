@@ -41,7 +41,7 @@ class Agent(object):
 	"""
 	Puts together a file name for the agent and the parameters in the format:
 	<agent> <LRC> <Discount_Factor> <Exploration_Threshold>
-	i.e. "Q_LEARNINING__LRC_10__Discount_0.8__ExplrThr_20"
+	i.e. "Q_LEARNINING__LRC_10__Discount_0.8__ExplrThr_20__100000"
 	"""
 	def formulate_file_name(self):
 		return str(self.name.upper()) + "__LRC_" + str(int(self.learning_rate_constant)) + \
@@ -50,7 +50,6 @@ class Agent(object):
 
 	def load(self):
 		fileName = "Agents/Training_Data/" + self.formulate_file_name() + ".npz"
-		print(fileName)
 		import os.path
 		load = os.path.isfile(fileName)
 		if load:
