@@ -147,6 +147,25 @@ if __name__ == "__main__":
     test = network()
     test.load_network()
     """
+    agent = network()
+    agent.load_network()
+
+    game = Pong(agent)
+    average_bounces = np.zeros(100)
+
+    for i in range(100):
+        print("TEST GAME SET " + str(i+1))
+
+        test_game_rewards = game.run_multiple_games(NUM_TEST_GAMES, False)
+        num_test_bounces = test_game_rewards + np.ones(len(test_game_rewards))
+        average_bounces[i] = np.sum(num_test_bounces)/len(num_test_bounces)
+        print("Average number of bounces: " + str(average_bounces[i]) + "\n")
+
+    average_of_averages = np.sum(average_bounces)/len(average_bounces)
+    print("AVERAGE OF AVERAGES: " + str(average_of_averages))
+
+    exit()
+
     if sys.argv[1].lower() == "part1":
         params = (sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
         fileName = "Agents/Training_Data/" + helper.formulate_file_name(params)
