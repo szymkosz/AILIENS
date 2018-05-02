@@ -1,8 +1,6 @@
 import pygame
 import time
 import loader
-# from pong import Pong
-# from Agents.human import Human
 
 # colors
 white = (255, 255, 255)
@@ -22,7 +20,6 @@ radius = 10
 def pong_gui(game, agent1 = None, agent2 = None):
 	global gameDisplay
 	gui_init(agent2)
-	# print(agent1, agent2)
 	# game loop
 	while not game.game_is_over():
 		game.update_time_step(False)
